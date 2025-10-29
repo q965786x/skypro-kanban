@@ -1,12 +1,28 @@
 import React from 'react';
 
-const Card = ({ theme, themeName, title, date }) => {
+const Card = ({ id, topic, title, date }) => {
+  // Функция для определения класса темы на основе названия
+  const getTopicClass = (topicName) => {
+    switch (topicName) {
+      case 'Web Design':
+        return '_orange';
+      case 'Research':
+        return '_green'; 
+      case 'Copywriting':
+        return '_purple'; 
+      default:
+        return '_orange'
+    }
+  };
+
+  const topicClass = getTopicClass(topic);
+
   return (
     <div className="cards__item">
       <div className="cards__card card">
         <div className="card__group">
-          <div className={`card__theme ${theme}`}>
-            <p className={theme}>{themeName}</p>
+          <div className={`card__theme ${topicClass}`}>
+            <p className={topicClass}>{topic}</p>
           </div>
           <a href="#popBrowse" target="_self">
             <div className="card__btn">

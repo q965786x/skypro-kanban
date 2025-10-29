@@ -1,46 +1,3 @@
-/*#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
-
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
-}*/
-
 * {
   margin: 0;
   padding: 0;
@@ -1131,3 +1088,69 @@ body {
     display: block;
   }
 }
+
+/* Исправляем стили для header__user */
+.header__user {
+  cursor: pointer;
+  background: none;
+  border: none;
+  font: inherit;
+  color: inherit;
+}
+
+/* Убедимся, что попап всегда поверх других элементов */
+.header__pop-user-set {
+  display: none;
+}
+
+/* Принудительно показываем попап когда нужно */
+.header__pop-user-set[style*="display: block"] {
+  display: block !important;
+}
+
+/* Убираем стандартные стили с кнопки в попапе */
+.pop-user-set button {
+  background: none;
+  border: none;
+  font: inherit;
+  cursor: pointer;
+}
+
+/* Убедимся, что контейнер имеет relative positioning */
+.header__block {
+  position: relative !important;
+}
+
+/* Стили для индикатора загрузки */
+.loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 400px;
+    width: 100%;
+}
+
+.loading-text {
+    font-size: 24px;
+    font-weight: 600;
+    color: #565EEF;
+    text-align: center;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Анимация пульсации для текста загрузки */
+@keyframes pulse {
+    0% {
+        opacity: 0.6;
+        transform: scale(0.98);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    100% {
+        opacity: 0.6;
+        transform: scale(0.98);
+    }
+}
+
