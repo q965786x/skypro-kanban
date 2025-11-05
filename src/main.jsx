@@ -7,7 +7,7 @@ createRoot(document.getElementById('root')).render(
   <StrictMode>
     {/* BrowserRouter позволяет управлять маршрутизацией в приложении */}
     <BrowserRouter>
-    <App />
+      <App />
     </BrowserRouter>      
   </StrictMode>
 );
