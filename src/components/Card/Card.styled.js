@@ -62,7 +62,7 @@ export const SCardTheme = styled.div`
   height: 20px;
   padding: 5px 14px;
   border-radius: 18px;
-  background-color: ${(props) => {
+  /*background-color: ${(props) => {
     switch (props.$topic) {
       case "Web Design":
         return "#FFE4C2";
@@ -73,7 +73,7 @@ export const SCardTheme = styled.div`
       default:
         return "#FFE4C2";
     }
-  }};
+  }};*/
   color: ${(props) => {
     switch (props.$topic) {
       case "Web Design":
