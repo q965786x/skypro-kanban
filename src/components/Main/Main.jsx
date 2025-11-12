@@ -1,16 +1,20 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import Column from "../Column/Column";
-import { getCardsByStatus, statuses } from "../../../data";
+import { getCardsByStatus, statuses } from "../data";
 import {
   SMain,
   SMainBlock,
   SMainContent,
   SLoadingContainer,
   SLoadingText,
+  HeaderSection,
+  WelcomeText,
+  AddCardButton,
 } from "./Main.styled";
 import { SContainer } from "../Header/Header.styled";
 
-const Main = () => {
+const Main = ({ onLogout, showExitPopup, onShowExitConfirm, onHideExitConfirm }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   // Имитация загрузки данных
@@ -43,6 +47,31 @@ const Main = () => {
     <SMain>
       <SContainer>
         <SMainBlock>
+          {/*<HeaderSection>
+              <button 
+                onClick={onShowExitConfirm} // Показываем подтверждение выхода
+                style={{ 
+                  marginLeft: '10px', 
+                  padding: '10px 20px', 
+                  background: 'transparent', 
+                  color: '#565EEF', 
+                  border: '1px solid #565EEF',
+                  borderRadius: '4px', 
+                  cursor: 'pointer',
+                  transition: 'all 0.3s ease'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.background = '#565EEF';
+                  e.target.style.color = 'white';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.background = 'transparent';
+                  e.target.style.color = '#565EEF';
+                }}
+              >
+                Выйти
+              </button>
+        </HeaderSection> */}
           <SMainContent>
             {statuses.map((status) => (
               <Column

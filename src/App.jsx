@@ -1,29 +1,49 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import AppRoutes from './components/AppRoutes';
-import Header from './components/Header/Header';
-import Main from './components/Main/Main';
-import PopExit from './components/PopExit/PopExit';
-import PopNewCard from './components/PopNewCard/PopNewCard';
-import PopBrowse from './components/PopBrowse/PopBrowse';
 
+function App() {
+  const [isAuth, setIsAuth] = useState(false);
+  const [showExitPopup, setShowExitPopup] = useState(false); // Добавляем состояние для PopExit
 
-const App = () => {  
+  useEffect(() => {
+    // Проверяем, авторизован ли пользователь
+    const authStatus = localStorage.getItem('isAuth') === 'true';
+    setIsAuth(authStatus);
+  }, []);
+
+  const handleLogin = () => {
+    setIsAuth(true);
+    localStorage.setItem('isAuth', 'true');
+  };
+
+  const handleLogout = () => {
+    setIsAuth(false);
+    localStorage.setItem('isAuth', 'false');
+    setShowExitPopup(false); //Закрываем попап после выхода
+  };
+
+  const showExitConfirm = () => {
+    setShowExitPopup(true); // ✅ Показываем попап подтверждения выхода
+  };
+
+  const hideExitConfirm = () => {
+    setShowExitPopup(false); // ✅ Скрываем попап подтверждения выхода
+  };
 
   return (
-
-    <div className="wrapper">
-      {/* Pop-up компоненты */}
-      <PopExit />
-      <PopNewCard />
-      <PopBrowse />
-      
-      {/* Основные компоненты */}
-      <Header />
-      <Main />      
-    </div>
-  );
-};
+    <>
+    <AppRoutes 
+      isAuth={isAuth} 
+      onLogin={handleLogin} 
+      onLogout={handleLogout}
+      showExitPopup={showExitPopup}
+      onShowExitConfirm={showExitConfirm}
+      onHideExitConfirm={hideExitConfirm} 
+    />
+    </>      
+  );  
+}
 
 export default App;
 

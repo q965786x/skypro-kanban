@@ -44,3 +44,33 @@ export const SLoadingText = styled.div`
   text-align: center;
   animation: pulse 1.5s ease-in-out infinite;
 `;
+
+export const HeaderSection = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding: 0 20px;
+`;
+
+export const WelcomeText = styled.h1`
+  font-size: 24px;
+  color: #565eef;
+  font-weight: 600;
+`;
+
+export const AddCardButton = styled.button`
+  padding: 10px 20px;
+  background-color: #565eef;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 14px;
+
+  &:hover {
+    background-color: #33399b;
+  }
+`;

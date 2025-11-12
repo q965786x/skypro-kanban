@@ -1,11 +1,11 @@
 import React, { useEffect, useRef } from "react";
+//import { useNavigate } from "react-router-dom";
 
-const PopUser = ({ isOpen, onClose }) => {
+const PopUser = ({ isOpen, onClose, onLogout, onShowExitConfirm }) => {
   const popupRef = useRef(null);
+  //const navigate = useNavigate();
 
   useEffect(() => {
-    console.log("PopUser useEffect, isOpen:", isOpen);
-
     const popupClickOutside = (event) => {
       if (popupRef.current && !popupRef.current.contains(event.target)) {
         onClose();
@@ -13,8 +13,7 @@ const PopUser = ({ isOpen, onClose }) => {
     };
 
     const handleEscape = (event) => {
-      if (event.key === 'Escape') {
-        console.log("Escape pressed, closing popup");
+      if (event.key === "Escape") {
         onClose();
       }
     };
@@ -22,64 +21,75 @@ const PopUser = ({ isOpen, onClose }) => {
     if (isOpen) {
       document.addEventListener("mousedown", popupClickOutside);
       document.addEventListener("keydown", handleEscape);
-      console.log("Event listeners added");
     }
 
     return () => {
       document.removeEventListener("mousedown", popupClickOutside);
       document.removeEventListener("keydown", handleEscape);
-      console.log("Event listeners removed");
     };
   }, [isOpen, onClose]);
 
-  console.log("PopUser render, isOpen:", isOpen);
+  const handleLogoutClick = () => {
+    onShowExitConfirm(); // Показываем подтверждение выхода
+    //onLogout();
+    onClose();
+    //navigate("/sign-in");
+  };
 
   if (!isOpen) {
     return null;
   }
 
   return (
-    <div 
-      ref={popupRef} 
+    <div
+      ref={popupRef}
       className="header__pop-user-set pop-user-set"
-      style={{ 
-        display: 'block',
-        position: 'absolute',
-        top: '61px',
-        right: '0',
-        width: '213px',
-        height: '205px',
-        borderRadius: '10px',
-        border: '0.7px solid rgba(148, 166, 190, 0.4)',
-        background: '#FFF',
-        boxShadow: '0px 10px 39px 0px rgba(26, 56, 101, 0.21)',
-        padding: '34px',
-        textAlign: 'center',
-        zIndex: '1000'
+      style={{
+        display: "block",
+        position: "absolute",
+        top: "61px",
+        right: "0",
+        width: "213px",
+        height: "205px",
+        borderRadius: "10px",
+        border: "0.7px solid rgba(148, 166, 190, 0.4)",
+        background: "#FFF",
+        boxShadow: "0px 10px 39px 0px rgba(26, 56, 101, 0.21)",
+        padding: "34px",
+        textAlign: "center",
+        zIndex: "1000",
       }}
-      >
-
+    >
       <p className="pop-user-set__name">Ivan Ivanov</p>
       <p className="pop-user-set__mail">ivan.ivanov@gmail.com</p>
       <div className="pop-user-set__theme">
         <p>Темная тема</p>
         <input type="checkbox" className="checkbox" name="checkbox" />
       </div>
-      <button 
-        type="button" 
+      <button
+        type="button"
         className="_hover03"
-        onClick={onClose}
-        style={{ 
-          width: '72px', 
-          height: '30px', 
-          background: 'transparent', 
-          color: '#565EEF', 
-          borderRadius: '4px', 
-          border: '1px solid #565EEF',
-          cursor: 'pointer'
+        onClick={handleLogoutClick}
+        style={{
+          width: "72px",
+          height: "30px",
+          background: "transparent",
+          color: "#565EEF",
+          borderRadius: "4px",
+          border: "1px solid #565EEF",
+          cursor: "pointer",
+          transition: 'all 0.3s ease'
+        }}
+        onMouseEnter={(e) => {
+          e.target.style.background = '#565EEF';
+          e.target.style.color = 'white';
+        }}
+        onMouseLeave={(e) => {
+          e.target.style.background = 'transparent';
+          e.target.style.color = '#565EEF';
         }}
       >
-        <a href="#popExit" style={{ color: '#565EEF' }}>Выйти</a>
+        Выйти
       </button>
     </div>
   );
