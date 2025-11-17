@@ -4,8 +4,7 @@ import { SMainColumn, SColumnTitle } from "./Column.styled";
 import { SCardsContainer } from "../Card/Card.styled";
 
 const Column = ({ title, cards }) => {
-  console.log(`Column "${title}" received cards:`, cards);
-
+  
   return (
     <SMainColumn>
       <SColumnTitle>

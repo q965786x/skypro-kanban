@@ -1,6 +1,6 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import {
-  SCardsContainer,
   SCardsItem,
   SCardsCard,
   SCardGroup,
@@ -12,13 +12,14 @@ import {
 } from "./Card.styled";
 
 const Card = ({ id, topic, title, date }) => {
+  
   // Функция для определения класса темы на основе названия
   const getTopicClass = (topicName) => {
     switch (topicName) {
       case "Web Design":
         return "_orange";
       case "Research":
-        return "_green";
+        return "_green";        
       case "Copywriting":
         return "_purple";
       default:
@@ -28,25 +29,25 @@ const Card = ({ id, topic, title, date }) => {
 
   const topicClass = getTopicClass(topic);
 
-  return (
+  return (     
     <SCardsItem>
       <SCardsCard>
         <SCardGroup>
           <SCardTheme className={`${topicClass}`}>
             <p className={topicClass}>{topic}</p>
           </SCardTheme>
-          <a href="#popBrowse" target="_self">
+          <Link to={`/card/${id}`}>
             <SCardButton>
               <div></div>
               <div></div>
               <div></div>
             </SCardButton>
-          </a>
+          </Link>
         </SCardGroup>
         <SCardContent>
-          <a href="" target="_blank">
+          <Link to={`/card/${id}`}>
             <SCardTitle>{title}</SCardTitle>
-          </a>
+          </Link>
           <SCardDate>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -80,7 +81,7 @@ const Card = ({ id, topic, title, date }) => {
           </SCardDate>
         </SCardContent>
       </SCardsCard>
-    </SCardsItem>
+    </SCardsItem>       
   );
 };
 

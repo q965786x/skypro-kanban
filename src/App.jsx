@@ -1,50 +1,68 @@
-import React, { useState, useEffect } from 'react';
-import './App.css';
-import AppRoutes from './components/AppRoutes';
+import React, { useState, useEffect } from "react";
+import "./App.css";
+import AppRoutes from "./components/AppRoutes";
+import { cardsData } from "./data";
 
 function App() {
   const [isAuth, setIsAuth] = useState(false);
-  const [showExitPopup, setShowExitPopup] = useState(false); // Добавляем состояние для PopExit
+  const [cards, setCards] = useState([]); // Состояние для хранения карточек
 
   useEffect(() => {
     // Проверяем, авторизован ли пользователь
-    const authStatus = localStorage.getItem('isAuth') === 'true';
+    const authStatus = localStorage.getItem("isAuth") === "true";
     setIsAuth(authStatus);
+
+    const savedCards = localStorage.getItem("cards");
+     console.log("Saved cards from localStorage:", savedCards); // Для отладки
+    
+    if (savedCards) {
+      const parsedCards = JSON.parse(savedCards);
+      console.log("Parsed cards:", parsedCards); // Для отладки
+      setCards(JSON.parse(savedCards));
+    } else {
+      // Если в localStorage нет карточек, используем начальные данные из data.js
+      console.log("No saved cards, using initial data"); // Для отладки
+      setCards(cardsData); // Импортируйте cardsData из data.js если нужно
+    }
   }, []);
 
   const handleLogin = () => {
     setIsAuth(true);
-    localStorage.setItem('isAuth', 'true');
+    localStorage.setItem("isAuth", "true");
   };
 
   const handleLogout = () => {
     setIsAuth(false);
-    localStorage.setItem('isAuth', 'false');
-    setShowExitPopup(false); //Закрываем попап после выхода
+    localStorage.setItem("isAuth", "false");
   };
 
-  const showExitConfirm = () => {
-    setShowExitPopup(true); // ✅ Показываем попап подтверждения выхода
-  };
+  // Функция для создания новой карточки
+  const createNewCard = (newCardData) => {
+    const newCard = {
+      id: Date.now(), // Генерируем уникальный ID
+      topic: newCardData.topic,
+      title: newCardData.title,
+      date: newCardData.date,
+      status: "Без статуса", // Новая карточка всегда без статуса
+      description: newCardData.description, // Добавляем описание
+    };
 
-  const hideExitConfirm = () => {
-    setShowExitPopup(false); // ✅ Скрываем попап подтверждения выхода
+    const updatedCards = [...cards, newCard];
+    setCards(updatedCards);
+    localStorage.setItem("cards", JSON.stringify(updatedCards));
   };
 
   return (
     <>
-    <AppRoutes 
-      isAuth={isAuth} 
-      onLogin={handleLogin} 
-      onLogout={handleLogout}
-      showExitPopup={showExitPopup}
-      onShowExitConfirm={showExitConfirm}
-      onHideExitConfirm={hideExitConfirm} 
-    />
-    </>      
-  );  
+      <AppRoutes
+        isAuth={isAuth}
+        onLogin={handleLogin}
+        onLogout={handleLogout}
+        onCreateNewCard={createNewCard}
+        cards={cards}
+      />
+    </>
+  );
 }
 
 export default App;
-
-

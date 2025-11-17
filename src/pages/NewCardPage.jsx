@@ -1,21 +1,34 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import PopNewCard from "../components/PopNewCard/PopNewCard";
-import {
-  NewCardContainer,
-  Header,
-  Title,
-  BackLink,
-} from "./NewCardPage.styled";
+import Header from '../components/Header/Header';
+import Main from '../components/Main/Main';
 
-const NewCardPage = () => {
+const NewCardPage = ({ onCreateCard, cards, onLogout }) => {
+  const navigate = useNavigate();
+
+  const handleClose = () => {
+    navigate('/'); // Возврат на главную
+  };
+
+  const handleCreate = (newCardData) => {
+    onCreateCard(newCardData);
+    navigate('/'); // Возврат на главную после создания
+  };
+
   return (
-    <NewCardContainer>
-      <Header>
-        <Title>Создание новой задачи</Title>
-        <BackLink to="/">← Назад к доске</BackLink>
-      </Header>
-      <PopNewCard />
-    </NewCardContainer>
+    <div className="wrapper">
+      {/* Показываем основной интерфейс */}
+      <Header onLogout={onLogout} />
+      <Main cards={cards} />
+      
+      {/* Поверх всего показываем модальное окно */}
+      <PopNewCard 
+        isOpen={true}
+        onClose={handleClose}
+        onCreateCard={handleCreate}
+      />
+    </div>
   );
 };
 

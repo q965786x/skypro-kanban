@@ -1,12 +1,34 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import PopExit from "../components/PopExit/PopExit";
-import { ExitContainer } from "./ExitPage.styled";
+import Header from "../components/Header/Header";
+import Main from "../components/Main/Main";
 
-const ExitPage = () => {
+const ExitPage = ({ onLogout, cards }) => {
+  const navigate = useNavigate();
+
+  const handleClose = () => {
+    navigate('/'); // Возврат на главную
+  };
+
+  const handleLogout = () => {
+    onLogout();
+    navigate('/sign-in'); // Перенаправление на страницу входа
+  };
+
   return (
-    <ExitContainer>
-      <PopExit />
-    </ExitContainer>
+    <div className="wrapper">
+      {/* Показываем основной интерфейс */}
+      <Header onLogout={onLogout} />
+      <Main cards={cards} />
+      
+      {/* Поверх всего показываем модальное окно */}
+      <PopExit 
+        onLogout={handleLogout}
+        onHideExitConfirm={handleClose}
+        showExitPopup={true}
+      />
+    </div>
   );
 };
 

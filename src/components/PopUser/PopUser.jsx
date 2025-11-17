@@ -1,10 +1,10 @@
 import React, { useEffect, useRef } from "react";
-//import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-const PopUser = ({ isOpen, onClose, onLogout, onShowExitConfirm }) => {
+const PopUser = ({ isOpen, onClose }) => {
   const popupRef = useRef(null);
-  //const navigate = useNavigate();
-
+  const navigate = useNavigate();
+  
   useEffect(() => {
     const popupClickOutside = (event) => {
       if (popupRef.current && !popupRef.current.contains(event.target)) {
@@ -29,11 +29,9 @@ const PopUser = ({ isOpen, onClose, onLogout, onShowExitConfirm }) => {
     };
   }, [isOpen, onClose]);
 
-  const handleLogoutClick = () => {
-    onShowExitConfirm(); // Показываем подтверждение выхода
-    //onLogout();
+  const handleExitClick = () => {
+    navigate('/exit');
     onClose();
-    //navigate("/sign-in");
   };
 
   if (!isOpen) {
@@ -67,10 +65,10 @@ const PopUser = ({ isOpen, onClose, onLogout, onShowExitConfirm }) => {
         <input type="checkbox" className="checkbox" name="checkbox" />
       </div>
       <button
-        type="button"
+        onClick={handleExitClick}
         className="_hover03"
-        onClick={handleLogoutClick}
         style={{
+          display: "inline-block",
           width: "72px",
           height: "30px",
           background: "transparent",
@@ -78,12 +76,17 @@ const PopUser = ({ isOpen, onClose, onLogout, onShowExitConfirm }) => {
           borderRadius: "4px",
           border: "1px solid #565EEF",
           cursor: "pointer",
-          transition: 'all 0.3s ease'
+          transition: 'all 0.3s ease',
+          textDecoration: 'none',
+          lineHeight: '30px',
+          fontSize: '14px'
         }}
+
         onMouseEnter={(e) => {
           e.target.style.background = '#565EEF';
           e.target.style.color = 'white';
         }}
+        
         onMouseLeave={(e) => {
           e.target.style.background = 'transparent';
           e.target.style.color = '#565EEF';

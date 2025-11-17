@@ -65,8 +65,7 @@ const AuthForm = ({ isSignUp, onLogin }) => {
                 </SFormLink>
               ) : (
                 <SFormLink>
-                  <p>Уже есть аккаунт?</p>
-                  <Link to="/sign-in">Войдите здесь</Link>
+                  <p>Уже есть аккаунт? <Link to="/sign-in">Войдите здесь</Link></p>                  
                 </SFormLink>
               )}
             </form>

@@ -114,12 +114,17 @@ export const BaseButton = styled.button`
 export const SFormLink = styled.div`
   // стили для .form-group
   text-align: center;
-  color: #666;
+  color: #94a6be;
+  font-weight: 400;
+  font-size: 14px;
+  font-family: inherit;
 
   a {
-    color: #565eef;
+    color: #94a6be;
     text-decoration: none;
-    font-weight: 500;
+    font-weight: 400;
+    font-size: 14px;
+    font-family: inherit;
 
     &:hover {
       text-decoration: underline;

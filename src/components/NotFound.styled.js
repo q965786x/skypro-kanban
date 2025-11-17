@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import styled from "styled-components";
 
 export const NotFoundContainer = styled.div`
@@ -22,7 +23,7 @@ export const Text = styled.p`
   margin-bottom: 30px;
 `;
 
-export const HomeLink = styled.a`
+export const HomeLink = styled(Link)`
   color: #565eef;
   text-decoration: none;
   font-weight: 600;

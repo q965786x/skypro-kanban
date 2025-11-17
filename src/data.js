@@ -6,7 +6,8 @@ export const statuses = [
   "Готово",
 ];
 
-export const cardsData = [
+// Начальные данные (будут перезаписаны данными из localStorage)
+export let cardsData = [
   // Без статуса (5 карточек)
   {
     id: 1,
@@ -95,6 +96,13 @@ export const cardsData = [
   }
 ];
 
+// Функция для обновления cardsData
+export const updateCardsData = (newCards) => {
+  cardsData = newCards;
+};
+
 export const getCardsByStatus = (status) => {
   return cardsData.filter((card) => card.status === status);
 };
+
+
