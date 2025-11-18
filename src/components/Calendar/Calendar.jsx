@@ -1,8 +1,20 @@
-import React from 'react';
-import { SCalendar, SCalendarTitle, SCalendarBlock, SCalendarNav, SCalendarMonth, 
-SNavActions, SNavAction, SCalendarContent, SCalendarDaysNames, SCalendarCells,  } from './Calendar.styled';
+import React, { useState } from 'react';
+import { 
+  SCalendar, 
+  SCalendarTitle, 
+  SCalendarBlock, 
+  SCalendarNav, 
+  SCalendarMonth, 
+  SNavActions, 
+  SNavAction, 
+  SCalendarContent, 
+  SCalendarDaysNames, 
+  SCalendarCells,  
+} from './Calendar.styled';
 
-const Calendar = ({ mode = 'new', selectedDate = '08.09.2023' }) => {
+const Calendar = ({ mode = 'new', selectedDate = '', onDateSelect }) => {
+  const [currentDate, setCurrentDate] = useState(new Date());
+
   const days = [
     { day: 28, type: '_other-month' }, { day: 29, type: '_other-month' }, { day: 30, type: '_other-month' },
     { day: 31, type: '_cell-day' }, { day: 1, type: '_cell-day' }, { day: 2, type: '_cell-day _weekend' }, { day: 3, type: '_cell-day _weekend' },
@@ -17,6 +29,16 @@ const Calendar = ({ mode = 'new', selectedDate = '08.09.2023' }) => {
   ];
 
   const dayNames = ['пн', 'вт', 'ср', 'чт', 'пт', 'сб', 'вс'];
+
+  const handleDayClick = (day) => {
+    if (day.type.includes('_other-month')) return;
+    
+    // Форматируем дату
+    const formattedDate = `${day.day.toString().padStart(2, '0')}.09.2023`;
+    if (onDateSelect) {
+      onDateSelect(formattedDate);
+    }
+  };
 
   return (
     <SCalendar>
@@ -47,7 +69,9 @@ const Calendar = ({ mode = 'new', selectedDate = '08.09.2023' }) => {
           </SCalendarDaysNames>
           <SCalendarCells>
             {days.map((day, index) => (
-              <div key={index} className={`calendar__cell ${day.type}`}>
+              <div key={index} className={`calendar__cell ${day.type} ${selectedDate.includes(day.day) ? '_active-day' : ''}`}
+                onClick={() => handleDayClick(day)}
+              >
                 {day.day}
               </div>
             ))}
@@ -56,9 +80,9 @@ const Calendar = ({ mode = 'new', selectedDate = '08.09.2023' }) => {
         <input type="hidden" id="datepick_value" value={selectedDate} />
         <div className="calendar__period">
           {mode === 'new' ? (
-            <p className="calendar__p date-end">Выберите срок исполнения <span className="date-control"></span>.</p>
+            <p className="calendar__p date-end">Выберите срок исполнения <span className="date-control">{selectedDate || 'не выбран'}</span>.</p>
           ) : (
-            <p className="calendar__p date-end">Срок исполнения: <span className="date-control">09.09.23</span></p>
+            <p className="calendar__p date-end">Срок исполнения: <span className="date-control">{selectedDate}</span></p>
           )}
         </div>
       </SCalendarBlock>

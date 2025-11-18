@@ -93,6 +93,7 @@ export const SHeaderButton = styled.button`
   font-weight: 500;
   margin-right: 20px;
   transition: background-color 0.3s ease;
+  cursor: pointer;
 
   &:hover {
     background-color: #33399b;

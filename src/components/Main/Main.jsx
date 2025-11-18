@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Column from "../Column/Column";
-import { getCardsByStatus, statuses } from "../../../data";
+import { statuses } from "../../data";
 import {
   SMain,
   SMainBlock,
@@ -10,18 +10,33 @@ import {
 } from "./Main.styled";
 import { SContainer } from "../Header/Header.styled";
 
-const Main = () => {
-  const [isLoading, setIsLoading] = useState(true);
-
+const Main = ({ cards }) => {
+  const [isLoading, setIsLoading] = useState(true);  
+  
   // Имитация загрузки данных
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 3000);
+    const hasSeenLoading = localStorage.getItem('hasSeenLoading');
 
-    // Очистка таймера
-    return () => clearTimeout(timer);
+    if (!hasSeenLoading) {
+      // Первый раз - показываем загрузку и запоминаем
+      const timer = setTimeout(() => {
+        setIsLoading(false);
+        localStorage.setItem('hasSeenLoading', 'true');
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    } else {
+      // Не первый раз - сразу показываем контент
+      setIsLoading(false);
+    }
   }, []);
+
+    
+  // Функция для получения карточек по статусу из props cards
+  const getCardsByStatus = (status) => {
+    const filteredCards = cards.filter((card) => card.status === status);
+    return filteredCards;
+  };
 
   // Если данные загружаются, показываем индикатор загрузки
   if (isLoading) {
@@ -42,7 +57,7 @@ const Main = () => {
   return (
     <SMain>
       <SContainer>
-        <SMainBlock>
+        <SMainBlock>          
           <SMainContent>
             {statuses.map((status) => (
               <Column

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link, } from "react-router-dom";
 import PopUser from "../PopUser/PopUser";
 import {
   SHeader,
@@ -10,11 +11,11 @@ import {
   SHeaderUser,
 } from "./Header.styled";
 
-const Header = () => {
+const Header = ({ onLogout }) => {
+  
   const [isModalWindowOpen, setIsModalWindowOpen] = useState(false);
 
   const handleClick = () => {
-    console.log("Toggle clicked, current state:", isModalWindowOpen);
     setIsModalWindowOpen(!isModalWindowOpen);
   };
 
@@ -27,23 +28,26 @@ const Header = () => {
       <SContainer>
         <SHeaderBlock>
           <SHeaderLogo className="_show _light">
-            <a href="" target="_self">
+            <Link to="/">
               <img src="images/logo.png" alt="logo" />
-            </a>
+            </Link>
           </SHeaderLogo>
           <SHeaderLogo className="_dark">
-            <a href="" target="_self">
+            <Link to="/">
               <img src="images/logo_dark.png" alt="logo" />
-            </a>
+            </Link>
           </SHeaderLogo>
-          <SHeaderNav>
-            <SHeaderButton className="_hover01" id="btnMainNew">
-              <a href="#popNewCard">Создать новую задачу</a>
+          <SHeaderNav>           
+            <SHeaderButton className="_hover01">
+              <Link to="card/new">Создать новую задачу</Link> {/* относительный путь */}
             </SHeaderButton>
             <SHeaderUser className="_hover02" onClick={handleClick}>
               Ivan Ivanov
             </SHeaderUser>
-            <PopUser isOpen={isModalWindowOpen} onClose={closeModalWindow} />
+            <PopUser
+              isOpen={isModalWindowOpen}
+              onClose={closeModalWindow}              
+            />
           </SHeaderNav>
         </SHeaderBlock>
       </SContainer>
