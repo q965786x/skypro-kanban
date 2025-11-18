@@ -13,15 +13,12 @@ function App() {
     setIsAuth(authStatus);
 
     const savedCards = localStorage.getItem("cards");
-     console.log("Saved cards from localStorage:", savedCards); // Для отладки
-    
+         
     if (savedCards) {
       const parsedCards = JSON.parse(savedCards);
-      console.log("Parsed cards:", parsedCards); // Для отладки
       setCards(JSON.parse(savedCards));
     } else {
       // Если в localStorage нет карточек, используем начальные данные из data.js
-      console.log("No saved cards, using initial data"); // Для отладки
       setCards(cardsData); // Импортируйте cardsData из data.js если нужно
     }
   }, []);

@@ -11,18 +11,27 @@ import {
 import { SContainer } from "../Header/Header.styled";
 
 const Main = ({ cards }) => {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);  
   
   // Имитация загрузки данных
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 3000);
+    const hasSeenLoading = localStorage.getItem('hasSeenLoading');
 
-    // Очистка таймера
-    return () => clearTimeout(timer);
+    if (!hasSeenLoading) {
+      // Первый раз - показываем загрузку и запоминаем
+      const timer = setTimeout(() => {
+        setIsLoading(false);
+        localStorage.setItem('hasSeenLoading', 'true');
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    } else {
+      // Не первый раз - сразу показываем контент
+      setIsLoading(false);
+    }
   }, []);
 
+    
   // Функция для получения карточек по статусу из props cards
   const getCardsByStatus = (status) => {
     const filteredCards = cards.filter((card) => card.status === status);
