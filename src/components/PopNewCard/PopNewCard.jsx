@@ -35,7 +35,7 @@ const PopNewCard = ({ isOpen, onClose, onCreateCard }) => {
     }
   }, [isOpen]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     if (!title.trim()) {
@@ -47,11 +47,15 @@ const PopNewCard = ({ isOpen, onClose, onCreateCard }) => {
       title: title.trim(),
       description: description.trim(),
       topic: selectedTopic,
-      date: selectedDate
+      date: new Date().toISOString(),
     };
 
-    onCreateCard(newCard);
-    navigate('/'); // Возвращаемся на главную после создания
+    const success = await onCreateCard(newCard);
+    if (success) {
+      navigate('/');
+    } else {
+      alert('Ошибка при создании задачи');
+    }
   };
 
   const handleOverlayClick = (e) => {

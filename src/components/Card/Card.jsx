@@ -12,6 +12,8 @@ import {
 } from "./Card.styled";
 
 const Card = ({ id, topic, title, date }) => {
+  // Используем _id из API или id из localStorage
+  const cardId = id;
   
   // Функция для определения класса темы на основе названия
   const getTopicClass = (topicName) => {
@@ -36,7 +38,7 @@ const Card = ({ id, topic, title, date }) => {
           <SCardTheme className={`${topicClass}`}>
             <p className={topicClass}>{topic}</p>
           </SCardTheme>
-          <Link to={`/card/${id}`}>
+          <Link to={`/card/${cardId}`}>
             <SCardButton>
               <div></div>
               <div></div>
@@ -45,7 +47,7 @@ const Card = ({ id, topic, title, date }) => {
           </Link>
         </SCardGroup>
         <SCardContent>
-          <Link to={`/card/${id}`}>
+          <Link to={`/card/${cardId}`}>
             <SCardTitle>{title}</SCardTitle>
           </Link>
           <SCardDate>
@@ -77,7 +79,7 @@ const Card = ({ id, topic, title, date }) => {
                 </clipPath>
               </defs>
             </svg>
-            <p>{date}</p>
+            <p>{new Date(date).toLocaleDateString('ru-RU')}</p>
           </SCardDate>
         </SCardContent>
       </SCardsCard>

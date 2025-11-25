@@ -66,31 +66,11 @@ export const SInputWrapper = styled.div`
   }
 `;
 
-export const BaseInput = styled.input`
-  // стили для BaseInput
-  padding: 12px 16px;
-  border: 2px solid #e1e5e9;
-  border-radius: 8px;
-  width: 248px;
+export const BaseButton = styled.button`  
+  width: ${props => props.$fullWidth ? "100%" : "auto"};
   height: 30px;
-  font-size: 14px;
-  transition: border-color 0.3s ease;
-  
-  &:focus {
-    outline: none;
-    border-color: #565eef;
-  }
-
-  &::placeholder {
-    color: #a0a0a0;
-  }
-`;
-
-export const BaseButton = styled.button`
-  padding: 12px;
-  background-color: #565eef;
-  width: 248px;
-  height: 30px;
+  background-color: ${props => props.disabled ? '#ccc' : '#565eef'};
+  padding: 12px;  
   color: white;
   border: none;
   border-radius: 8px;
@@ -101,14 +81,14 @@ export const BaseButton = styled.button`
   padding-left: 10px;
   padding-right: 10px;
   gap: 10 px;
-  cursor: pointer;
+  cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
   transition: background-color 0.3s ease;
   margin-top: 20px;
   margin-bottom: 20px;
 
   &:hover {
-    background-color: #33399b;
-  }
+    background-color: ${props => props.disabled ? '#ccc' : '#33399b'};
+  }  
 `;
 
 export const SFormLink = styled.div`

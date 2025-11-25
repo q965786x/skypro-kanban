@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Column from "../Column/Column";
 import { statuses } from "../../data";
 import {
@@ -10,35 +10,20 @@ import {
 } from "./Main.styled";
 import { SContainer } from "../Header/Header.styled";
 
-const Main = ({ cards }) => {
-  const [isLoading, setIsLoading] = useState(true);  
-  
-  // Имитация загрузки данных
-  useEffect(() => {
-    const hasSeenLoading = localStorage.getItem('hasSeenLoading');
 
-    if (!hasSeenLoading) {
-      // Первый раз - показываем загрузку и запоминаем
-      const timer = setTimeout(() => {
-        setIsLoading(false);
-        localStorage.setItem('hasSeenLoading', 'true');
-      }, 3000);
+const Main = ({ cards, isLoading, error, onReloadTasks }) => {
 
-      return () => clearTimeout(timer);
-    } else {
-      // Не первый раз - сразу показываем контент
-      setIsLoading(false);
+  const handleRetry = () => {
+    if (onReloadTasks) {
+      onReloadTasks();
     }
-  }, []);
-
-    
-  // Функция для получения карточек по статусу из props cards
-  const getCardsByStatus = (status) => {
-    const filteredCards = cards.filter((card) => card.status === status);
-    return filteredCards;
   };
 
-  // Если данные загружаются, показываем индикатор загрузки
+  // Функция для получения карточек по статусу из props cards
+  const getCardsByStatus = (status) => {
+    return cards.filter((card) => card.status === status);
+  };
+
   if (isLoading) {
     return (
       <SMain>
@@ -53,7 +38,34 @@ const Main = ({ cards }) => {
     );
   }
 
-  // После загрузки показываем карточки
+  if (error) {
+    return (
+      <SMain>
+        <SContainer>
+          <SMainBlock>
+            <SLoadingContainer>
+              <SLoadingText style={{ color: "red" }}>Ошибка: {error}</SLoadingText>
+              <button 
+                onClick={handleRetry} 
+                style={{ 
+                  marginTop: "20px", 
+                  padding: "10px 20px",
+                  backgroundColor: "#565EEF",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "4px",
+                  cursor: "pointer"
+                }}
+              >
+                Попробовать снова
+              </button>
+            </SLoadingContainer>
+          </SMainBlock>
+        </SContainer>
+      </SMain>
+    );
+  }
+
   return (
     <SMain>
       <SContainer>
@@ -74,3 +86,4 @@ const Main = ({ cards }) => {
 };
 
 export default Main;
+ 
