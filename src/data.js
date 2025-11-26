@@ -1,98 +1,107 @@
 export const statuses = [
-  "Без статуса",
-  "Нужно сделать",
-  "В работе",
-  "Тестирование",
-  "Готово",
-];
+  "Без статуса", 
+  "Нужно сделать", 
+  "В работе", 
+  "Тестирование", 
+  "Готово"];
 
-// Начальные данные (будут перезаписаны данными из localStorage)
-export let cardsData = [
+export const cardsData = [
   // Без статуса (5 карточек)
   {
     id: 1,
     topic: "Web Design",
-    title: "Название задачи",
-    date: "30.10.2023",
+    title: "Новая задача",
+    date: "2023-12-01",
     status: "Без статуса",
+    description: "Описание задачи"
   },
   {
     id: 2,
     topic: "Research",
-    title: "Название задачи",
-    date: "30.10.2023",
+    title: "Новая задача",
+    date: "2023-12-01",
     status: "Без статуса",
+    description: "Описание задачи"
   },
   {
     id: 3,
     topic: "Web Design",
-    title: "Название задачи",
-    date: "30.10.2023",
+    title: "Новая задача",
+    date: "2023-12-01",
     status: "Без статуса",
+    description: "Описание задачи"
   },
   {
     id: 4,
     topic: "Copywriting",
-    title: "Название задачи",
-    date: "30.10.2023",
+    title: "Новая задача",
+    date: "2023-12-01",
     status: "Без статуса",
+    description: "Описание задачи"
   },
   {
     id: 5,
     topic: "Research",
-    title: "Название задачи",
-    date: "30.10.2023",
+    title: "Новая задача",
+    date: "2023-12-01",
     status: "Без статуса",
+    description: "Описание задачи"
   },
 
   // Нужно сделать (1 карточка)
   {
     id: 6,
     topic: "Research",
-    title: "Название задачи",
-    date: "30.10.2023",
+    title: "Новая задача",
+    date: "2023-12-01",
     status: "Нужно сделать",
+    description: "Описание задачи"
   },
 
   // В работе (3 карточки)
   {
     id: 7,
     topic: "Research",
-    title: "Название задачи",
-    date: "30.10.23",
-    status: "В работе"
+    title: "Новая задача",
+    date: "2023-12-01",
+    status: "В работе",
+    description: "Описание задачи"
   },
   {
     id: 8,
     topic: "Copywriting",
-    title: "Название задачи",
-    date: "30.10.23",
-    status: "В работе"
+    title: "Новая задача",
+    date: "2023-12-01",
+    status: "В работе",
+    description: "Описание задачи"
   },
   {
     id: 9,
     topic: "Web Design",
-    title: "Название задачи",
-    date: "30.10.23",
-    status: "В работе"
+    title: "Новая задача",
+    date: "2023-12-01",
+    status: "В работе",
+    description: "Описание задачи"
   },
 
   // Тестирование (1 карточка)
   {
     id: 10,
     topic: "Research",
-    title: "Название задачи",
-    date: "30.10.23",
-    status: "Тестирование"
+    title: "Новая задача",
+    date: "2023-12-01",
+    status: "Тестирование",
+    description: "Описание задачи"
   },
   
   // Готово (1 карточка)
   {
     id: 11,
     topic: "Research",
-    title: "Название задачи",
-    date: "30.10.23",
-    status: "Готово"
+    title: "Новая задача",
+    date: "2023-12-01",
+    status: "Готово",
+    description: "Описание задачи"
   }
 ];
 
@@ -103,6 +112,6 @@ export const updateCardsData = (newCards) => {
 
 export const getCardsByStatus = (status) => {
   return cardsData.filter((card) => card.status === status);
-};
+}; 
 
 

@@ -1,53 +1,138 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import "./App.css";
 import AppRoutes from "./components/AppRoutes";
-import { cardsData } from "./data";
+import { fetchTasks, postTask, editTask, deleteTask } from "./services/api";
 
 function App() {
   const [isAuth, setIsAuth] = useState(false);
   const [cards, setCards] = useState([]); // Состояние для хранения карточек
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  useEffect(() => {
-    // Проверяем, авторизован ли пользователь
-    const authStatus = localStorage.getItem("isAuth") === "true";
-    setIsAuth(authStatus);
-
-    const savedCards = localStorage.getItem("cards");
-         
-    if (savedCards) {
-      const parsedCards = JSON.parse(savedCards);
-      setCards(JSON.parse(savedCards));
-    } else {
-      // Если в localStorage нет карточек, используем начальные данные из data.js
-      setCards(cardsData); // Импортируйте cardsData из data.js если нужно
-    }
+  // Получаем токен из localStorage
+  const getToken = useCallback(() => {
+    const userInfo = localStorage.getItem("userInfo");
+    return userInfo ? JSON.parse(userInfo).token : null;
   }, []);
 
-  const handleLogin = () => {
+  // Мемоизированная функция загрузки задач
+  const loadTasks = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      setError('');
+      const token = getToken();
+
+      if (!token) {
+        throw new Error("Токен не найден. Пожалуйста, войдите снова.");
+      }
+
+      const data = await fetchTasks({ token });
+      setCards(data.tasks || []);
+    } catch (err) {
+      console.error("Ошибка загрузки задач:", err.message);
+      setError(err.message);
+
+      // Если ошибка авторизации, разлогиниваем пользователя
+      if (err.message.includes('401') || err.message.includes('токен') || err.message.includes('Неверный')) {
+        handleLogout();
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  }, [getToken]);
+
+
+  useEffect(() => {
+    const userInfo = localStorage.getItem("userInfo");
+    const authStatus = !!userInfo;
+    setIsAuth(authStatus);
+
+    if (authStatus) {
+      loadTasks();
+    } else {
+      setIsLoading(false);
+    }
+  }, [loadTasks]);
+
+
+  const handleLogin = useCallback((userData) => {
     setIsAuth(true);
-    localStorage.setItem("isAuth", "true");
-  };
+    // Не загружаем задачи сразу, чтобы избежать race condition
+    setTimeout(() => loadTasks(), 100);
+  }, [loadTasks]);
 
-  const handleLogout = () => {
+
+  const handleLogout = useCallback(() => {
     setIsAuth(false);
-    localStorage.setItem("isAuth", "false");
-  };
+    setCards([]);
+    setError('');
+    localStorage.removeItem("userInfo"); 
+    console.log("Пользователь разлогинен");   
+  }, []);
 
-  // Функция для создания новой карточки
-  const createNewCard = (newCardData) => {
-    const newCard = {
-      id: Date.now(), // Генерируем уникальный ID
-      topic: newCardData.topic,
-      title: newCardData.title,
-      date: newCardData.date,
-      status: "Без статуса", // Новая карточка всегда без статуса
-      description: newCardData.description, // Добавляем описание
-    };
 
-    const updatedCards = [...cards, newCard];
-    setCards(updatedCards);
-    localStorage.setItem("cards", JSON.stringify(updatedCards));
-  };
+  // Функция для создания новой карточки через API
+  const createNewCard = useCallback(async (newCardData) => {
+    try {
+      setError('');
+      const token = getToken();
+      if (!token) {
+        throw new Error("Токен не найден");
+      }
+
+      const taskData = {
+        title: newCardData.title || "Новая задача",
+        topic: newCardData.topic || "Research",
+        status: "Без статуса",
+        description: newCardData.description || "",
+        date: new Date().toISOString(),
+      }; 
+
+    const updatedTasks = await postTask({ token, task: taskData });    
+      setCards(updatedTasks || []);
+      return true;
+    } catch (err) {
+      console.error("Ошибка создания задачи:", err);
+      setError(err.message);
+      return false;
+    }
+  }, [getToken]);
+
+  // Функция для обновления задачи
+  const updateCard = useCallback(async (id, updatedData)  => {
+    try {
+      const token = getToken();
+      if (!token) {
+        throw new Error("Токен не найден");
+      }
+
+      const updatedTasks = await editTask({ token, id, task: updatedData });
+      setCards(updatedTasks || []);
+      return true;
+    } catch (err) {
+      console.error("Ошибка обновления задачи:", err);
+      setError(err.message);
+      return false;
+    }
+  }, [getToken]);
+
+  // Функция для удаления задачи
+  const deleteCard = useCallback(async (id) => {
+    try {
+      const token = getToken();
+      if (!token) {
+        throw new Error("Токен не найден");
+      }
+
+      const updatedTasks = await deleteTask({ token, id });
+      setCards(updatedTasks || []);
+      return true;
+    } catch (err) {
+      console.error("Ошибка удаления задачи:", err);
+      setError(err.message);
+      return false;
+    }
+  }, [getToken]);
 
   return (
     <>
@@ -56,7 +141,12 @@ function App() {
         onLogin={handleLogin}
         onLogout={handleLogout}
         onCreateNewCard={createNewCard}
+        onUpdateCard={updateCard}
+        onDeleteCard={deleteCard}
         cards={cards}
+        isLoading={isLoading}
+        error={error}
+        onReloadTasks={loadTasks}
       />
     </>
   );

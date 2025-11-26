@@ -15,7 +15,12 @@ function AppRoutes({
   onLogin, 
   onLogout, 
   onCreateNewCard,
-  cards 
+  onUpdateCard,
+  onDeleteCard,
+  cards,
+  isLoading,
+  error,
+  onReloadTasks
 }) {
   
   return (
@@ -25,7 +30,10 @@ function AppRoutes({
         <Route path="/" element={
           <MainPage 
             onLogout={onLogout}            
-            cards={cards} // cards передаются в MainPage            
+            cards={cards} // cards передаются в MainPage  
+            isLoading={isLoading}
+            error={error}
+            onReloadTasks={onReloadTasks}       
           />} 
         />
         {/* Вложенные маршруты для модальных окон */}
@@ -41,7 +49,9 @@ function AppRoutes({
         <Route path="/card/:id" element={
           <CardPage
             onLogout={onLogout}
-            cards={cards} // cards передаются в CardPage            
+            cards={cards} // cards передаются в CardPage  
+            onUpdateCard={onUpdateCard}
+            onDeleteCard={onDeleteCard}          
           />} 
         />
         

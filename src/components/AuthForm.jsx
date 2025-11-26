@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { signIn, signUp } from '../services/auth';
+import BaseInput from "./Input";
 import {
   SSignInWrapper,
   SContainerSignIn,
@@ -7,7 +9,6 @@ import {
   SModalBlock,
   SModalTtl,
   SInputWrapper,
-  BaseInput,
   BaseButton,
   SFormLink,
 } from "./AuthForm.styled";
@@ -15,11 +16,79 @@ import {
 const AuthForm = ({ isSignUp, onLogin }) => {
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onLogin();
-    navigate("/");
+  const [formData, setFormData] = useState({
+    name: "",
+    login: "",
+    password: "",
+  });
+
+  const [errors, setErrors] = useState({
+    name: false,
+    login: false,
+    password: false,
+  });
+
+  const [error, setError] = useState("");
+
+  const validateForm = () => {
+      const newErrors = { name: false, login: false, password: false };
+      let isValid = true;
+
+      if (isSignUp && !formData.name.trim()) {
+         newErrors.name = true;
+         isValid = false;
+      }
+
+      if (!formData.login.trim()) {
+         newErrors.login = true;
+         isValid = false;
+      }
+
+      if (!formData.password.trim()) {
+         newErrors.password = true;
+         isValid = false;
+      }
+
+      setErrors(newErrors);
+      
+      if (!isValid) {
+        setError("Заполните все поля");
+      }
+      
+      return isValid;
   };
+
+  const handleChange = (e) => {
+      const { name, value } = e.target;
+      setFormData({
+         ...formData,
+         [name]: value,
+      });
+      setErrors({ ...errors, [name]: false });
+      setError("");
+  };
+
+  const handleSubmit = async (e) => {
+      e.preventDefault();
+      
+      if (!validateForm()) {
+        return;
+      }
+
+      try { 
+        const data = isSignUp
+          ? await signUp(formData)
+          : await signIn({ login: formData.login, password: formData.password });
+
+        if (data) {          
+          localStorage.setItem("userInfo", JSON.stringify(data));
+          onLogin(); // Передаем данные пользователя
+          navigate("/");
+        }
+      } catch (err) {
+        setError(err.message);
+      }
+  }; 
 
   return (
     <SSignInWrapper>
@@ -31,30 +100,40 @@ const AuthForm = ({ isSignUp, onLogin }) => {
               <SInputWrapper>
                 {isSignUp && (
                   <BaseInput
+                    error={errors.name}
                     type="text"
                     name="name"
                     id="formname"
                     placeholder="Имя"
-                    required
+                    value={formData.name}
+                    onChange={handleChange}
                   />
                 )}
                 <BaseInput
-                  type="email"
+                  error={errors.login}
+                  type="text"
                   name="login"
                   id="formlogin"
-                  placeholder="Эл. почта"
-                  required
+                  placeholder="Логин"
+                  value={formData.login}
+                  onChange={handleChange}
                 />
                 <BaseInput
+                  error={errors.password}
                   type="password"
                   name="password"
                   id="formpassword"
                   placeholder="Пароль"
-                  required
+                  value={formData.password}
+                  onChange={handleChange}
                 />
               </SInputWrapper>
+              {error && <p style={{ color: "red", textAlign: "center" }}>{error}</p>}
 
-              <BaseButton type="submit">
+              <BaseButton
+                type="submit"
+                $fullWidth={true}
+              >
                 {isSignUp ? "Зарегистрироваться" : "Войти"}
               </BaseButton>
 

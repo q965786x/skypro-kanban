@@ -7,7 +7,9 @@ import PopBrowse from '../components/PopBrowse/PopBrowse';
 const CardPage = ({ onLogout, cards }) => {
   const navigate = useNavigate();
   const { id } = useParams();
-  const card = cards.find(card => card.id === parseInt(id));
+
+  // Ищем карточку по _id (из API) или id (из localStorage)
+  const card = cards.find(card => card._id === id || card.id === id);
   
   const handleClose = () => {
     navigate('/'); // Возврат на главную
@@ -27,6 +29,39 @@ const CardPage = ({ onLogout, cards }) => {
       document.removeEventListener('keydown', handleEscape);
     };
   }, []);
+
+  if (!card) {
+    console.warn("Карточка не найдена, id:", id);
+    return (
+      <div className="wrapper">
+        <Header onLogout={onLogout} />
+        <Main cards={cards} />
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0,0,0,0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000
+        }}>
+          <div style={{
+            background: 'white',
+            padding: '20px',
+            borderRadius: '10px',
+            textAlign: 'center'
+          }}>
+            <h3>Задача не найдена</h3>
+            <p>Задача с ID {id} не существует или была удалена.</p>
+            <button onClick={handleClose}>Закрыть</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="wrapper">

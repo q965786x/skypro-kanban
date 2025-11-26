@@ -74,3 +74,35 @@ export const AddCardButton = styled.button`
     background-color: #33399b;
   }
 `;
+
+export const SErrorContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 400px;
+  width: 100%;
+  gap: 20px;
+`;
+
+export const SErrorText = styled.div`
+  font-size: 18px;
+  font-weight: 600;
+  color: #ff4444;
+  text-align: center;
+`;
+
+export const SRetryButton = styled.button`
+  padding: 10px 20px;
+  background-color: #565eef;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #33399b;
+  }
+`;
