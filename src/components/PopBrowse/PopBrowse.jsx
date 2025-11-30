@@ -1,5 +1,5 @@
-import React from 'react';
-import Calendar from '../Calendar/Calendar'
+import React from "react";
+import Calendar from "../Calendar/Calendar";
 
 const PopBrowse = ({ card, onClose }) => {
   const handleClose = (e) => {
@@ -14,31 +14,42 @@ const PopBrowse = ({ card, onClose }) => {
   };
 
   return (
-    <div 
-    className="pop-browse" 
-    id="popBrowse" 
-    style={{ display: 'block' }}
-    onClick={handleOverlayClick}
+    <div
+      className="pop-browse"
+      id="popBrowse"
+      style={{ display: "block" }}
+      onClick={handleOverlayClick}
     >
       <div className="pop-browse__container">
         <div className="pop-browse__block">
           <div className="pop-browse__content">
             <div className="pop-browse__top-block">
-              <h3 className="pop-browse__ttl">{card?.title || "Название задачи"}</h3>
-              <div className={`categories__theme theme-top _${getTopicClass(card?.topic)} _active-category`}>
-                <p className={`_${getTopicClass(card?.topic)}`}>{card?.topic || 'Web Design'}</p>
+              <h3 className="pop-browse__ttl">
+                {card?.title || "Название задачи"}
+              </h3>
+              <div
+                className={`categories__theme theme-top _${getTopicClass(
+                  card?.topic
+                )} _active-category`}
+              >
+                <p className={`_${getTopicClass(card?.topic)}`}>
+                  {card?.topic || "Web Design"}
+                </p>
               </div>
             </div>
-            
+
             <StatusSection status={card?.status} />
-            
+
             <div className="pop-browse__wrap">
               <DescriptionForm description={card?.description} />
-              <Calendar mode="browse" selectedDate={card?.date || "09.09.2023"} />
+              <Calendar
+                mode="browse"
+                selectedDate={card?.date || "09.09.2023"}
+              />
             </div>
-            
+
             <CategorySection topic={card?.topic} />
-            
+
             <BrowseButtons onClose={handleClose} />
             <EditButtons onClose={handleClose} />
           </div>
@@ -66,34 +77,54 @@ const StatusSection = ({ status }) => (
   <div className="pop-browse__status status">
     <p className="status__p subttl">Статус</p>
     <div className="status__themes">
-      <div className={`status__theme ${status === 'Без статуса' ? '_gray' : '_hide'}`}>
-        <p className={status === 'Без статуса' ? '_gray' : ''}>Без статуса</p>
+      <div
+        className={`status__theme ${
+          status === "Без статуса" ? "_gray" : "_hide"
+        }`}
+      >
+        <p className={status === "Без статуса" ? "_gray" : ""}>Без статуса</p>
       </div>
-      <div className={`status__theme ${status === 'Нужно сделать' ? '_gray' : '_hide'}`}>
-        <p className={status === 'Нужно сделать' ? '_gray' : ''}>Нужно сделать</p>
+      <div
+        className={`status__theme ${
+          status === "Нужно сделать" ? "_gray" : "_hide"
+        }`}
+      >
+        <p className={status === "Нужно сделать" ? "_gray" : ""}>
+          Нужно сделать
+        </p>
       </div>
-      <div className={`status__theme ${status === 'В работе' ? '_gray' : '_hide'}`}>
-        <p className={status === 'В работе' ? '_gray' : ''}>В работе</p>
+      <div
+        className={`status__theme ${status === "В работе" ? "_gray" : "_hide"}`}
+      >
+        <p className={status === "В работе" ? "_gray" : ""}>В работе</p>
       </div>
-      <div className={`status__theme ${status === 'Тестирование' ? '_gray' : '_hide'}`}>
-        <p className={status === 'Тестирование' ? '_gray' : ''}>Тестирование</p>
+      <div
+        className={`status__theme ${
+          status === "Тестирование" ? "_gray" : "_hide"
+        }`}
+      >
+        <p className={status === "Тестирование" ? "_gray" : ""}>Тестирование</p>
       </div>
-      <div className={`status__theme ${status === 'Готово' ? '_gray' : '_hide'}`}>
-        <p className={status === 'Готово' ? '_gray' : ''}>Готово</p>
+      <div
+        className={`status__theme ${status === "Готово" ? "_gray" : "_hide"}`}
+      >
+        <p className={status === "Готово" ? "_gray" : ""}>Готово</p>
       </div>
-    </div>    
+    </div>
   </div>
 );
 
 const DescriptionForm = ({ description }) => (
   <form className="pop-browse__form form-browse" id="formBrowseCard" action="#">
     <div className="form-browse__block">
-      <label htmlFor="textArea01" className="subttl">Описание задачи</label>
-      <textarea 
-        className="form-browse__area" 
-        name="text" 
-        id="textArea01" 
-        readOnly 
+      <label htmlFor="textArea01" className="subttl">
+        Описание задачи
+      </label>
+      <textarea
+        className="form-browse__area"
+        name="text"
+        id="textArea01"
+        readOnly
         placeholder="Введите описание задачи..."
       ></textarea>
     </div>
@@ -103,8 +134,10 @@ const DescriptionForm = ({ description }) => (
 const CategorySection = ({ topic }) => (
   <div className="theme-down__categories theme-down">
     <p className="categories__p subttl">Категория</p>
-    <div className={`categories__theme _${getTopicClass(topic)} _active-category`}>
-      <p className={`_${getTopicClass(topic)}`}>{topic || 'Web Design'}</p>
+    <div
+      className={`categories__theme _${getTopicClass(topic)} _active-category`}
+    >
+      <p className={`_${getTopicClass(topic)}`}>{topic || "Web Design"}</p>
     </div>
   </div>
 );
@@ -119,8 +152,7 @@ const BrowseButtons = ({ onClose }) => (
         <a href="#">Удалить задачу</a>
       </button>
     </div>
-    <button className="btn-browse__close _btn-bg _hover01" 
-      onClick={onClose}>
+    <button className="btn-browse__close _btn-bg _hover01" onClick={onClose}>
       Закрыть
     </button>
   </div>
@@ -139,8 +171,7 @@ const EditButtons = ({ onClose }) => (
         <a href="#">Удалить задачу</a>
       </button>
     </div>
-    <button className="btn-edit__close _btn-bg _hover01" 
-      onClick={onClose}>
+    <button className="btn-edit__close _btn-bg _hover01" onClick={onClose}>
       Закрыть
     </button>
   </div>

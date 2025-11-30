@@ -1,27 +1,33 @@
-import React from "react";
+import React, { useContext } from "react";
 import Column from "../Column/Column";
 import { statuses } from "../../data";
+import { TasksContext } from "../../context/TaskContext";
 import {
   SMain,
   SMainBlock,
   SMainContent,
   SLoadingContainer,
   SLoadingText,
+  SErrorContainer,
+  SErrorText,
+  SRetryButton,
+  SOfflineIndicator,
 } from "./Main.styled";
 import { SContainer } from "../Header/Header.styled";
 
-
-const Main = ({ cards, isLoading, error, onReloadTasks }) => {
+const Main = () => {
+  const { tasks, isLoading, error, refetchTasks, isOfflineMode } =
+    useContext(TasksContext);
 
   const handleRetry = () => {
-    if (onReloadTasks) {
-      onReloadTasks();
+    if (refetchTasks) {
+      refetchTasks();
     }
   };
 
   // Функция для получения карточек по статусу из props cards
   const getCardsByStatus = (status) => {
-    return cards.filter((card) => card.status === status);
+    return tasks.filter((task) => task.status === status);
   };
 
   if (isLoading) {
@@ -43,23 +49,17 @@ const Main = ({ cards, isLoading, error, onReloadTasks }) => {
       <SMain>
         <SContainer>
           <SMainBlock>
-            <SLoadingContainer>
-              <SLoadingText style={{ color: "red" }}>Ошибка: {error}</SLoadingText>
-              <button 
-                onClick={handleRetry} 
-                style={{ 
-                  marginTop: "20px", 
-                  padding: "10px 20px",
-                  backgroundColor: "#565EEF",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "4px",
-                  cursor: "pointer"
-                }}
-              >
+            <SErrorContainer>
+              <SErrorText>Ошибка: {error}</SErrorText>
+              {isOfflineMode && (
+                <SOfflineIndicator>
+                  🔄 Используются локальные данные
+                </SOfflineIndicator>
+              )}
+              <SRetryButton onClick={handleRetry}>
                 Попробовать снова
-              </button>
-            </SLoadingContainer>
+              </SRetryButton>
+            </SErrorContainer>
           </SMainBlock>
         </SContainer>
       </SMain>
@@ -69,7 +69,22 @@ const Main = ({ cards, isLoading, error, onReloadTasks }) => {
   return (
     <SMain>
       <SContainer>
-        <SMainBlock>          
+        <SMainBlock>
+          {isOfflineMode && (
+            <SOfflineIndicator
+              style={{
+                background: "#FFF3CD",
+                color: "#856404",
+                padding: "10px",
+                borderRadius: "4px",
+                marginBottom: "20px",
+                textAlign: "center",
+                border: "1px solid #FFEEBA",
+              }}
+            >
+              ⚡ Режим оффлайн: используются локальные данные
+            </SOfflineIndicator>
+          )}
           <SMainContent>
             {statuses.map((status) => (
               <Column
@@ -86,4 +101,3 @@ const Main = ({ cards, isLoading, error, onReloadTasks }) => {
 };
 
 export default Main;
- 

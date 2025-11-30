@@ -12,16 +12,15 @@ import {
 } from "./Card.styled";
 
 const Card = ({ id, topic, title, date }) => {
-  // Используем _id из API или id из localStorage
   const cardId = id;
-  
+
   // Функция для определения класса темы на основе названия
   const getTopicClass = (topicName) => {
     switch (topicName) {
       case "Web Design":
         return "_orange";
       case "Research":
-        return "_green";        
+        return "_green";
       case "Copywriting":
         return "_purple";
       default:
@@ -31,7 +30,7 @@ const Card = ({ id, topic, title, date }) => {
 
   const topicClass = getTopicClass(topic);
 
-  return (     
+  return (
     <SCardsItem>
       <SCardsCard>
         <SCardGroup>
@@ -79,11 +78,11 @@ const Card = ({ id, topic, title, date }) => {
                 </clipPath>
               </defs>
             </svg>
-            <p>{new Date(date).toLocaleDateString('ru-RU')}</p>
+            <p>{new Date(date).toLocaleDateString("ru-RU")}</p>
           </SCardDate>
         </SCardContent>
       </SCardsCard>
-    </SCardsItem>       
+    </SCardsItem>
   );
 };
 

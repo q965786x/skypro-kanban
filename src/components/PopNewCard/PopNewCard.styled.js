@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 export const SPopNewCard = styled.div`
-  //стили для .pop-new-card 
+  //стили для .pop-new-card
   width: 100%;
   min-width: 375px;
   height: 100%;
@@ -26,16 +26,15 @@ export const SPopNewCardContainer = styled.div`
 `;
 
 export const SPopNewCardBlock = styled.div`
-  
   //стили для .pop-new-card__block
   display: block;
   margin: 0 auto;
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   max-width: 630px;
   width: 100%;
   padding: 40px 30px 48px;
   border-radius: 10px;
-  border: 0.7px solid #D4DBE5;
+  border: 0.7px solid #d4dbe5;
   position: relative;
   box-shadow: 0px 4px 67px -12px rgba(0, 0, 0, 0.13);
 `;
@@ -61,23 +60,23 @@ export const SPopNewCardClose = styled.a`
   position: absolute;
   top: 20px;
   right: 30px;
-  color: #94A6BE;  
+  color: #94a6be;
   font-size: 20px;
   text-decoration: none;
   cursor: pointer;
-  
+
   &:hover {
     color: #000000;
   }
 `;
 
 export const SPopNewCardWrap = styled.div`
-  //стили для .pop-new-card__wrap 
+  //стили для .pop-new-card__wrap
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 20px;
-  
+
   @media screen and (max-width: 660px) {
     display: block;
   }
@@ -109,12 +108,12 @@ export const SFormNewInput = styled.input`
   font-size: 14px;
   line-height: 1;
   letter-spacing: -0.14px;
-  
+
   &::placeholder {
     font-weight: 400;
     font-size: 14px;
     line-height: 1px;
-    color: #94A6BE;
+    color: #94a6be;
     letter-spacing: -0.14px;
   }
 `;
@@ -134,12 +133,12 @@ export const SFormNewArea = styled.textarea`
   height: 200px;
   resize: vertical;
   font-family: inherit;
-  
+
   &::placeholder {
     font-weight: 400;
     font-size: 14px;
     line-height: 1px;
-    color: #94A6BE;
+    color: #94a6be;
     letter-spacing: -0.14px;
   }
 `;
@@ -148,18 +147,18 @@ export const SFormNewCreate = styled.button`
   //стили для .form-new__create
   width: 132px;
   height: 30px;
-  background-color: #565EEF;
+  background-color: #565eef;
   border-radius: 4px;
   border: 0;
   outline: none;
   font-size: 14px;
   font-weight: 500;
   line-height: 1;
-  color: #FFFFFF;
+  color: #ffffff;
   float: right;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  
+
   &:hover {
     background-color: #33399b;
   }
@@ -191,11 +190,11 @@ export const SCategoriesTheme = styled.div`
   opacity: 0.4;
   cursor: pointer;
   transition: opacity 0.3s ease;
-  
+
   &._active-category {
     opacity: 1 !important;
   }
-  
+
   &:hover {
     opacity: 0.7;
   }

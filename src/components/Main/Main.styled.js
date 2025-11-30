@@ -106,3 +106,15 @@ export const SRetryButton = styled.button`
     background-color: #33399b;
   }
 `;
+
+export const SOfflineIndicator = styled.div`
+  background: #fff3cd;
+  color: #856404;
+  padding: 12px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  text-align: center;
+  border: 1px solid #ffeeba;
+  font-size: 14px;
+  font-weight: 500;
+`;

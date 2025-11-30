@@ -1,29 +1,33 @@
-import React, { useState, useEffect } from "react";
+import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import PopNewCard from "../components/PopNewCard/PopNewCard";
-import Header from '../components/Header/Header';
-import Main from '../components/Main/Main';
+import Header from "../components/Header/Header";
+import Main from "../components/Main/Main";
+import { TasksContext } from "../context/TaskContext";
 
-const NewCardPage = ({ onCreateCard, cards, onLogout }) => {
+const NewCardPage = () => {
   const navigate = useNavigate();
+  const { addNewTask } = useContext(TasksContext);
 
   const handleClose = () => {
-    navigate('/'); // Возврат на главную
+    navigate("/"); // Возврат на главную
   };
 
-  const handleCreate = (newCardData) => {
-    onCreateCard(newCardData);
-    navigate('/'); // Возврат на главную после создания
+  const handleCreate = async (newCardData) => {
+    const success = await addNewTask(newCardData);
+    if (success) {
+      navigate("/");
+    }
   };
 
   return (
     <div className="wrapper">
       {/* Показываем основной интерфейс */}
-      <Header onLogout={onLogout} />
-      <Main cards={cards} />
-      
+      <Header />
+      <Main />
+
       {/* Поверх всего показываем модальное окно */}
-      <PopNewCard 
+      <PopNewCard
         isOpen={true}
         onClose={handleClose}
         onCreateCard={handleCreate}

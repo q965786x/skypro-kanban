@@ -1,6 +1,7 @@
-import React, { useState } from "react";
-import { Link, } from "react-router-dom";
+import React, { useState, useContext } from "react";
+import { Link } from "react-router-dom";
 import PopUser from "../PopUser/PopUser";
+import { AuthContext } from "../../context/AuthContext";
 import {
   SHeader,
   SContainer,
@@ -11,8 +12,8 @@ import {
   SHeaderUser,
 } from "./Header.styled";
 
-const Header = ({ onLogout }) => {
-  
+const Header = () => {
+  const { user } = useContext(AuthContext);
   const [isModalWindowOpen, setIsModalWindowOpen] = useState(false);
 
   const handleClick = () => {
@@ -37,17 +38,14 @@ const Header = ({ onLogout }) => {
               <img src="images/logo_dark.png" alt="logo" />
             </Link>
           </SHeaderLogo>
-          <SHeaderNav>           
+          <SHeaderNav>
             <SHeaderButton className="_hover01">
-              <Link to="card/new">Создать новую задачу</Link> {/* относительный путь */}
+              <Link to="card/new">Создать новую задачу</Link>
             </SHeaderButton>
             <SHeaderUser className="_hover02" onClick={handleClick}>
-              Ivan Ivanov
+              {user?.name || user?.login || "Пользователь"}
             </SHeaderUser>
-            <PopUser
-              isOpen={isModalWindowOpen}
-              onClose={closeModalWindow}              
-            />
+            <PopUser isOpen={isModalWindowOpen} onClose={closeModalWindow} />
           </SHeaderNav>
         </SHeaderBlock>
       </SContainer>
