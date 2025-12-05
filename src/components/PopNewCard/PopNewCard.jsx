@@ -21,11 +21,14 @@ import {
 } from "./PopNewCard.styled";
 
 const PopNewCard = ({ isOpen, onClose, onCreateCard }) => {
+  
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [selectedTopic, setSelectedTopic] = useState("Web Design");
+  const [selectedStatus, setSelectedStatus] = useState("Без статуса"); // Добавляем состояние статуса
   const [selectedDate, setSelectedDate] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false); // Защита от двойного сабмита
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -40,8 +43,17 @@ const PopNewCard = ({ isOpen, onClose, onCreateCard }) => {
     }
   }, [isOpen]);
 
-  // useCallback для обработчика сабмита
-  const handleSubmit = useCallback(
+  // PopNewCard.jsx - добавьте в начало компонента
+useEffect(() => {
+  // Проверяем классы body при открытии/закрытии
+  console.log("PopNewCard открыт, классы body:", document.body.className);
+  
+  return () => {
+    console.log("PopNewCard закрыт, классы body:", document.body.className);
+  };
+}, [isOpen]);
+
+ const handleSubmit = useCallback(
     async (e) => {
       e.preventDefault();
 
@@ -62,23 +74,27 @@ const PopNewCard = ({ isOpen, onClose, onCreateCard }) => {
           title: title.trim(),
           description: description.trim(),
           topic: selectedTopic,
+          status: selectedStatus, // Используем выбранный статус!
           date: new Date().toISOString(),
         };
 
-        const success = await onCreateCard(newCard);
-        if (success) {
-          navigate("/");
-        } else {
-          alert("Ошибка при создании задачи");
-        }
+        console.log("Создаем задачу со статусом:", selectedStatus);
+        
+        // Вызываем создание задачи без проверки результата
+      await onCreateCard(newCard);
+      
+      // Всегда считаем успехом и закрываем модалку
+      console.log("Задача отправлена, закрываем модалку");
+      navigate("/");
+
       } catch (error) {
         console.error("Ошибка создания задачи:", error);
-        alert("Произошла ошибка при создании задачи");
+        alert("Ошибка при создании задачи: " + error.message);
       } finally {
         setIsSubmitting(false);
       }
     },
-    [title, description, selectedTopic, isSubmitting, onCreateCard, navigate]
+    [title, description, selectedTopic, selectedStatus, isSubmitting, onCreateCard, navigate]
   );
 
   const handleOverlayClick = (e) => {
@@ -103,7 +119,7 @@ const PopNewCard = ({ isOpen, onClose, onCreateCard }) => {
 
             <SPopNewCardWrap>
               <SFormNew onSubmit={handleSubmit}>
-                <SFormNewBlock>
+                <SFormNewBlock>                  
                   <label htmlFor="formTitle" className="subttl">
                     Название задачи
                   </label>
@@ -142,6 +158,32 @@ const PopNewCard = ({ isOpen, onClose, onCreateCard }) => {
                 onDateSelect={handleDateSelect}
               />
             </SPopNewCardWrap>
+
+            {/* БЛОК ВЫБОРА СТАТУСА */}
+            <div style={{ marginBottom: "20px" }}>
+              <SCategoriesP className="subttl">Статус задачи</SCategoriesP>
+              <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+                {["Без статуса", "Нужно сделать", "В работе", "Тестирование", "Готово"].map((status) => (
+                  <button
+                    key={status}
+                    type="button"
+                    onClick={() => setSelectedStatus(status)}
+                    style={{
+                      padding: "8px 16px",
+                      border: `2px solid ${selectedStatus === status ? "#565eef" : "#d4dbe5"}`,
+                      background: selectedStatus === status ? "#565eef" : "white",
+                      color: selectedStatus === status ? "white" : "#565eef",
+                      borderRadius: "20px",
+                      fontSize: "14px",
+                      cursor: "pointer",
+                      transition: "all 0.3s ease"
+                    }}
+                  >
+                    {status}
+                  </button>
+                ))}
+              </div>
+            </div>
 
             <SCategories>
               <SCategoriesP className="subttl">Категория</SCategoriesP>

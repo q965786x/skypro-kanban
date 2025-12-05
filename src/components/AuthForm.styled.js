@@ -36,7 +36,7 @@ export const SModalBlock = styled.div`
   background-color: #ffffff;
   max-width: 368px;
   width: 100%;
-  max-height: 329px;
+  max-height: 345px;
   height: 100%;
   padding: 50px 60px;
   border-radius: 10px;

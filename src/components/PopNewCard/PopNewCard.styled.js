@@ -11,6 +11,13 @@ export const SPopNewCard = styled.div`
   left: 0;
   z-index: 1000;
   background: rgba(0, 0, 0, 0.4);
+
+  /* Модалка не должна перекрывать Header */
+  pointer-events: none;
+
+  & > * {
+    pointer-events: auto; /* Но контент модалки кликабелен */
+  }
 `;
 
 export const SPopNewCardContainer = styled.div`
@@ -22,7 +29,7 @@ export const SPopNewCardContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: center;  
 `;
 
 export const SPopNewCardBlock = styled.div`

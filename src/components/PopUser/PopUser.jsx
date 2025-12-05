@@ -89,6 +89,19 @@ const PopUser = ({ isOpen, onClose }) => {
         {/* Используем handleExitClick вместо onLogout */}
         <button
           className="pop-user__exit _btn-bor _hover03"
+          style={{
+            width: "72px",
+            height: "30px",
+            background: "transparent",
+            borderRadius: "4px",
+            border: "1px solid #565EEF",
+            fontFamily: "inherit",
+            fontSize: "14px",
+            fontWeight: "500",
+            lineHeight: "10px",
+            textAlign: "center",
+            color: "#565EEF",
+          }}
           onClick={handleExitClick}
         >
           Выйти

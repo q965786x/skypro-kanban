@@ -766,6 +766,38 @@ body {
   width: 85px;
 }*/ 
 
+._show {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Светлая тема */
+._light {
+  display: block !important;
+}
+
+/* Темная тема - скрыта по умолчанию */
+._dark {
+  display: none !important;
+}
+
+/* Если тема темная, показываем темный логотип */
+body.dark-theme ._light {
+  display: none !important;
+}
+
+body.dark-theme ._dark {
+  display: block !important;
+}
+
+/* Принудительно показываем логотип в Header */
+.header__logo {
+  display: block !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
 /*.header__nav {
   max-width: 290px;
   padding: 0;
@@ -785,10 +817,19 @@ body {
   line-height: 1;
   font-weight: 500;
   margin-right: 20px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }*/
 
 /*.header__btn-main-new a {
   color: #FFFFFF;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }*/ 
 
 /*.header__user {

@@ -1,42 +1,45 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { AuthContext } from "./AuthContext";
-//import { checkLs } from "../utils/checkLs";
-//import { fetchTasks } from "../services/api";
 
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true); // Добавляем состояние проверки
-  const isCheckingRef = useRef(false); // Защита от двойной проверки
+  
 
   useEffect(() => {
     const checkAuth = async () => {
-      // Защита от двойных вызовов в StrictMode
-      if (isCheckingRef.current) {
-        return;
-      }
-
-      isCheckingRef.current = true;
-
       try {
         setIsCheckingAuth(true);
-
-        // Добавляем небольшую задержку для лучшего UX
-        await new Promise((resolve) => setTimeout(resolve, 500));
-
         const storedUser = localStorage.getItem("userInfo");
 
-        console.log(
-          "Автоматический вход отключен - показываем форму авторизации"
-        );
+        if (storedUser) {
+          try {
+            const userData = JSON.parse(storedUser);
+            if (userData && userData.token) {
+              // Оставляем автовход
+              console.log(
+                "Автоматический вход для пользователя:",
+                userData.login
+              );
+              setUser(userData);
+              return;
+            }
+          } catch (e) {
+            console.error("Ошибка парсинга userInfo:", e);
+            localStorage.removeItem("userInfo");
+          }
+        }
+
+        // Если нет сохраненного пользователя
+        console.log("Нет сохраненного пользователя");
         setUser(null);
-        localStorage.removeItem("userInfo"); // Очищаем на всякий случай
+        
+
       } catch (error) {
         console.error("Ошибка при проверке авторизации:", error);
-        localStorage.removeItem("userInfo");
         setUser(null);
       } finally {
         setIsCheckingAuth(false);
-        isCheckingRef.current = false;
       }
     };
 

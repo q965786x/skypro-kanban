@@ -14,11 +14,22 @@ const NewCardPage = () => {
   };
 
   const handleCreate = async (newCardData) => {
-    const success = await addNewTask(newCardData);
-    if (success) {
-      navigate("/");
+    console.log("NewCardPage: создание задачи");
+    try {
+      const success = await addNewTask(newCardData);
+      console.log("NewCardPage: результат создания", success);
+      
+      if (success) {
+        return true; // Возвращаем true при успехе
+      } else {
+        return false; // Возвращаем false при ошибке
+      }
+    } catch (error) {
+      console.error("NewCardPage: ошибка создания", error);
+      return false; // Возвращаем false при исключении
     }
   };
+
 
   return (
     <div className="wrapper">

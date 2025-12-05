@@ -44,19 +44,20 @@ const AuthForm = ({ isSignUp }) => {
     if (!formData.login.trim()) {
       newErrors.login = true;
       isValid = false;
+    } else if (!formData.login.includes("@")) {
+      setError("Введите корректный email");
+      return false;
     }
 
     if (!formData.password.trim()) {
       newErrors.password = true;
       isValid = false;
+    } else if (formData.password.length < 3) {
+      setError("Пароль должен содержать не менее 6 символов");
+      return false;
     }
 
     setErrors(newErrors);
-
-    if (!isValid) {
-      setError("Заполните все поля");
-    }
-
     return isValid;
   };
 
@@ -117,7 +118,7 @@ const AuthForm = ({ isSignUp }) => {
                   type="text"
                   name="login"
                   id="formlogin"
-                  placeholder="Логин"
+                  placeholder="Эл. почта"
                   value={formData.login}
                   onChange={handleChange}
                 />
@@ -132,25 +133,38 @@ const AuthForm = ({ isSignUp }) => {
                 />
               </SInputWrapper>
               {error && (
-                <p style={{ color: "red", textAlign: "center" }}>{error}</p>
+                <p
+                  style={{
+                    color: "red",
+                    textAlign: "center",
+                    fontSize: "14px",
+                    marginTop: "10px",
+                    marginBottom: "10px",
+                  }}
+                >
+                  {error}
+                </p>
               )}
 
               <BaseButton type="submit" $fullWidth={true}>
                 {isSignUp ? "Зарегистрироваться" : "Войти"}
               </BaseButton>
 
-              {!isSignUp ? (
-                <SFormLink>
-                  <p>Нужно зарегистрироваться?</p>
-                  <Link to="/sign-up">Регистрируйтесь здесь</Link>
-                </SFormLink>
-              ) : (
-                <SFormLink>
-                  <p>
-                    Уже есть аккаунт? <Link to="/sign-in">Войдите здесь</Link>
-                  </p>
-                </SFormLink>
-              )}
+              <SFormLink>
+                {!isSignUp ? (
+                  <>
+                    <p style={{ marginBottom: "5px" }}>
+                      Нужно зарегистрироваться? <Link to="/sign-up">Регистрируйтесь здесь</Link>
+                    </p>                    
+                  </>
+                ) : (
+                  <>
+                    <p style={{ marginBottom: "5px" }}>
+                      Уже есть аккаунт? <Link to="/sign-in">Войдите здесь</Link> 
+                    </p>                    
+                  </>
+                )}
+              </SFormLink>
             </form>
           </SModalBlock>
         </SModal>

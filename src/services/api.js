@@ -37,8 +37,10 @@ export async function postTask({ token, task }) {
     console.log("Создание задачи:", {
       title: task.title,
       topic: task.topic,
+      status: task.status, // Проверьте что статус есть
+      token: token ? "есть" : "нет"
     });
-
+    
     const response = await axios.post(API_URL, task, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -46,14 +48,29 @@ export async function postTask({ token, task }) {
       },
     });
 
-    console.log("Задача успешно создана:", response.data);
+    console.log("Сервер ответил:", response.data);
 
-    return response.data.tasks;
+    // ВАЖНО: API возвращает {tasks: [...]}
+    return response.data;
+    
   } catch (error) {
-    console.error("Ошибка создания задачи:", error.response?.data);
-    throw new Error(
-      error.response?.data?.error || error.message || "Ошибка создания задачи"
-    );
+    console.error("Ошибка создания задачи:", {
+      status: error.response?.status,
+      data: error.response?.data,
+      message: error.message,
+    });
+
+    let errorMessage = "Ошибка создания задачи";
+
+    if (error.response?.status === 400) {
+      errorMessage = "Некорректные данные задачи";
+    } else if (error.response?.status === 401) {
+      errorMessage = "Требуется авторизация";
+    } else if (error.response?.data?.error) {
+      errorMessage = error.response.data.error;
+    }
+
+    throw new Error(errorMessage);
   }
 }
 
