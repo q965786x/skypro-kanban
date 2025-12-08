@@ -11,17 +11,16 @@ import {
   SCardDate,
 } from "./Card.styled";
 
-const Card = ({ id, topic, title, date }) => {
-  // Используем _id из API или id из localStorage
+const Card = ({ id, topic, title, date, status }) => {
   const cardId = id;
-  
+
   // Функция для определения класса темы на основе названия
   const getTopicClass = (topicName) => {
     switch (topicName) {
       case "Web Design":
         return "_orange";
       case "Research":
-        return "_green";        
+        return "_green";
       case "Copywriting":
         return "_purple";
       default:
@@ -31,13 +30,30 @@ const Card = ({ id, topic, title, date }) => {
 
   const topicClass = getTopicClass(topic);
 
-  return (     
+  console.log("Card данные:", { title, status, topic, date, id });
+
+  return (
     <SCardsItem>
       <SCardsCard>
         <SCardGroup>
           <SCardTheme className={`${topicClass}`}>
             <p className={topicClass}>{topic}</p>
           </SCardTheme>
+
+          {/* Показываем статус маленьким текстом */}
+          {/* <div
+            style={{
+              fontSize: "10px",
+              color: "#94a6be",
+              background: "#f0f0f0",
+              padding: "2px 6px",
+              borderRadius: "10px",
+              marginLeft: "5px",
+            }}
+          >
+            {status || "Без статуса"}
+          </div> */}
+
           <Link to={`/card/${cardId}`}>
             <SCardButton>
               <div></div>
@@ -79,11 +95,11 @@ const Card = ({ id, topic, title, date }) => {
                 </clipPath>
               </defs>
             </svg>
-            <p>{new Date(date).toLocaleDateString('ru-RU')}</p>
+            <p>{new Date(date).toLocaleDateString("ru-RU")}</p>
           </SCardDate>
         </SCardContent>
       </SCardsCard>
-    </SCardsItem>       
+    </SCardsItem>
   );
 };
 

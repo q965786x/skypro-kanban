@@ -9,63 +9,20 @@ import SignInPage from "../pages/SignIn";
 import SignUpPage from "../pages/SignUp";
 import NotFound from "../pages/NotFoundPage";
 
-
-function AppRoutes({ 
-  isAuth, 
-  onLogin, 
-  onLogout, 
-  onCreateNewCard,
-  onUpdateCard,
-  onDeleteCard,
-  cards,
-  isLoading,
-  error,
-  onReloadTasks
-}) {
-  
+function AppRoutes() {
   return (
     <Routes>
       {/* Защищенные маршруты */}
-      <Route element={<PrivateRoute isAuth={isAuth} />}>
-        <Route path="/" element={
-          <MainPage 
-            onLogout={onLogout}            
-            cards={cards} // cards передаются в MainPage  
-            isLoading={isLoading}
-            error={error}
-            onReloadTasks={onReloadTasks}       
-          />} 
-        />
-        {/* Вложенные маршруты для модальных окон */}
-        <Route path="/card/new" element={
-          <NewCardPage
-            onCreateCard={onCreateNewCard}
-            onLogout={onLogout}
-            cards={cards} // cards передаются в NewCardPage
-            
-          />} 
-        />
-
-        <Route path="/card/:id" element={
-          <CardPage
-            onLogout={onLogout}
-            cards={cards} // cards передаются в CardPage  
-            onUpdateCard={onUpdateCard}
-            onDeleteCard={onDeleteCard}          
-          />} 
-        />
-        
-        <Route path="/exit" element={
-          <ExitPage
-            onLogout={onLogout}
-            cards={cards} // cards передаются в ExitPage
-          />} 
-        />
+      <Route element={<PrivateRoute />}>
+        <Route path="/" element={<MainPage />} />
+        <Route path="/card/new" element={<NewCardPage />} />
+        <Route path="/card/:id" element={<CardPage />} />
+        <Route path="/exit" element={<ExitPage />} />
       </Route>
-      
+
       {/* Публичные маршруты */}
-      <Route path="/sign-in" element={<SignInPage onLogin={onLogin} />} />
-      <Route path="/sign-up" element={<SignUpPage onLogin={onLogin} />} />
+      <Route path="/sign-in" element={<SignInPage />} />
+      <Route path="/sign-up" element={<SignUpPage />} />
 
       {/* Страница 404 */}
       <Route path="*" element={<NotFound />} />

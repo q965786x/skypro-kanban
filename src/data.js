@@ -1,11 +1,12 @@
 export const statuses = [
-  "Без статуса", 
-  "Нужно сделать", 
-  "В работе", 
-  "Тестирование", 
-  "Готово"];
+  "Без статуса",
+  "Нужно сделать",
+  "В работе",
+  "Тестирование",
+  "Готово",
+];
 
-export const cardsData = [
+export let cardsData = [
   // Без статуса (5 карточек)
   {
     id: 1,
@@ -13,7 +14,7 @@ export const cardsData = [
     title: "Новая задача",
     date: "2023-12-01",
     status: "Без статуса",
-    description: "Описание задачи"
+    description: "Описание задачи",
   },
   {
     id: 2,
@@ -21,7 +22,7 @@ export const cardsData = [
     title: "Новая задача",
     date: "2023-12-01",
     status: "Без статуса",
-    description: "Описание задачи"
+    description: "Описание задачи",
   },
   {
     id: 3,
@@ -29,7 +30,7 @@ export const cardsData = [
     title: "Новая задача",
     date: "2023-12-01",
     status: "Без статуса",
-    description: "Описание задачи"
+    description: "Описание задачи",
   },
   {
     id: 4,
@@ -37,7 +38,7 @@ export const cardsData = [
     title: "Новая задача",
     date: "2023-12-01",
     status: "Без статуса",
-    description: "Описание задачи"
+    description: "Описание задачи",
   },
   {
     id: 5,
@@ -45,7 +46,7 @@ export const cardsData = [
     title: "Новая задача",
     date: "2023-12-01",
     status: "Без статуса",
-    description: "Описание задачи"
+    description: "Описание задачи",
   },
 
   // Нужно сделать (1 карточка)
@@ -55,7 +56,7 @@ export const cardsData = [
     title: "Новая задача",
     date: "2023-12-01",
     status: "Нужно сделать",
-    description: "Описание задачи"
+    description: "Описание задачи",
   },
 
   // В работе (3 карточки)
@@ -65,7 +66,7 @@ export const cardsData = [
     title: "Новая задача",
     date: "2023-12-01",
     status: "В работе",
-    description: "Описание задачи"
+    description: "Описание задачи",
   },
   {
     id: 8,
@@ -73,7 +74,7 @@ export const cardsData = [
     title: "Новая задача",
     date: "2023-12-01",
     status: "В работе",
-    description: "Описание задачи"
+    description: "Описание задачи",
   },
   {
     id: 9,
@@ -81,7 +82,7 @@ export const cardsData = [
     title: "Новая задача",
     date: "2023-12-01",
     status: "В работе",
-    description: "Описание задачи"
+    description: "Описание задачи",
   },
 
   // Тестирование (1 карточка)
@@ -91,9 +92,9 @@ export const cardsData = [
     title: "Новая задача",
     date: "2023-12-01",
     status: "Тестирование",
-    description: "Описание задачи"
+    description: "Описание задачи",
   },
-  
+
   // Готово (1 карточка)
   {
     id: 11,
@@ -101,8 +102,8 @@ export const cardsData = [
     title: "Новая задача",
     date: "2023-12-01",
     status: "Готово",
-    description: "Описание задачи"
-  }
+    description: "Описание задачи",
+  },
 ];
 
 // Функция для обновления cardsData
@@ -112,6 +113,4 @@ export const updateCardsData = (newCards) => {
 
 export const getCardsByStatus = (status) => {
   return cardsData.filter((card) => card.status === status);
-}; 
-
-
+};

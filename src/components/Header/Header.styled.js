@@ -5,14 +5,18 @@ export const SHeader = styled.header`
   width: 100%;
   margin: 0 auto;
   background-color: #ffffff;
+  position: relative;
+  z-index: 1000;    
 `;
+
+
 
 export const SContainer = styled.div`
   // стили для .container
   max-width: 1260px;
   width: 100%;
   margin: 0 auto;
-  padding: 0 30px;
+  padding: 0 30px;  
 `;
 
 export const SHeaderBlock = styled.div`
@@ -31,7 +35,7 @@ export const SHeaderBlock = styled.div`
 
 export const SHeaderLogo = styled.div`
   // стили для .header__logo
-  width: 85px;
+  width: 85px;  
 `;
 
 export const SHeaderNav = styled.nav`
@@ -82,25 +86,32 @@ export const SHeaderUser = styled.div`
 
 export const SHeaderButton = styled.button`
   // стили для .header__btn-main-new
-  width: 178px;
+ width: 178px;
   height: 30px;
   border-radius: 4px;
-  background-color: #565eef;
-  color: #ffffff;
+  background-color: #565EEF;
+  color: #FFFFFF;
   border: none;
   font-size: 14px;
   line-height: 1;
   font-weight: 500;
   margin-right: 20px;
-  transition: background-color 0.3s ease;
-  cursor: pointer;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   &:hover {
     background-color: #33399b;
   }
 
   a {
-    color: #ffffff;
+    color: #FFFFFF;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   @media screen and (max-width: 495px) {

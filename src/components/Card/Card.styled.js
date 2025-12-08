@@ -57,13 +57,8 @@ export const SCardGroup = styled.div`
 `;
 
 export const SCardTheme = styled.div`
-  // стили для .card__theme
-  width: auto;
-  height: 20px;
-  padding: 5px 14px;
-  border-radius: 18px;
-  /*background-color: ${(props) => {
-    switch (props.$topic) {
+  background-color: ${(props) => {
+    switch (props.topic) {
       case "Web Design":
         return "#FFE4C2";
       case "Research":
@@ -73,9 +68,9 @@ export const SCardTheme = styled.div`
       default:
         return "#FFE4C2";
     }
-  }};*/
+  }};
   color: ${(props) => {
-    switch (props.$topic) {
+    switch (props.topic) {
       case "Web Design":
         return "#FF6D00";
       case "Research":
@@ -86,12 +81,6 @@ export const SCardTheme = styled.div`
         return "#FF6D00";
     }
   }};
-
-  p {
-    font-size: 10px;
-    font-weight: 600;
-    line-height: 10px;
-  }
 `;
 
 export const SCardButton = styled.div`

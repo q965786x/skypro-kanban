@@ -1,6 +1,7 @@
-import React, { useState } from "react";
-import { Link, } from "react-router-dom";
+import React, { useState, useContext } from "react";
+import { Link } from "react-router-dom";
 import PopUser from "../PopUser/PopUser";
+import { AuthContext } from "../../context/AuthContext";
 import {
   SHeader,
   SContainer,
@@ -11,8 +12,8 @@ import {
   SHeaderUser,
 } from "./Header.styled";
 
-const Header = ({ onLogout }) => {
-  
+const Header = () => {
+  const { user } = useContext(AuthContext);
   const [isModalWindowOpen, setIsModalWindowOpen] = useState(false);
 
   const handleClick = () => {
@@ -29,25 +30,45 @@ const Header = ({ onLogout }) => {
         <SHeaderBlock>
           <SHeaderLogo className="_show _light">
             <Link to="/">
-              <img src="images/logo.png" alt="logo" />
+              <img
+                src="/images/logo.png"
+                alt="logo"
+                onError={(e) => {
+                  console.error("Logo failed to load:", e.target.src);
+                  // Fallback на base64 изображение
+                  e.target.onerror = null;
+                  e.target.src =
+                    "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODUiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA4NSA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9Ijg1IiBoZWlnaHQ9IjQwIiByeD0iNCIgZmlsbD0iIzU2NUVFRiIvPgo8dGV4dCB4PSI1MCUiIHk9IjUwJSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0id2hpdGUiIGZvbnQtc2l6ZT0iMTYiIGZvbnQtd2VpZ2h0PSJib2xkIj5MT0dPPC90ZXh0Pgo8L3N2Zz4=";
+                }}
+                style={{
+                  width: "85px",
+                  height: "auto",
+                  display: "block",
+                }}
+              />
             </Link>
           </SHeaderLogo>
-          <SHeaderLogo className="_dark">
+          <SHeaderLogo style={{ display: "none" }} className="_dark">
             <Link to="/">
-              <img src="images/logo_dark.png" alt="logo" />
+              <img
+                src="/images/logo_dark.png"
+                alt="logo"
+                style={{
+                  width: "85px",
+                  height: "auto",
+                  display: "block",
+                }}
+              />
             </Link>
           </SHeaderLogo>
-          <SHeaderNav>           
+          <SHeaderNav>
             <SHeaderButton className="_hover01">
-              <Link to="card/new">Создать новую задачу</Link> {/* относительный путь */}
+              <Link to="card/new">Создать новую задачу</Link>
             </SHeaderButton>
             <SHeaderUser className="_hover02" onClick={handleClick}>
-              Ivan Ivanov
+              {user?.name || user?.login || "Пользователь"}
             </SHeaderUser>
-            <PopUser
-              isOpen={isModalWindowOpen}
-              onClose={closeModalWindow}              
-            />
+            <PopUser isOpen={isModalWindowOpen} onClose={closeModalWindow} />
           </SHeaderNav>
         </SHeaderBlock>
       </SContainer>
