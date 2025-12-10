@@ -84,9 +84,8 @@ const AuthForm = ({ isSignUp }) => {
         : await signIn({ login: formData.login, password: formData.password });
 
       if (data) {
-        console.log("AuthForm: успешная авторизация, данные:", data);
         login(data);
-        console.log("AuthForm: переход на главную страницу");
+
         navigate("/");
       }
     } catch (err) {
@@ -154,14 +153,15 @@ const AuthForm = ({ isSignUp }) => {
                 {!isSignUp ? (
                   <>
                     <p style={{ marginBottom: "5px" }}>
-                      Нужно зарегистрироваться? <Link to="/sign-up">Регистрируйтесь здесь</Link>
-                    </p>                    
+                      Нужно зарегистрироваться?{" "}
+                      <Link to="/sign-up">Регистрируйтесь здесь</Link>
+                    </p>
                   </>
                 ) : (
                   <>
                     <p style={{ marginBottom: "5px" }}>
-                      Уже есть аккаунт? <Link to="/sign-in">Войдите здесь</Link> 
-                    </p>                    
+                      Уже есть аккаунт? <Link to="/sign-in">Войдите здесь</Link>
+                    </p>
                   </>
                 )}
               </SFormLink>

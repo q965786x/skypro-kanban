@@ -14,10 +14,10 @@ const NewCardPage = () => {
   };
 
   const handleCreate = async (newCardData) => {
-    console.log("NewCardPage: создание задачи");
+    
     try {
       const success = await addNewTask(newCardData);
-      console.log("NewCardPage: результат создания", success);
+      
       
       if (success) {
         return true; // Возвращаем true при успехе

@@ -1,5 +1,4 @@
 import React, { useContext, useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 
@@ -11,7 +10,7 @@ const PopUser = ({ isOpen, onClose }) => {
 
   const handleThemeToggle = () => {
     setIsDarkTheme(!isDarkTheme);
-    console.log("Тема изменена на:", !isDarkTheme ? "темная" : "светлая");
+    
   };
 
   useEffect(() => {

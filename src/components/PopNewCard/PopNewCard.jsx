@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import Calendar from "../Calendar/Calendar";
+import { TasksContext } from "../../context/TaskContext";
 import {
   SPopNewCard,
   SPopNewCardContainer,
@@ -21,15 +22,20 @@ import {
 } from "./PopNewCard.styled";
 
 const PopNewCard = ({ isOpen, onClose, onCreateCard }) => {
-  
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [selectedTopic, setSelectedTopic] = useState("Web Design");
   const [selectedStatus, setSelectedStatus] = useState("Без статуса"); // Добавляем состояние статуса
   const [selectedDate, setSelectedDate] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formError, setFormError] = useState("");
 
   const navigate = useNavigate();
+  const {
+    addNewTask,
+    error: contextError,
+    clearError,
+  } = useContext(TasksContext);
 
   useEffect(() => {
     if (isOpen) {
@@ -40,32 +46,39 @@ const PopNewCard = ({ isOpen, onClose, onCreateCard }) => {
         .toString()
         .padStart(2, "0")}.${today.getFullYear()}`;
       setSelectedDate(formattedDate);
+      setFormError("");
+      if (clearError) clearError();
     }
-  }, [isOpen]);
+  }, [isOpen, clearError]);
 
-  // PopNewCard.jsx - добавьте в начало компонента
-useEffect(() => {
-  // Проверяем классы body при открытии/закрытии
-  console.log("PopNewCard открыт, классы body:", document.body.className);
-  
-  return () => {
-    console.log("PopNewCard закрыт, классы body:", document.body.className);
+  const validateForm = () => {
+    if (!title.trim()) {
+      setFormError("Введите название задачи");
+      return false;
+    }
+    if (title.trim().length < 3) {
+      setFormError("Название должно содержать минимум 3 символа");
+      return false;
+    }
+    if (!description.trim()) {
+      setFormError("Введите описание задачи");
+      return false;
+    }
+    if (description.trim().length < 10) {
+      setFormError("Описание должно содержать минимум 10 символов");
+      return false;
+    }
+    setFormError("");
+    return true;
   };
-}, [isOpen]);
 
- const handleSubmit = useCallback(
+  const handleSubmit = useCallback(
     async (e) => {
       e.preventDefault();
 
-      if (isSubmitting) {
-        console.log("Запрос уже отправляется...");
-        return;
-      }
+      if (isSubmitting) return;
 
-      if (!title.trim()) {
-        alert("Пожалуйста, введите название задачи");
-        return;
-      }
+      if (!validateForm()) return;
 
       setIsSubmitting(true);
 
@@ -78,23 +91,29 @@ useEffect(() => {
           date: new Date().toISOString(),
         };
 
-        console.log("Создаем задачу со статусом:", selectedStatus);
-        
-        // Вызываем создание задачи без проверки результата
-      await onCreateCard(newCard);
-      
-      // Всегда считаем успехом и закрываем модалку
-      console.log("Задача отправлена, закрываем модалку");
-      navigate("/");
+        const success = await addNewTask(newCard);
 
-      } catch (error) {
-        console.error("Ошибка создания задачи:", error);
-        alert("Ошибка при создании задачи: " + error.message);
+        if (success) {
+          // Сброс формы
+          setTitle("");
+          setDescription("");
+          setSelectedTopic("Web Design");
+          setSelectedStatus("Без статуса");
+          navigate("/");
+        }
       } finally {
         setIsSubmitting(false);
       }
     },
-    [title, description, selectedTopic, selectedStatus, isSubmitting, onCreateCard, navigate]
+    [
+      title,
+      description,
+      selectedTopic,
+      selectedStatus,
+      isSubmitting,
+      addNewTask,
+      navigate,
+    ]
   );
 
   const handleOverlayClick = (e) => {
@@ -117,9 +136,24 @@ useEffect(() => {
             <SPopNewCardTtl>Создание задачи</SPopNewCardTtl>
             <SPopNewCardClose onClick={onClose}>&#10006;</SPopNewCardClose>
 
+            {(formError || contextError) && (
+              <div
+                style={{
+                  background: "#FFE6E6",
+                  color: "#D32F2F",
+                  padding: "10px",
+                  borderRadius: "4px",
+                  marginBottom: "20px",
+                  fontSize: "14px",
+                }}
+              >
+                {formError || contextError}
+              </div>
+            )}
+
             <SPopNewCardWrap>
               <SFormNew onSubmit={handleSubmit}>
-                <SFormNewBlock>                  
+                <SFormNewBlock>
                   <label htmlFor="formTitle" className="subttl">
                     Название задачи
                   </label>
@@ -129,7 +163,10 @@ useEffect(() => {
                     id="formTitle"
                     placeholder="Введите название задачи..."
                     value={title}
-                    onChange={(e) => setTitle(e.target.value)}
+                    onChange={(e) => {
+                      setTitle(e.target.value);
+                      if (formError) setFormError("");
+                    }}
                     autoFocus
                     required
                     disabled={isSubmitting}
@@ -145,7 +182,10 @@ useEffect(() => {
                     id="textArea"
                     placeholder="Введите описание задачи..."
                     value={description}
-                    onChange={(e) => setDescription(e.target.value)}
+                    onChange={(e) => {
+                      setDescription(e.target.value);
+                      if (formError) setFormError("");
+                    }}
                     rows="4"
                     disabled={isSubmitting}
                   ></SFormNewArea>
@@ -163,21 +203,32 @@ useEffect(() => {
             <div style={{ marginBottom: "20px" }}>
               <SCategoriesP className="subttl">Статус задачи</SCategoriesP>
               <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-                {["Без статуса", "Нужно сделать", "В работе", "Тестирование", "Готово"].map((status) => (
+                {[
+                  "Без статуса",
+                  "Нужно сделать",
+                  "В работе",
+                  "Тестирование",
+                  "Готово",
+                ].map((status) => (
                   <button
                     key={status}
                     type="button"
                     onClick={() => setSelectedStatus(status)}
                     style={{
                       padding: "8px 16px",
-                      border: `2px solid ${selectedStatus === status ? "#565eef" : "#d4dbe5"}`,
-                      background: selectedStatus === status ? "#565eef" : "white",
+                      border: `2px solid ${
+                        selectedStatus === status ? "#565eef" : "#d4dbe5"
+                      }`,
+                      background:
+                        selectedStatus === status ? "#565eef" : "white",
                       color: selectedStatus === status ? "white" : "#565eef",
                       borderRadius: "20px",
                       fontSize: "14px",
                       cursor: "pointer",
-                      transition: "all 0.3s ease"
+                      transition: "all 0.3s ease",
+                      opacity: isSubmitting ? 0.7 : 1,
                     }}
+                    disabled={isSubmitting}
                   >
                     {status}
                   </button>
@@ -195,6 +246,7 @@ useEffect(() => {
                   onClick={() =>
                     !isSubmitting && setSelectedTopic("Web Design")
                   }
+                  style={{ opacity: isSubmitting ? 0.7 : 1 }}
                 >
                   <p className="_orange">Web Design</p>
                 </SCategoriesTheme>
@@ -203,6 +255,7 @@ useEffect(() => {
                     selectedTopic === "Research" ? "_active-category" : ""
                   }`}
                   onClick={() => !isSubmitting && setSelectedTopic("Research")}
+                  style={{ opacity: isSubmitting ? 0.7 : 1 }}
                 >
                   <p className="_green">Research</p>
                 </SCategoriesTheme>
@@ -213,6 +266,7 @@ useEffect(() => {
                   onClick={() =>
                     !isSubmitting && setSelectedTopic("Copywriting")
                   }
+                  style={{ opacity: isSubmitting ? 0.7 : 1 }}
                 >
                   <p className="_purple">Copywriting</p>
                 </SCategoriesTheme>
@@ -224,8 +278,15 @@ useEffect(() => {
               id="btnCreate"
               onClick={handleSubmit}
               disabled={isSubmitting}
+              style={{ opacity: isSubmitting ? 0.7 : 1 }}
             >
-              {isSubmitting ? "Создание..." : "Создать задачу"}
+              {isSubmitting ? (
+                <>
+                  <span className="spinner"></span> Создание...
+                </>
+              ) : (
+                "Создать задачу"
+              )}
             </SFormNewCreate>
           </SPopNewCardContent>
         </SPopNewCardBlock>

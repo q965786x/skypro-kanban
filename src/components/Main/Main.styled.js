@@ -118,3 +118,18 @@ export const SOfflineIndicator = styled.div`
   font-size: 14px;
   font-weight: 500;
 `;
+
+export const SLoadingSpinner = styled.div`
+  width: 50px;
+  height: 50px;
+  border: 5px solid #eaeef6;
+  border-top: 5px solid #565eef;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+`;
