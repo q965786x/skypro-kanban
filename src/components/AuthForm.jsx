@@ -53,7 +53,7 @@ const AuthForm = ({ isSignUp }) => {
       newErrors.password = true;
       isValid = false;
     } else if (formData.password.length < 3) {
-      setError("Пароль должен содержать не менее 6 символов");
+      setError("Пароль должен содержать не менее 3 символов");
       return false;
     }
 
