@@ -18,15 +18,13 @@ const AuthProvider = ({ children }) => {
               setUser(userData);
               return;
             }
-          } catch (e) {
-            console.error("Ошибка парсинга userInfo:", e);
+          } catch (e) {            
             localStorage.removeItem("userInfo");
           }
         }
 
         setUser(null);
-      } catch (error) {
-        console.error("Ошибка при проверке авторизации:", error);
+      } catch (error) {        
         setUser(null);
       } finally {
         setIsCheckingAuth(false);
@@ -62,7 +60,7 @@ const AuthProvider = ({ children }) => {
         login,
         logout,
         updateUserInfo,
-        isCheckingAuth, // Добавляем в контекст
+        isCheckingAuth, 
       }}
     >
       {children}

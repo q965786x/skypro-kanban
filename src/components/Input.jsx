@@ -2,12 +2,14 @@ import styled from "styled-components";
 
 const StyledInput = styled.input`
   width: 100%;
-  border: 1px solid ${(props) => (props.$error ? "red" : "#94A6BE")};
+  height: 30px;
+  border: 1px solid ${(props) => (props.$error ? "#F84D4D" : "#94A6BE")};
   border-radius: 8px;
-  padding: 12px 8px;
+  padding: 0 12px;
   outline: none;
   font-size: 14px;
   line-height: 1;
+  transition: border-color 0.3s ease;
 
   &::placeholder {
     font-weight: 400;
@@ -17,13 +19,18 @@ const StyledInput = styled.input`
   }
 
   &:focus {
-    border-color: #4a6cf7;
+    border-color: ${(props) => (props.$error ? "#F84D4D" : "#4a6cf7")};
+  }
+
+  &:disabled {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
   }
 `;
 
 const StyledTextarea = styled.textarea`
   width: 100%;
-  border: 1px solid ${(props) => (props.$error ? "red" : "#94A6BE")};
+  border: 1px solid ${(props) => (props.$error ? "#F84D4D" : "#94A6BE")};
   border-radius: 8px;
   padding: 12px 8px;
   outline: none;
@@ -40,7 +47,12 @@ const StyledTextarea = styled.textarea`
   }
 
   &:focus {
-    border-color: #4a6cf7;
+    border-color: ${(props) => (props.$error ? "#F84D4D" : "#4a6cf7")};
+  }
+
+  &:disabled {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
   }
 `;
 
@@ -56,7 +68,6 @@ const BaseInput = ({
   required = false,
   disabled = false,
 }) => {
-  // Выбираем компонент в зависимости от тега, на случай, если нужна textarea
   const Component = tag === "textarea" ? StyledTextarea : StyledInput;
 
   return (
@@ -71,7 +82,6 @@ const BaseInput = ({
       required={required}
       disabled={disabled}
       style={{
-        borderColor: error ? "red" : "#94A6BE",
         opacity: disabled ? 0.7 : 1,
       }}
     />

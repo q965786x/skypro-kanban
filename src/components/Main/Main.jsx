@@ -115,14 +115,6 @@ const Main = () => {
             </SOfflineIndicator>
           )}
           <SMainContent>
-            {/* {statuses.map((status) => (
-              <Column
-                key={status}
-                title={status}
-                cards={getCardsByStatus(status)}
-              />
-            ))} */}
-
             {statuses.map((status) => {
               const cards = getCardsByStatus(status);
               return cards.length > 0 ? (

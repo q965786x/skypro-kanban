@@ -2,9 +2,7 @@ import axios from "axios";
 
 const API_URL = "https://wedev-api.sky.pro/api/kanban";
 
-const handleApiError = (error) => {
-  console.error("API Error:", error.response?.status, error.response?.data);
-  
+const handleApiError = (error) => {  
   if (error.response?.status === 401) {
     throw new Error("Сессия истекла. Пожалуйста, войдите снова.");
   }

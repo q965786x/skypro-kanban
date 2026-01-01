@@ -13,14 +13,12 @@ const CardPage = () => {
   const { id } = useParams();
   const [cardNotFound, setCardNotFound] = useState(false);
 
-  // Ищем карточку в tasks из контекста
   const card = tasks.find((card) => card._id === id || card.id === id);
 
   const handleClose = () => {
-    navigate("/"); // Возврат на главную
+    navigate("/");
   };
 
-  // Добавляем обработчик клавиши Escape
   useEffect(() => {
     const handleEscape = (e) => {
       if (e.key === "Escape") {
@@ -35,15 +33,12 @@ const CardPage = () => {
     };
   }, []);
 
-  // Если карточка удалена, перенаправляем на главную
   useEffect(() => {
     if (!card && id) {
-      // Даем небольшой таймаут для обновления списка задач после удаления
       const timer = setTimeout(() => {
         const updatedCard = tasks.find((c) => c._id === id || c.id === id);
         if (!updatedCard) {
           setCardNotFound(true);
-          // Автоматически закрываем через 2 секунды если задача не найдена
           setTimeout(() => {
             navigate("/");
           }, 2000);
@@ -110,7 +105,6 @@ const CardPage = () => {
   }
 
   if (!card) {
-    // Показываем загрузку пока ищем задачу
     return (
       <div className="wrapper">
         <Header />
@@ -150,11 +144,9 @@ const CardPage = () => {
 
   return (
     <div className="wrapper">
-      {/* Показываем основной интерфейс */}
       <Header />
       <Main />
 
-      {/* Поверх всего показываем модальное окно просмотра карточки */}
       {card && <PopBrowse card={card} onClose={handleClose} />}
     </div>
   );

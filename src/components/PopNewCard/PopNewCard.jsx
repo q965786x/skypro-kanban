@@ -87,14 +87,13 @@ const PopNewCard = ({ isOpen, onClose, onCreateCard }) => {
           title: title.trim(),
           description: description.trim(),
           topic: selectedTopic,
-          status: selectedStatus, // Используем выбранный статус!
+          status: selectedStatus,
           date: new Date().toISOString(),
         };
 
         const success = await addNewTask(newCard);
 
         if (success) {
-          // Сброс формы
           setTitle("");
           setDescription("");
           setSelectedTopic("Web Design");
@@ -199,7 +198,6 @@ const PopNewCard = ({ isOpen, onClose, onCreateCard }) => {
               />
             </SPopNewCardWrap>
 
-            {/* БЛОК ВЫБОРА СТАТУСА */}
             <div style={{ marginBottom: "20px" }}>
               <SCategoriesP className="subttl">Статус задачи</SCategoriesP>
               <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>

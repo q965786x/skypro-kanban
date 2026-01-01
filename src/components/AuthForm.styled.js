@@ -36,12 +36,11 @@ export const SModalBlock = styled.div`
   background-color: #ffffff;
   max-width: 368px;
   width: 100%;
-  max-height: 345px;
-  height: 100%;
   padding: 50px 60px;
   border-radius: 10px;
   border: 0.7px solid #d4dbe5;
   box-shadow: 0px 4px 67px -12px rgba(0, 0, 0, 0.13);
+  overflow: hidden;
 `;
 
 export const SModalTtl = styled.div`
@@ -69,7 +68,8 @@ export const SInputWrapper = styled.div`
 export const BaseButton = styled.button`
   width: ${(props) => (props.$fullWidth ? "100%" : "auto")};
   height: 30px;
-  background-color: ${(props) => (props.disabled ? "#ccc" : "#565eef")};
+  background-color: ${(props) => 
+    props.$isDisabled ? "#94A6BE" : "#565EEF"};
   padding: 12px;
   color: white;
   border: none;
@@ -80,14 +80,16 @@ export const BaseButton = styled.button`
   padding-bottom: 8px;
   padding-left: 10px;
   padding-right: 10px;
-  gap: 10 px;
-  cursor: ${(props) => (props.disabled ? "not-allowed" : "pointer")};
+  gap: 10px;
+  cursor: ${(props) => 
+    props.$isDisabled ? "not-allowed" : "pointer"};
   transition: background-color 0.3s ease;
   margin-top: 20px;
   margin-bottom: 20px;
 
   &:hover {
-    background-color: ${(props) => (props.disabled ? "#ccc" : "#33399b")};
+    background-color: ${(props) => 
+      props.$isDisabled ? "#94A6BE" : "#33399b"};
   }
 `;
 
@@ -110,4 +112,18 @@ export const SFormLink = styled.div`
       text-decoration: underline;
     }
   }
+`;
+
+export const SErrorText = styled.p`
+  color: #F84D4D;
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.4;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  font-weight: 400;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;

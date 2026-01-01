@@ -1,5 +1,4 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
 import {
   SPopExit,
   SPopExitContainer,
@@ -8,19 +7,14 @@ import {
 } from "./PopExit.styled";
 
 const PopExit = ({ onConfirm, onCancel, isOpen = false }) => {
-  // Упрощенные пропсы:
-  // - onConfirm: вызывается при подтверждении выхода
-  // - onCancel: вызывается при отмене
-  // - isOpen: управляет видимостью попапа
-
   const handleExitYes = (e) => {
     e.preventDefault();
-    onConfirm?.(); // Вызываем колбэк подтверждения
+    onConfirm?.();
   };
 
   const handleExitNo = (e) => {
     e.preventDefault();
-    onCancel?.(); // Вызываем колбэк отмены
+    onCancel?.();
   };
 
   if (!isOpen) {

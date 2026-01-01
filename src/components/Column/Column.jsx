@@ -10,7 +10,6 @@ const Column = ({ title, cards }) => {
         <p>
           {title} ({cards?.length || 0})
         </p>
-        {/* Покажем количество карточек */}
       </SColumnTitle>
       <SCardsContainer>
         {cards && cards.length > 0 ? (
@@ -35,3 +34,4 @@ const Column = ({ title, cards }) => {
 };
 
 export default Column;
+

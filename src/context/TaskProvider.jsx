@@ -3,7 +3,7 @@ import { fetchTasks, postTask, editTask, deleteTask } from "../services/api";
 import { AuthContext } from "./AuthContext";
 import { TasksContext } from "./TaskContext";
 
-// Экспортируем провайдер как дефолтный
+
 const TaskProvider = ({ children }) => {
   const [tasks, setTasks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -11,7 +11,7 @@ const TaskProvider = ({ children }) => {
   const [isOfflineMode, setIsOfflineMode] = useState(false);
   const { user } = useContext(AuthContext);
 
-  // Загрузка задач
+  
   const loadTasks = useCallback(async () => {
     if (!user?.token) {
       setTasks([]);
@@ -44,7 +44,7 @@ const TaskProvider = ({ children }) => {
     loadTasks();
   }, [loadTasks]);
 
-  // Создание задачи
+  
   const addNewTask = useCallback(
     async (task) => {
       if (!user?.token) {
@@ -52,7 +52,7 @@ const TaskProvider = ({ children }) => {
         return false;
       }
 
-      // Валидация данных
+      
       if (!task.title || !task.title.trim()) {
         setError("Название задачи не может быть пустым");
         return false;
@@ -93,7 +93,7 @@ const TaskProvider = ({ children }) => {
         return false;
       }
 
-      // Валидация данных
+      
       if (!task.title || !task.title.trim()) {
         setError("Название задачи не может быть пустым");
         return false;

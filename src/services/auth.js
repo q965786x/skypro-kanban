@@ -12,12 +12,8 @@ export async function signIn(userData) {
 
     return response.data.user;
   } catch (error) {
-    console.error("Ошибка входа:", error.response?.data);
-    const errorMessage =
-      error.response?.data?.error ||
-      error.response?.data?.message ||
-      "Неверный логин или пароль";
-    throw new Error(errorMessage);
+    // Всегда бросаем одну и ту же ошибку для формы входа
+    throw new Error("Неверный логин или пароль");
   }
 }
 
@@ -31,11 +27,16 @@ export async function signUp(userData) {
 
     return response.data.user;
   } catch (error) {
-    console.error("Ошибка регистрации:", error.response?.data);
-    const errorMessage =
-      error.response?.data?.error ||
-      error.response?.data?.message ||
-      "Ошибка при регистрации";
+    let errorMessage = "Ошибка при регистрации";
+
+    if (error.response?.status === 400) {
+      errorMessage = "Некорректные данные";
+    } else if (error.response?.status === 409) {
+      errorMessage = "Пользователь с таким email уже существует";
+    } else if (error.response?.status === 500) {
+      errorMessage = "Ошибка сервера. Попробуйте позже.";
+    }
+
     throw new Error(errorMessage);
   }
 }

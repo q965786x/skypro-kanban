@@ -10,7 +10,6 @@ const PopUser = ({ isOpen, onClose }) => {
 
   const handleThemeToggle = () => {
     setIsDarkTheme(!isDarkTheme);
-    
   };
 
   useEffect(() => {
@@ -67,7 +66,6 @@ const PopUser = ({ isOpen, onClose }) => {
       }}
     >
       <div className="pop-user__set">
-        {/* Информация о пользователе */}
         <div className="pop-user-set__name">
           {user?.name || user?.login || "Пользователь"}
         </div>
@@ -75,7 +73,6 @@ const PopUser = ({ isOpen, onClose }) => {
           {user?.login || "email@example.com"}
         </div>
 
-        {/* Переключатель темы */}
         <div className="pop-user-set__theme">
           <p>Темная тема</p>
           <input
@@ -85,7 +82,6 @@ const PopUser = ({ isOpen, onClose }) => {
           />
         </div>
 
-        {/* Используем handleExitClick вместо onLogout */}
         <button
           className="pop-user__exit _btn-bor _hover03"
           style={{

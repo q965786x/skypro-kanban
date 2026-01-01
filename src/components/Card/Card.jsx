@@ -14,7 +14,7 @@ import {
 const Card = ({ id, topic, title, date, status }) => {
   const cardId = id;
 
-  // Функция для определения класса темы на основе названия
+  
   const getTopicClass = (topicName) => {
     switch (topicName) {
       case "Web Design":

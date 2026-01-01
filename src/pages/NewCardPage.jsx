@@ -10,34 +10,28 @@ const NewCardPage = () => {
   const { addNewTask } = useContext(TasksContext);
 
   const handleClose = () => {
-    navigate("/"); // Возврат на главную
+    navigate("/");
   };
 
   const handleCreate = async (newCardData) => {
-    
     try {
       const success = await addNewTask(newCardData);
-      
-      
+
       if (success) {
-        return true; // Возвращаем true при успехе
+        return true;
       } else {
-        return false; // Возвращаем false при ошибке
+        return false;
       }
     } catch (error) {
-      console.error("NewCardPage: ошибка создания", error);
-      return false; // Возвращаем false при исключении
+      return false;
     }
   };
 
-
   return (
     <div className="wrapper">
-      {/* Показываем основной интерфейс */}
       <Header />
       <Main />
 
-      {/* Поверх всего показываем модальное окно */}
       <PopNewCard
         isOpen={true}
         onClose={handleClose}

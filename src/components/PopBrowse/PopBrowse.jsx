@@ -38,7 +38,7 @@ const PopBrowse = ({ card, onClose }) => {
 
   const { updateTask, removeTask } = useContext(TasksContext);
 
-  // Инициализация данных при монтировании
+  
   useEffect(() => {
     if (card) {
       setTitle(card.title || "");
@@ -66,7 +66,7 @@ const PopBrowse = ({ card, onClose }) => {
     [onClose]
   );
 
-  // Вспомогательная функция для определения класса темы
+  
   const getTopicClass = useCallback((topic) => {
     switch (topic) {
       case "Web Design":
@@ -80,21 +80,21 @@ const PopBrowse = ({ card, onClose }) => {
     }
   }, []);
 
-  // Включение режима редактирования
+  
   const handleEditClick = useCallback((e) => {
     e.preventDefault();
     setIsEditing(true);
     setError("");
   }, []);
 
-  // Отмена редактирования
+  
   const handleCancelEdit = useCallback(
     (e) => {
       e.preventDefault();
       setIsEditing(false);
       setError("");
 
-      // Восстанавливаем исходные значения
+      
       if (card) {
         setTitle(card.title || "");
         setDescription(card.description || "");
@@ -106,14 +106,14 @@ const PopBrowse = ({ card, onClose }) => {
     [card]
   );
 
-  // Сохранение изменений
+  
   const handleSave = useCallback(
     async (e) => {
       e.preventDefault();
 
       if (isSubmitting || !card) return;
 
-      // Валидация
+      
       if (!title.trim()) {
         setError("Название задачи не может быть пустым");
         return;
@@ -161,7 +161,7 @@ const PopBrowse = ({ card, onClose }) => {
     ]
   );
 
-  // Удаление задачи
+  
   const handleDelete = useCallback(
     async (e) => {
       e.preventDefault();
@@ -232,7 +232,7 @@ const PopBrowse = ({ card, onClose }) => {
     );
   };
 
-  // Вспомогательный компонент для DescriptionForm
+  
   const DescriptionForm = ({ description, onChange, isEditing: editMode }) => (
     <SPopBrowseForm>
       <SFormBrowseBlock>
@@ -252,7 +252,7 @@ const PopBrowse = ({ card, onClose }) => {
     </SPopBrowseForm>
   );
 
-  // Вспомогательный компонент для CategorySection
+  
   const CategorySection = ({ topic, onTopicChange, isEditing: editMode }) => {
     const topicClass = getTopicClass(topic);
     const topics = ["Web Design", "Research", "Copywriting"];
@@ -289,7 +289,7 @@ const PopBrowse = ({ card, onClose }) => {
     );
   };
 
-  // Вспомогательный компонент для TitleField
+  
   const TitleField = ({
     title,
     onChange,
@@ -311,7 +311,7 @@ const PopBrowse = ({ card, onClose }) => {
     return <SPopBrowseTtl>{title || "Название задачи"}</SPopBrowseTtl>;
   };
 
-  // Вспомогательный компонент для BrowseButtons
+  
   const BrowseButtons = ({ onClose, onEdit, onDelete }) => (
     <SPopBrowseBtnBrowse>
       <SBtnGroup>
@@ -342,7 +342,7 @@ const PopBrowse = ({ card, onClose }) => {
     </SPopBrowseBtnBrowse>
   );
 
-  // Вспомогательный компонент для EditButtons
+  
   const EditButtons = ({ onClose, onSave, onCancel, onDelete }) => (
     <SPopBrowseBtnEdit>
       <SBtnGroup>
@@ -390,7 +390,7 @@ const PopBrowse = ({ card, onClose }) => {
     [isSubmitting, isEditing]
   );
 
-  // Добавляем обработчик Escape
+  
   useEffect(() => {
     const handleEscKey = (e) => {
       if (e.key === "Escape") {

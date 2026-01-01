@@ -61,7 +61,7 @@ const Calendar = ({ mode = "new", selectedDate = "", onDateSelect }) => {
   const handleDayClick = (day) => {
     if (day.type.includes("_other-month")) return;
 
-    // Форматируем дату
+    
     const formattedDate = `${day.day.toString().padStart(2, "0")}.09.2023`;
 
     if (mode === "new" || mode === "edit") {
