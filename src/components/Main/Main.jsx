@@ -36,7 +36,7 @@ const Main = () => {
         <SContainer>
           <SMainBlock>
             <SLoadingContainer>
-              <SLoadingSpinner></SLoadingSpinner>
+              <SLoadingSpinner />
               <SLoadingText>Загружаем задачи...</SLoadingText>
             </SLoadingContainer>
           </SMainBlock>

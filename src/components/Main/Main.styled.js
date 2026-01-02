@@ -1,4 +1,53 @@
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
+
+const gradientRotate = keyframes`
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+`;
+
+export const SLoadingSpinner = styled.div`
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(
+    45deg,
+    #565eef,
+    #6a73ff,
+    #8a94ff,
+    #aab3ff,
+    #c9ceff
+  );
+  background-size: 400% 400%;
+  animation: ${gradientRotate} 1.5s ease infinite;
+  margin: 0 auto 20px;
+  box-shadow: 0 4px 10px rgba(86, 94, 239, 0.3);
+`;
+
+export const SLoadingContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+  background: white;
+  border-radius: 10px;
+  margin-top: 20px;
+  min-height: 300px;
+`;
+
+export const SLoadingText = styled.p`
+  font-size: 18px;
+  color: #565eef;
+  font-weight: 500;
+  margin-top: 10px;
+`;
 
 export const SMain = styled.main`
   // стили для Main
@@ -27,23 +76,23 @@ export const SMainContent = styled.div`
   }
 `;
 
-export const SLoadingContainer = styled.div`
+/*export const SLoadingContainer = styled.div`
   // стили для .loading-container
   display: flex;
   justify-content: center;
   align-items: center;
   height: 400px;
   width: 100%;
-`;
+`; */
 
-export const SLoadingText = styled.div`
+/*export const SLoadingText = styled.div`
   // стили для .loading-text
   font-size: 24px;
   font-weight: 600;
   color: #565eef;
   text-align: center;
   animation: pulse 1.5s ease-in-out infinite;
-`;
+`; */
 
 export const HeaderSection = styled.div`
   display: flex;
@@ -119,17 +168,4 @@ export const SOfflineIndicator = styled.div`
   font-weight: 500;
 `;
 
-export const SLoadingSpinner = styled.div`
-  width: 50px;
-  height: 50px;
-  border: 5px solid #eaeef6;
-  border-top: 5px solid #565eef;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-bottom: 20px;
 
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-`;

@@ -37,6 +37,26 @@ const PopNewCard = ({ isOpen, onClose, onCreateCard }) => {
     clearError,
   } = useContext(TasksContext);
 
+  // Функция для форматирования даты в формат API
+  const formatDateForAPI = useCallback((dateString) => {
+    if (!dateString) return new Date().toISOString();
+    
+    // Преобразуем DD.MM.YYYY в YYYY-MM-DD
+    if (dateString.match(/\d{1,2}\.\d{1,2}\.\d{4}/)) {
+      const [day, month, year] = dateString.split('.');
+      const formattedDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+      return new Date(formattedDate).toISOString();
+    }
+    
+    // Если дата уже в формате YYYY-MM-DD
+    if (dateString.match(/\d{4}-\d{1,2}-\d{1,2}/)) {
+      return new Date(dateString).toISOString();
+    }
+    
+    // Если дата в другом формате, возвращаем как есть
+    return dateString;
+  }, []);
+
   useEffect(() => {
     if (isOpen) {
       const today = new Date();
@@ -88,18 +108,26 @@ const PopNewCard = ({ isOpen, onClose, onCreateCard }) => {
           description: description.trim(),
           topic: selectedTopic,
           status: selectedStatus,
-          date: new Date().toISOString(),
+          date: formatDateForAPI(selectedDate),
         };
+
+        console.log("Создание задачи с данными:", newCard);
 
         const success = await addNewTask(newCard);
 
         if (success) {
+          console.log("Задача успешно создана");
           setTitle("");
           setDescription("");
           setSelectedTopic("Web Design");
           setSelectedStatus("Без статуса");
           navigate("/");
+        } else {
+          setFormError("Не удалось создать задачу");
         }
+      } catch (error) {
+        console.error("Ошибка при создании задачи:", error);
+        setFormError(error.message || "Произошла ошибка при создании задачи");
       } finally {
         setIsSubmitting(false);
       }
@@ -109,9 +137,11 @@ const PopNewCard = ({ isOpen, onClose, onCreateCard }) => {
       description,
       selectedTopic,
       selectedStatus,
+      selectedDate,
       isSubmitting,
       addNewTask,
       navigate,
+      formatDateForAPI,
     ]
   );
 
@@ -198,7 +228,7 @@ const PopNewCard = ({ isOpen, onClose, onCreateCard }) => {
               />
             </SPopNewCardWrap>
 
-            <div style={{ marginBottom: "20px" }}>
+            {/* <div style={{ marginBottom: "20px" }}>
               <SCategoriesP className="subttl">Статус задачи</SCategoriesP>
               <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
                 {[
@@ -232,7 +262,7 @@ const PopNewCard = ({ isOpen, onClose, onCreateCard }) => {
                   </button>
                 ))}
               </div>
-            </div>
+            </div> */}
 
             <SCategories>
               <SCategoriesP className="subttl">Категория</SCategoriesP>
@@ -244,7 +274,10 @@ const PopNewCard = ({ isOpen, onClose, onCreateCard }) => {
                   onClick={() =>
                     !isSubmitting && setSelectedTopic("Web Design")
                   }
-                  style={{ opacity: isSubmitting ? 0.7 : 1 }}
+                  style={{ 
+                    opacity: isSubmitting ? 0.7 : (selectedTopic === "Web Design" ? 1 : 0.4),
+                    cursor: isSubmitting ? "not-allowed" : "pointer"
+                  }}
                 >
                   <p className="_orange">Web Design</p>
                 </SCategoriesTheme>
@@ -264,7 +297,10 @@ const PopNewCard = ({ isOpen, onClose, onCreateCard }) => {
                   onClick={() =>
                     !isSubmitting && setSelectedTopic("Copywriting")
                   }
-                  style={{ opacity: isSubmitting ? 0.7 : 1 }}
+                  style={{ 
+                    opacity: isSubmitting ? 0.7 : (selectedTopic === "Copywriting" ? 1 : 0.4),
+                    cursor: isSubmitting ? "not-allowed" : "pointer"
+                  }}
                 >
                   <p className="_purple">Copywriting</p>
                 </SCategoriesTheme>
@@ -276,7 +312,10 @@ const PopNewCard = ({ isOpen, onClose, onCreateCard }) => {
               id="btnCreate"
               onClick={handleSubmit}
               disabled={isSubmitting}
-              style={{ opacity: isSubmitting ? 0.7 : 1 }}
+              style={{ 
+                opacity: isSubmitting ? 0.7 : 1,
+                cursor: isSubmitting ? "not-allowed" : "pointer"
+              }}
             >
               {isSubmitting ? (
                 <>

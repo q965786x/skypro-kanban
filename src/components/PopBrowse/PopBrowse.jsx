@@ -26,6 +26,84 @@ import {
   SPopBrowseTitleInput,
 } from "./PopBrowse.styled";
 
+// Вспомогательная функция для форматирования даты
+const formatDisplayDate = (dateString) => {
+  if (!dateString) return "не установлен";
+  
+  try {
+    // Пробуем разные форматы даты
+    if (dateString.match(/\d{1,2}\.\d{1,2}\.\d{4}/)) {
+      // DD.MM.YYYY
+      const [day, month, year] = dateString.split('.');
+      const shortYear = year.slice(-2);
+      return `${day}.${month}.${shortYear}`;
+    }
+    
+    if (dateString.match(/\d{4}-\d{1,2}-\d{1,2}/)) {
+      // YYYY-MM-DD
+      const [year, month, day] = dateString.split('-');
+      const shortYear = year.slice(-2);
+      return `${day}.${month}.${shortYear}`;
+    }
+
+    // Пробуем распарсить как ISO строку
+    const date = new Date(dateString);
+    if (!isNaN(date.getTime())) {
+      const day = date.getDate().toString().padStart(2, '0');
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const year = date.getFullYear().toString().slice(-2);
+      return `${day}.${month}.${year}`;
+    }
+    
+    return dateString;
+  } catch (error) {
+    console.error("Ошибка форматирования даты:", error);
+    return dateString;
+  }
+};
+
+// Функция для получения даты в формате для календаря
+const getDateForCalendar = (dateString) => {
+  if (!dateString) return "";
+  
+  try {
+    if (dateString.match(/\d{1,2}\.\d{1,2}\.\d{4}/)) {
+      return dateString; // Уже в правильном формате
+    }
+    
+    if (dateString.match(/\d{4}-\d{1,2}-\d{1,2}/)) {
+      const [year, month, day] = dateString.split('-');
+      return `${day}.${month}.${year}`;
+    }
+
+    const date = new Date(dateString);
+    if (!isNaN(date.getTime())) {
+      const day = date.getDate().toString().padStart(2, '0');
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const year = date.getFullYear();
+      return `${day}.${month}.${year}`;
+    }
+    
+    return "";
+  } catch (error) {
+    console.error("Ошибка преобразования даты:", error);
+    return "";
+  }
+};
+
+const getTopicClass = (topic) => {
+    switch (topic) {
+      case "Web Design":
+        return "orange";
+      case "Research":
+        return "green";
+      case "Copywriting":
+        return "purple";
+      default:
+        return "orange";
+    }
+  };
+
 const PopBrowse = ({ card, onClose }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState("");
@@ -65,21 +143,6 @@ const PopBrowse = ({ card, onClose }) => {
     },
     [onClose]
   );
-
-  
-  const getTopicClass = useCallback((topic) => {
-    switch (topic) {
-      case "Web Design":
-        return "orange";
-      case "Research":
-        return "green";
-      case "Copywriting":
-        return "purple";
-      default:
-        return "orange";
-    }
-  }, []);
-
   
   const handleEditClick = useCallback((e) => {
     e.preventDefault();
@@ -105,6 +168,30 @@ const PopBrowse = ({ card, onClose }) => {
     },
     [card]
   );
+
+  // Функция для форматирования даты в формат API
+  const formatDateForAPI = useCallback((dateString) => {
+    if (!dateString) return new Date().toISOString();
+    
+    try {
+      // Преобразуем DD.MM.YYYY в YYYY-MM-DD
+      if (dateString.match(/\d{1,2}\.\d{1,2}\.\d{4}/)) {
+        const [day, month, year] = dateString.split('.');
+        const formattedDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+        return new Date(formattedDate).toISOString();
+      }
+      
+      // Если дата уже в формате YYYY-MM-DD
+      if (dateString.match(/\d{4}-\d{1,2}-\d{1,2}/)) {
+        return new Date(dateString).toISOString();
+      }
+      
+       return dateString;
+    } catch (error) {
+      console.error("Ошибка форматирования даты:", error);
+      return new Date().toISOString();
+    }
+  }, []);
 
   
   const handleSave = useCallback(
@@ -133,7 +220,7 @@ const PopBrowse = ({ card, onClose }) => {
           description: description.trim(),
           topic: selectedTopic,
           status: selectedStatus,
-          date: selectedDate || new Date().toISOString(),
+          date: formatDateForAPI(selectedDate),
         };
 
         const success = await updateTask(card._id || card.id, updatedTask);
@@ -158,6 +245,7 @@ const PopBrowse = ({ card, onClose }) => {
       selectedStatus,
       selectedDate,
       updateTask,
+      formatDateForAPI,
     ]
   );
 
@@ -253,7 +341,7 @@ const PopBrowse = ({ card, onClose }) => {
   );
 
   
-  const CategorySection = ({ topic, onTopicChange, isEditing: editMode }) => {
+  {/* const CategorySection = ({ topic, onTopicChange, isEditing: editMode }) => {
     const topicClass = getTopicClass(topic);
     const topics = ["Web Design", "Research", "Copywriting"];
 
@@ -287,7 +375,7 @@ const PopBrowse = ({ card, onClose }) => {
         )}
       </div>
     );
-  };
+  }; */}
 
   
   const TitleField = ({
@@ -341,7 +429,6 @@ const PopBrowse = ({ card, onClose }) => {
       </SBtnClose>
     </SPopBrowseBtnBrowse>
   );
-
   
   const EditButtons = ({ onClose, onSave, onCancel, onDelete }) => (
     <SPopBrowseBtnEdit>
@@ -409,6 +496,9 @@ const PopBrowse = ({ card, onClose }) => {
     };
   }, [isEditing, handleCancelEdit, handleClose]);
 
+  // Форматируем дату для отображения
+  const displayDate = formatDisplayDate(selectedDate || card?.date);
+
   return (
     <SPopBrowse style={{ display: "block" }} onClick={handleOverlayClick}>
       <SPopBrowseContainer>
@@ -435,15 +525,21 @@ const PopBrowse = ({ card, onClose }) => {
                 title={title}
                 onChange={setTitle}
                 isEditing={isEditing}
+                isSubmitting={isSubmitting}
               />
-              {!isEditing && (
+              {/* КАТЕГОРИЯ В ПРАВОМ ВЕРХНЕМ УГЛУ - ОТОБРАЖАЕТСЯ И В РЕЖИМЕ ПРОСМОТРА, И В РЕЖИМЕ РЕДАКТИРОВАНИЯ */}
+              {selectedTopic && (
                 <div
                   className={`categories__theme theme-top _${getTopicClass(
                     selectedTopic
                   )} _active-category`}
+                  style={{
+                    opacity: isEditing ? 1 : 1, // Всегда видна
+                    pointerEvents: isEditing ? "none" : "auto", // В режиме редактирования не кликабельна
+                  }}
                 >
                   <p className={`_${getTopicClass(selectedTopic)}`}>
-                    {selectedTopic || "Web Design"}
+                    {selectedTopic}
                   </p>
                 </div>
               )}
@@ -463,16 +559,16 @@ const PopBrowse = ({ card, onClose }) => {
               />
               <Calendar
                 mode={isEditing ? "new" : "browse"}
-                selectedDate={selectedDate || card?.date || "09.09.2023"}
+                selectedDate={isEditing ? selectedDate : displayDate}
                 onDateSelect={isEditing ? handleDateSelect : undefined}
               />
             </SPopBrowseWrap>
 
-            <CategorySection
+            {/* <CategorySection
               topic={selectedTopic}
               onTopicChange={isEditing ? setSelectedTopic : undefined}
-              isEditing={isEditing}
-            />
+              isEditing={isEditing} 
+            /> */}
 
             {isEditing ? (
               <EditButtons
