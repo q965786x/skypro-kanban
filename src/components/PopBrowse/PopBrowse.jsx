@@ -562,13 +562,7 @@ const PopBrowse = ({ card, onClose }) => {
                 selectedDate={isEditing ? selectedDate : displayDate}
                 onDateSelect={isEditing ? handleDateSelect : undefined}
               />
-            </SPopBrowseWrap>
-
-            {/* <CategorySection
-              topic={selectedTopic}
-              onTopicChange={isEditing ? setSelectedTopic : undefined}
-              isEditing={isEditing} 
-            /> */}
+            </SPopBrowseWrap>            
 
             {isEditing ? (
               <EditButtons

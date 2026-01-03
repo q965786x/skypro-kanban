@@ -6,7 +6,8 @@ export const SSignInWrapper = styled.div`
   height: 100%;
   overflow-x: hidden;
   overflow-y: scroll;
-  background-color: #eaeef6;
+  background-color: ${props => props.theme.colors.background};
+  transition: background-color 0.3s ease;
 `;
 
 export const SContainerSignIn = styled.div`
@@ -33,14 +34,15 @@ export const SModalBlock = styled.div`
   //стили для .modal__block
   display: block;
   margin: 0 auto;
-  background-color: #ffffff;
+  background-color: ${props => props.theme.colors.surface};
   max-width: 368px;
   width: 100%;
   padding: 50px 60px;
   border-radius: 10px;
-  border: 0.7px solid #d4dbe5;
-  box-shadow: 0px 4px 67px -12px rgba(0, 0, 0, 0.13);
+  border: 0.7px solid ${props => props.theme.colors.border};
+  box-shadow: ${props => props.theme.shadows.medium};
   overflow: hidden;
+  transition: all 0.3s ease;
 `;
 
 export const SModalTtl = styled.div`
@@ -51,6 +53,7 @@ export const SModalTtl = styled.div`
   line-height: 30px;
   letter-spacing: -0.6px;
   margin-bottom: 20px;
+  color: ${props => props.theme.colors.text};
 `;
 
 export const SInputWrapper = styled.div`
@@ -61,7 +64,7 @@ export const SInputWrapper = styled.div`
 
   label {
     font-weight: 500;
-    color: #555;
+    color: ${props => props.theme.colors.textSecondary};
   }
 `;
 
@@ -69,7 +72,7 @@ export const BaseButton = styled.button`
   width: ${(props) => (props.$fullWidth ? "100%" : "auto")};
   height: 30px;
   background-color: ${(props) => 
-    props.$isDisabled ? "#94A6BE" : "#565EEF"};
+    props.$isDisabled ? props.theme.colors.textSecondary : props.theme.colors.primary};
   padding: 12px;
   color: white;
   border: none;
@@ -89,33 +92,35 @@ export const BaseButton = styled.button`
 
   &:hover {
     background-color: ${(props) => 
-      props.$isDisabled ? "#94A6BE" : "#33399b"};
+      props.$isDisabled ? props.theme.colors.textSecondary : props.theme.colors.primaryHover};
   }
 `;
 
 export const SFormLink = styled.div`
   // стили для .form-group
   text-align: center;
-  color: #94a6be;
+  color: ${props => props.theme.colors.textSecondary};
   font-weight: 400;
   font-size: 14px;
   font-family: inherit;
 
   a {
-    color: #94a6be;
+    color: ${props => props.theme.colors.primary};
     text-decoration: none;
     font-weight: 400;
     font-size: 14px;
     font-family: inherit;
+    transition: color 0.3s ease;
 
     &:hover {
       text-decoration: underline;
+      color: ${props => props.theme.colors.primaryHover};
     }
   }
 `;
 
 export const SErrorText = styled.p`
-  color: #F84D4D;
+  color: ${props => props.theme.colors.error};
   text-align: center;
   font-size: 12px;
   line-height: 1.4;
@@ -126,4 +131,8 @@ export const SErrorText = styled.p`
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: ${props => props.theme.mode === 'dark' ? 'rgba(255, 82, 82, 0.1)' : 'rgba(248, 77, 77, 0.1)'};
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid ${props => props.theme.colors.error};
 `;

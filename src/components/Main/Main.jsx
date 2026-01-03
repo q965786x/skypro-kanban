@@ -117,9 +117,9 @@ const Main = () => {
           <SMainContent>
             {statuses.map((status) => {
               const cards = getCardsByStatus(status);
-              return cards.length > 0 ? (
+              return (
                 <Column key={status} title={status} cards={cards} />
-              ) : null;
+              );
             })}
           </SMainContent>
         </SMainBlock>

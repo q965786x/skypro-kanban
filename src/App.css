@@ -476,7 +476,7 @@ body {
 }*/ 
 
 .calendar__cell {
-  width: 22px;
+   width: 22px;
   height: 22px;
   margin: 2px;
   border-radius: 50%;
@@ -484,11 +484,29 @@ body {
   flex-wrap: nowrap;
   align-items: center;
   justify-content: center;
-  color: #94A6BE;
+  color: var(--text-secondary);
   font-size: 10px;
   line-height: 1;
   letter-spacing: -0.2px;
   cursor: pointer;
+}
+
+body.dark-theme .calendar__cell {
+  color: #A6B4CC;
+}
+
+body.dark-theme .calendar__cell._cell-day:hover {
+  color: #A6B4CC;
+  background-color: #3A3D42;
+}
+
+body.dark-theme .calendar__cell._active-day {
+  background-color: #A6B4CC;
+  color: #2D2F33;
+}
+
+body.dark-theme .calendar__day-name {
+  color: #A6B4CC;
 }
 
 /*.calendar__nav {
@@ -1428,5 +1446,241 @@ body.modal-open {
 .pop-exit,
 .pop-browse {
   animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Базовая стилизация для темы */
+:root {
+  --primary-color: #565EEF;
+  --background-color: #F5F5F5;
+  --text-color: #000000;
+}
+
+[data-theme="dark"] {
+  --primary-color: #6A73FF;
+  --background-color: #1A1C1E;
+  --text-color: #FFFFFF;
+}
+
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Стили для кнопки переключения темы */
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.theme-toggle input[type="checkbox"] {
+  width: 40px;
+  height: 20px;
+  appearance: none;
+  background-color: #e0e0e0;
+  border-radius: 20px;
+  position: relative;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.theme-toggle input[type="checkbox"]:checked {
+  background-color: #565EEF;
+}
+
+.theme-toggle input[type="checkbox"]::before {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background-color: white;
+  top: 2px;
+  left: 2px;
+  transition: transform 0.3s;
+}
+
+.theme-toggle input[type="checkbox"]:checked::before {
+  transform: translateX(20px);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+body.dark-theme {
+  background-color: #1A1C1E;
+  color: #FFFFFF;
+}
+
+body.dark-theme .pop-new-card__block,
+body.dark-theme .pop-browse__block,
+body.dark-theme .pop-exit__block {
+  background-color: #2D2F33;
+  color: #FFFFFF;
+  border-color: rgba(166, 180, 204, 0.3);
+}
+
+:root {
+  --surface-color: #FFFFFF;
+  --text-color: #000000;
+  --background-color: #EAEEF6;
+  --border-color: rgba(148, 166, 190, 0.4);
+}
+
+[data-theme="dark"] {
+  --surface-color: #2D2F33;
+  --text-color: #FFFFFF;
+  --background-color: #1A1C1E;
+  --border-color: rgba(166, 180, 204, 0.3);
+}
+
+/* Глобальные стили для тёмной темы */
+body.dark-theme {
+  background-color: #1A1C1E;
+  color: #FFFFFF;
+}
+
+/* Стили для модальных окон в тёмной теме */
+body.dark-theme .pop-new-card__block,
+body.dark-theme .pop-browse__block,
+body.dark-theme .pop-exit__block {
+  background-color: #2D2F33;
+  color: #FFFFFF;
+}
+
+/* Стили для кнопок в тёмной теме */
+body.dark-theme .pop-exit__exit-no {
+  color: #6A73FF;
+  border-color: #6A73FF;
+}
+
+body.dark-theme .pop-exit__exit-no:hover {
+  background-color: #6A73FF;
+  color: #FFFFFF;
+}
+
+/* Стили для input и textarea в тёмной теме */
+body.dark-theme input,
+body.dark-theme textarea {
+  background-color: #3A3D42;
+  color: #FFFFFF;
+  border-color: rgba(166, 180, 204, 0.3);
+}
+
+body.dark-theme input::placeholder,
+body.dark-theme textarea::placeholder {
+  color: #A6B4CC;
+}
+
+/* Стили для select и других элементов формы */
+body.dark-theme select {
+  background-color: #3A3D42;
+  color: #FFFFFF;
+  border-color: rgba(166, 180, 204, 0.3);
+}
+
+/* Стили для SVG иконок в тёмной теме */
+body.dark-theme svg path {
+  stroke: #A6B4CC;
+}
+
+/* Анимации */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+/* Плавные переходы для смены темы */
+* {
+  transition: background-color 0.3s ease, 
+              border-color 0.3s ease, 
+              color 0.3s ease,
+              box-shadow 0.3s ease,
+              opacity 0.3s ease;
+}
+
+/* Исключения для элементов, которые не должны анимировать все свойства */
+input, 
+textarea, 
+button,
+select {
+  transition: background-color 0.3s ease, 
+              border-color 0.3s ease, 
+              color 0.3s ease,
+              box-shadow 0.3s ease;
+}
+
+/* Стили для форм авторизации в тёмной теме */
+body.dark-theme .signin-wrapper {
+  background-color: #151419;
+}
+
+/* Специфичные стили для input в формах */
+body.dark-theme .modal__input {
+  background-color: #2A2A36;
+  color: #FFFFFF;
+  border-color: rgba(166, 180, 204, 0.3);
+}
+
+body.dark-theme .modal__input::placeholder {
+  color: #A6B4CC;
+}
+
+/* Стили для кнопок входа/регистрации */
+body.dark-theme .modal__btn-enter,
+body.dark-theme .modal__btn-signup-ent {
+  background-color: #565EEF;
+}
+
+body.dark-theme .modal__btn-enter:hover,
+body.dark-theme .modal__btn-signup-ent:hover {
+  background-color: #6a73ff;
+}
+
+/* Стили для текста ссылок */
+body.dark-theme .modal__form-group a {
+  color: #565EEF;
+}
+
+body.dark-theme .modal__form-group a:hover {
+  color: #6a73ff;
+}
+
+/* Анимация появления форм */
+.modal__block {
+  animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Плавные переходы для всех элементов форм */
+.modal__block,
+.modal__input,
+.modal__btn-enter,
+.modal__btn-signup-ent {
+  transition: all 0.3s ease;
 }
 

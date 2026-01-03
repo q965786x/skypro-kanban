@@ -4,12 +4,14 @@ export const SHeader = styled.header`
   // стили для .header
   width: 100%;
   margin: 0 auto;
-  background-color: #ffffff;
+  background-color: ${props => props.theme.mode === 'dark' ? '#1E1E1E' : props.theme.colors.surface};
+  padding: 12px 0;
+  box-shadow: ${props => props.theme.shadows.small};
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
   position: relative;
-  z-index: 1000;    
+  z-index: 1000; 
+  border-bottom: ${props => props.theme.mode === 'dark' ? '1px solid #2D2D2D' : 'none'};   
 `;
-
-
 
 export const SContainer = styled.div`
   // стили для .container
@@ -56,12 +58,12 @@ export const SHeaderUser = styled.div`
   justify-content: center;
   font-size: 14px;
   line-height: 20px;
-  color: #565eef;
+  color: ${props => props.theme.colors.primary};
   cursor: pointer;
   transition: color 0.3s ease;
 
   &:hover {
-    color: #33399b;
+    color: ${props => props.theme.colors.primaryHover};
   }
 
   &::after {
@@ -70,8 +72,8 @@ export const SHeaderUser = styled.div`
     width: 6px;
     height: 6px;
     border-radius: 1px;
-    border-left: 1.9px solid #565eef;
-    border-bottom: 1.9px solid #565eef;
+    border-left: 1.9px solid ${props => props.theme.colors.primary};
+    border-bottom: 1.9px solid ${props => props.theme.colors.primary};
     transform: rotate(-45deg);
     margin: -6px 0 0 5px;
     padding: 0;
@@ -79,8 +81,8 @@ export const SHeaderUser = styled.div`
   }
 
   &:hover::after {
-    border-left-color: #33399b;
-    border-bottom-color: #33399b;
+    border-left-color: ${props => props.theme.colors.primaryHover};
+    border-bottom-color: ${props => props.theme.colors.primaryHover};
   }
 `;
 
@@ -89,7 +91,7 @@ export const SHeaderButton = styled.button`
  width: 178px;
   height: 30px;
   border-radius: 4px;
-  background-color: #565EEF;
+  background-color: ${props => props.theme.colors.primary};
   color: #FFFFFF;
   border: none;
   font-size: 14px;
@@ -100,9 +102,12 @@ export const SHeaderButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.3s ease;
 
   &:hover {
-    background-color: #33399b;
+    background-color: ${props => props.theme.colors.primaryHover};
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(86, 94, 239, 0.3);
   }
 
   a {

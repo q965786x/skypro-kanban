@@ -36,14 +36,14 @@ export const SPopNewCardBlock = styled.div`
   //стили для .pop-new-card__block
   display: block;
   margin: 0 auto;
-  background-color: #ffffff;
+  background-color: ${props => props.theme.colors.surface};
   max-width: 630px;
   width: 100%;
   padding: 40px 30px 48px;
   border-radius: 10px;
-  border: 0.7px solid #d4dbe5;
+  border: 0.7px solid ${props => props.theme.colors.border};
   position: relative;
-  box-shadow: 0px 4px 67px -12px rgba(0, 0, 0, 0.13);
+  box-shadow: ${props => props.theme.shadows.medium};
 `;
 
 export const SPopNewCardContent = styled.div`
@@ -55,7 +55,7 @@ export const SPopNewCardContent = styled.div`
 export const SPopNewCardTtl = styled.h3`
   //стили для .pop-new-card__ttl
   display: block;
-  color: #000;
+  color: ${props => props.theme.colors.text};
   font-size: 20px;
   font-weight: 600;
   line-height: 24px;
@@ -67,13 +67,14 @@ export const SPopNewCardClose = styled.a`
   position: absolute;
   top: 20px;
   right: 30px;
-  color: #94a6be;
+  color: ${props => props.theme.colors.textSecondary};
   font-size: 20px;
   text-decoration: none;
   cursor: pointer;
+  transition: color 0.3s ease;
 
   &:hover {
-    color: #000000;
+    color: ${props => props.theme.colors.text};
   }
 `;
 
@@ -109,19 +110,26 @@ export const SFormNewInput = styled.input`
   width: 100%;
   outline: none;
   padding: 14px;
-  background: transparent;
-  border: 0.7px solid rgba(148, 166, 190, 0.4);
+  background: ${props => props.theme.colors.background};
+  border: 0.7px solid ${props => props.theme.colors.border};
   border-radius: 8px;
   font-size: 14px;
   line-height: 1;
   letter-spacing: -0.14px;
+  color: ${props => props.theme.colors.text};
+  transition: border-color 0.3s ease;
+
 
   &::placeholder {
     font-weight: 400;
     font-size: 14px;
     line-height: 1px;
-    color: #94a6be;
+    color: ${props => props.theme.colors.textSecondary};
     letter-spacing: -0.14px;
+  }
+
+  &:focus {
+    border-color: ${props => props.theme.colors.primary};
   }
 `;
 
@@ -130,8 +138,8 @@ export const SFormNewArea = styled.textarea`
   max-width: 370px;
   outline: none;
   padding: 14px;
-  background: transparent;
-  border: 0.7px solid rgba(148, 166, 190, 0.4);
+  background: ${props => props.theme.colors.background};
+  border: 0.7px solid ${props => props.theme.colors.border};
   border-radius: 8px;
   font-size: 14px;
   line-height: 1;
@@ -140,13 +148,19 @@ export const SFormNewArea = styled.textarea`
   height: 200px;
   resize: vertical;
   font-family: inherit;
+  color: ${props => props.theme.colors.text};
+  transition: border-color 0.3s ease;
 
   &::placeholder {
     font-weight: 400;
     font-size: 14px;
     line-height: 1px;
-    color: #94a6be;
+    color: ${props => props.theme.colors.textSecondary};
     letter-spacing: -0.14px;
+  }
+
+  &:focus {
+    border-color: ${props => props.theme.colors.primary};
   }
 `;
 
@@ -154,7 +168,7 @@ export const SFormNewCreate = styled.button`
   //стили для .form-new__create
   width: 132px;
   height: 30px;
-  background-color: #565eef;
+  background-color: ${props => props.theme.colors.primary};
   border-radius: 4px;
   border: 0;
   outline: none;
@@ -167,7 +181,12 @@ export const SFormNewCreate = styled.button`
   transition: background-color 0.3s ease;
 
   &:hover {
-    background-color: #33399b;
+    background-color: ${props => props.theme.colors.primaryHover};
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
   }
 `;
 
@@ -178,6 +197,10 @@ export const SCategories = styled.div`
 
 export const SCategoriesP = styled.p`
   margin-bottom: 14px;
+  color: ${props => props.theme.colors.text};
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
 `;
 
 export const SCategoriesThemes = styled.div`
@@ -204,5 +227,44 @@ export const SCategoriesTheme = styled.div`
 
   &:hover {
     opacity: 0.7;
+  }
+
+  &._orange {
+    background-color: ${props => props.theme.mode === 'dark' ? "#4a2c00" : "#FFE4C2"};
+
+    p._orange {
+      color: ${props => props.theme.mode === 'dark' ? "#ffb347" : "#FF6D00"};
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 14px;
+      white-space: nowrap;
+      margin: 0;
+    }
+  }
+
+  &._green {
+    background-color: ${props => props.theme.mode === 'dark' ? "#004d2a" : "#B4FDD1"};
+
+    p._green {
+      color: ${props => props.theme.mode === 'dark' ? "#00e676" : "#06B16E"};
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 14px;
+      white-space: nowrap;
+      margin: 0;
+    }
+  }
+
+  &._purple {
+    background-color: ${props => props.theme.mode === 'dark' ? "#3a1d66" : "#E9D4FF"};
+
+    p._purple {
+      color: ${props => props.theme.mode === 'dark' ? "#bb86fc" : "#9A48F1"};
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 14px;
+      white-space: nowrap;
+      margin: 0;
+    }
   }
 `;

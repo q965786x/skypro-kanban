@@ -19,10 +19,11 @@ export const SColumnTitle = styled.div`
   margin: 15px 0;
 
   p {
-    color: #94a6be;
+    color: ${props => props.theme.colors.textSecondary};
     font-size: 14px;
     font-weight: 600;
     line-height: 1;
     text-transform: uppercase;
+    letter-spacing: 0.5px;
   }
 `;

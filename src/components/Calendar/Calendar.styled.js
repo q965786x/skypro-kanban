@@ -10,6 +10,10 @@ export const SCalendarTitle = styled.p `
 // стили для .calendar__ttl subttl
     margin-bottom: 14px;
     padding: 0 7px;
+    color: ${props => props.theme.colors.text};
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1;
 `;
 
 export const SCalendarBlock = styled.div `
@@ -29,7 +33,7 @@ export const SCalendarNav = styled.div `
 
 export const SCalendarMonth = styled.div `
 // стили для .calendar__month
-    color: #94A6BE;
+    color: ${props => props.theme.colors.textSecondary};
     font-size: 14px;
     line-height: 25px;
     font-weight: 600;
@@ -73,5 +77,13 @@ export const SNavAction = styled.div `
     display: flex;
     align-items: center;
     justify-content: center;
+
+    svg {
+    fill: ${props => props.theme.colors.textSecondary};
+    
+    path {
+      fill: ${props => props.theme.colors.textSecondary};
+    }
+  }
 `;
 
