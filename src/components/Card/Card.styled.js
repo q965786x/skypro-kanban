@@ -88,7 +88,7 @@ export const SCardTheme = styled.div`
           return "#FFE4C2";
       }
         }
-  }};
+  }}; 
   color: ${(props) => {
     if (props.theme.mode === 'dark') {
       switch (props.topic) {
@@ -187,4 +187,25 @@ export const SCardDate = styled.div`
     letter-spacing: 0.2px;
     transition: color 0.3s ease;
   }
+`;
+
+export const SDraggingCard = styled(SCardsCard)`
+  transform: rotate(3deg);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+  z-index: 1000;
+  opacity: 0.8;
+`;
+
+export const SDropPreview = styled.div`
+  background: rgba(86, 94, 239, 0.1);
+  border: 2px dashed #565eef;
+  border-radius: 10px;
+  padding: 20px;
+  margin: 5px;
+  transition: all 0.3s ease;
+  min-height: 130px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #565eef;
 `;

@@ -11,7 +11,17 @@ const TaskProvider = ({ children }) => {
   const [isOfflineMode, setIsOfflineMode] = useState(false);
   const { user } = useContext(AuthContext);
 
-  
+  // Функция для локального обновления статуса карточки
+  const updateTaskStatus = useCallback((taskId, newStatus) => {
+    setTasks(prevTasks => 
+      prevTasks.map(task => 
+        (task._id === taskId || task.id === taskId) 
+          ? { ...task, status: newStatus }
+          : task
+      )
+    );
+  }, []);
+
   const loadTasks = useCallback(async () => {
     if (!user?.token) {
       setTasks([]);
@@ -87,41 +97,52 @@ const TaskProvider = ({ children }) => {
   );
 
   const updateTask = useCallback(
-    async (id, task) => {
+    async (id, taskData) => {
       if (!user?.token) {
         setError("Требуется авторизация");
         return false;
       }
 
+
       
-      if (!task.title || !task.title.trim()) {
+      if (!taskData.title || !taskData.title.trim()) {
         setError("Название задачи не может быть пустым");
         return false;
       }
 
-      if (!task.description || !task.description.trim()) {
+      if (!taskData.description || !taskData.description.trim()) {
         setError("Описание задачи не может быть пустым");
         return false;
       }
 
       try {
+        // Сначала обновляем локально для мгновенной обратной связи
+        updateTaskStatus(id, taskData.status);
+        
+        // Затем отправляем на сервер
         const updatedTasks = await editTask({
           token: user?.token,
           id,
           task: {
-            ...task,
-            title: task.title.trim(),
-            description: task.description.trim(),
+            ...taskData,
+            title: taskData.title?.trim() || taskData.title,
+            description: taskData.description?.trim() || taskData.description,
           },
         });
-        setTasks(updatedTasks || []);
+      // Если сервер вернул обновленный список, используем его
+        if (updatedTasks && Array.isArray(updatedTasks)) {
+          setTasks(updatedTasks);
+        }
+        
         return true;
       } catch (error) {
+        // Если ошибка, возвращаем предыдущее состояние
+        loadTasks(); // Перезагружаем задачи с сервера
         setError(error.message || "Ошибка редактирования задачи");
         return false;
       }
     },
-    [user?.token]
+    [user?.token, updateTaskStatus, loadTasks]
   );
 
   const removeTask = useCallback(
@@ -154,7 +175,8 @@ const TaskProvider = ({ children }) => {
         updateTask,
         removeTask,
         refetchTasks: loadTasks,
-        clearError: () => setError(""),
+        clearError: () => setError(""),  
+        updateTaskStatus, // Экспортируем новую функцию      
       }}
     >
       {children}

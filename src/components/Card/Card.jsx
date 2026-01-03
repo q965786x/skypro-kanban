@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   SCardsItem,
@@ -11,8 +11,9 @@ import {
   SCardDate,
 } from "./Card.styled";
 
-const Card = ({ id, topic, title, date, status }) => {
+const Card = ({ id, topic, title, date, status, onDragStart, onDragEnd }) => {
   const cardId = id;
+  const [isDragging, setIsDragging] = useState(false);
 
   
   const getTopicClass = (topicName) => {
@@ -30,8 +31,43 @@ const Card = ({ id, topic, title, date, status }) => {
 
   const topicClass = getTopicClass(topic);
 
+  const handleDragStart = (e) => {
+    setIsDragging(true);
+    e.dataTransfer.setData("text/plain", cardId);
+    e.dataTransfer.setData("text/status", status);
+    if (onDragStart) onDragStart(cardId);
+
+    // Устанавливаем эффект перемещения
+    e.dataTransfer.effectAllowed = "move";
+    
+    // Добавляем класс для визуальной обратной связи
+    e.currentTarget.classList.add("dragging");
+  };    
+
+  const handleDragEnd = (e) => {
+    setIsDragging(false);
+    e.currentTarget.classList.remove("dragging");
+    if (onDragEnd) onDragEnd();
+  };
+
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+  };
+
   return (
-    <SCardsItem>
+    <SCardsItem
+      draggable="true"
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+      onDragOver={handleDragOver}
+      style={{
+        opacity: isDragging ? 0.5 : 1,
+        cursor: "grab",
+        transition: "opacity 0.2s ease",
+      }}
+    >
       <SCardsCard>
         <SCardGroup>
           <SCardTheme className={`${topicClass}`}>
