@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect, useCallback } from "react";
 import Calendar from "../Calendar/Calendar";
 import { TasksContext } from "../../context/TaskContext";
+import { useModal } from "../../context/Modal";
 import {
   SPopBrowse,
   SPopBrowseContainer,
@@ -22,76 +23,64 @@ import {
   SBtnGroup,
   SBtnEdit,
   SBtnClose,
-  SCategoryTheme,
   SPopBrowseTitleInput,
 } from "./PopBrowse.styled";
 
-// Вспомогательная функция для форматирования даты
-const formatDisplayDate = (dateString) => {
-  if (!dateString) return "не установлен";
-  
-  try {
-    // Пробуем разные форматы даты
-    if (dateString.match(/\d{1,2}\.\d{1,2}\.\d{4}/)) {
-      // DD.MM.YYYY
-      const [day, month, year] = dateString.split('.');
-      const shortYear = year.slice(-2);
-      return `${day}.${month}.${shortYear}`;
-    }
-    
-    if (dateString.match(/\d{4}-\d{1,2}-\d{1,2}/)) {
-      // YYYY-MM-DD
-      const [year, month, day] = dateString.split('-');
-      const shortYear = year.slice(-2);
-      return `${day}.${month}.${shortYear}`;
-    }
+const PopBrowse = ({ card, onClose }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [selectedDate, setSelectedDate] = useState("");
+  const [formattedDate, setFormattedDate] = useState("");
+  const [selectedTopic, setSelectedTopic] = useState("");
+  const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const { openModal, closeModal } = useModal();
 
-    // Пробуем распарсить как ISO строку
-    const date = new Date(dateString);
-    if (!isNaN(date.getTime())) {
-      const day = date.getDate().toString().padStart(2, '0');
-      const month = (date.getMonth() + 1).toString().padStart(2, '0');
-      const year = date.getFullYear().toString().slice(-2);
-      return `${day}.${month}.${year}`;
-    }
-    
-    return dateString;
-  } catch (error) {
-    console.error("Ошибка форматирования даты:", error);
-    return dateString;
-  }
-};
+  const { updateTask, removeTask } = useContext(TasksContext);
 
-// Функция для получения даты в формате для календаря
-const getDateForCalendar = (dateString) => {
-  if (!dateString) return "";
-  
-  try {
-    if (dateString.match(/\d{1,2}\.\d{1,2}\.\d{4}/)) {
-      return dateString; // Уже в правильном формате
-    }
-    
-    if (dateString.match(/\d{4}-\d{1,2}-\d{1,2}/)) {
-      const [year, month, day] = dateString.split('-');
-      return `${day}.${month}.${year}`;
-    }
+  useEffect(() => {
+    if (card) {
+      setTitle(card.title || "");
+      setDescription(card.description || "");
+      setSelectedStatus(card.status || "Без статуса");
 
-    const date = new Date(dateString);
-    if (!isNaN(date.getTime())) {
-      const day = date.getDate().toString().padStart(2, '0');
-      const month = (date.getMonth() + 1).toString().padStart(2, '0');
-      const year = date.getFullYear();
-      return `${day}.${month}.${year}`;
-    }
-    
-    return "";
-  } catch (error) {
-    console.error("Ошибка преобразования даты:", error);
-    return "";
-  }
-};
+      // Нормализуем дату при загрузке
+      const normalizedDate = normalizeDate(card.date || "");
 
-const getTopicClass = (topic) => {
+      // Устанавливаем оба состояния
+      setSelectedDate(normalizedDate);
+      setFormattedDate(normalizedDate);
+
+      setSelectedTopic(card.topic || "Web Design");
+    }
+  }, [card]);
+
+  useEffect(() => {
+    // Проверка на мобильное устройство
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 495);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+
+    return () => {
+      window.removeEventListener("resize", checkMobile);
+    };
+  }, []);
+
+  useEffect(() => {
+    openModal();
+
+    return () => {
+      closeModal();
+    };
+  }, [openModal, closeModal]);
+
+  const getTopicClass = (topic) => {
     switch (topic) {
       case "Web Design":
         return "orange";
@@ -104,35 +93,13 @@ const getTopicClass = (topic) => {
     }
   };
 
-const PopBrowse = ({ card, onClose }) => {
-  const [isEditing, setIsEditing] = useState(false);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState("");
-  const [selectedDate, setSelectedDate] = useState("");
-  const [selectedTopic, setSelectedTopic] = useState("");
-  const [error, setError] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const { updateTask, removeTask } = useContext(TasksContext);
-
-  
-  useEffect(() => {
-    if (card) {
-      setTitle(card.title || "");
-      setDescription(card.description || "");
-      setSelectedStatus(card.status || "Без статуса");
-      setSelectedDate(card.date || "");
-      setSelectedTopic(card.topic || "Web Design");
-    }
-  }, [card]);
-
   const handleClose = useCallback(
     (e) => {
       e.preventDefault();
+      closeModal();
       onClose();
     },
-    [onClose]
+    [closeModal, onClose]
   );
 
   const handleOverlayClick = useCallback(
@@ -143,64 +110,115 @@ const PopBrowse = ({ card, onClose }) => {
     },
     [onClose]
   );
-  
+
   const handleEditClick = useCallback((e) => {
     e.preventDefault();
     setIsEditing(true);
     setError("");
   }, []);
 
-  
   const handleCancelEdit = useCallback(
     (e) => {
       e.preventDefault();
       setIsEditing(false);
       setError("");
 
-      
       if (card) {
         setTitle(card.title || "");
         setDescription(card.description || "");
         setSelectedStatus(card.status || "Без статуса");
-        setSelectedDate(card.date || "");
+
+        // Восстанавливаем исходную дату
+        const normalizedDate = normalizeDate(card.date || "");
+        setSelectedDate(normalizedDate);
+        setFormattedDate(normalizedDate);
+
         setSelectedTopic(card.topic || "Web Design");
       }
     },
     [card]
   );
 
+  // Функция для нормализации даты
+  const normalizeDate = (dateString) => {
+    if (!dateString) return "";
+
+    // 1. ISO формат (2026-01-17T00:00:00.000Z)
+    if (dateString.includes("T") && dateString.endsWith("Z")) {
+      try {
+        const date = new Date(dateString);
+        if (!isNaN(date.getTime())) {
+          const day = date.getDate().toString().padStart(2, "0");
+          const month = (date.getMonth() + 1).toString().padStart(2, "0");
+          const year = date.getFullYear();
+          return `${day}.${month}.${year}`;
+        }
+      } catch (error) {}
+    }
+
+    // 2. Формат DD.MM.YYYY - возвращаем как есть
+    if (dateString.match(/\d{1,2}\.\d{1,2}\.\d{4}/)) {
+      return dateString;
+    }
+
+    // 3. Формат YYYY-MM-DD
+    if (dateString.match(/\d{4}-\d{1,2}-\d{1,2}/)) {
+      const [year, month, day] = dateString.split("-");
+      return `${day.padStart(2, "0")}.${month.padStart(2, "0")}.${year}`;
+    }
+
+    return dateString;
+  };
+
+  // Функция для форматирования даты для отображения
+  const formatDisplayDate = (dateString) => {
+    if (!dateString) return "не установлен";
+
+    // Если дата уже в формате DD.MM.YYYY
+    if (dateString.match(/\d{1,2}\.\d{1,2}\.\d{4}/)) {
+      return dateString;
+    }
+
+    // Если пришла "не установлен"
+    if (dateString === "не установлен") {
+      return dateString;
+    }
+
+    // Пробуем нормализовать
+    const normalized = normalizeDate(dateString);
+    return normalized || "не установлен";
+  };
+
   // Функция для форматирования даты в формат API
   const formatDateForAPI = useCallback((dateString) => {
-    if (!dateString) return new Date().toISOString();
-    
-    try {
-      // Преобразуем DD.MM.YYYY в YYYY-MM-DD
-      if (dateString.match(/\d{1,2}\.\d{1,2}\.\d{4}/)) {
-        const [day, month, year] = dateString.split('.');
-        const formattedDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
-        return new Date(formattedDate).toISOString();
-      }
-      
-      // Если дата уже в формате YYYY-MM-DD
-      if (dateString.match(/\d{4}-\d{1,2}-\d{1,2}/)) {
-        return new Date(dateString).toISOString();
-      }
-      
-       return dateString;
-    } catch (error) {
-      console.error("Ошибка форматирования даты:", error);
+    if (!dateString || dateString === "не установлен") {
       return new Date().toISOString();
     }
+
+    // Если дата уже в формате DD.MM.YYYY
+    if (dateString.match(/\d{1,2}\.\d{1,2}\.\d{4}/)) {
+      const [day, month, year] = dateString.split(".");
+      const formattedDate = `${year}-${month.padStart(2, "0")}-${day.padStart(
+        2,
+        "0"
+      )}`;
+      return new Date(formattedDate).toISOString();
+    }
+
+    // Если дата уже в ISO формате
+    if (dateString.includes("T") && dateString.endsWith("Z")) {
+      return dateString;
+    }
+
+    return new Date().toISOString(); // Возвращаем текущую дату как запасной вариант
   }, []);
 
-  
   const handleSave = useCallback(
     async (e) => {
       e.preventDefault();
 
       if (isSubmitting || !card) return;
 
-      
       if (!title.trim()) {
         setError("Название задачи не может быть пустым");
         return;
@@ -220,7 +238,7 @@ const PopBrowse = ({ card, onClose }) => {
           description: description.trim(),
           topic: selectedTopic,
           status: selectedStatus,
-          date: formatDateForAPI(selectedDate),
+          date: formatDateForAPI(formattedDate),
         };
 
         const success = await updateTask(card._id || card.id, updatedTask);
@@ -243,13 +261,12 @@ const PopBrowse = ({ card, onClose }) => {
       description,
       selectedTopic,
       selectedStatus,
-      selectedDate,
+      formattedDate,
       updateTask,
       formatDateForAPI,
     ]
   );
 
-  
   const handleDelete = useCallback(
     async (e) => {
       e.preventDefault();
@@ -291,93 +308,55 @@ const PopBrowse = ({ card, onClose }) => {
     ];
 
     return (
-      <SPopBrowseStatus>
-        <SStatusTitle>Статус</SStatusTitle>
-        <SStatusThemes>
-          {statuses.map((statusItem) =>
-            editMode ? (
-              <SStatusTheme
-                key={statusItem}
-                $active={status === statusItem}
-                onClick={() =>
-                  !isSubmitting && onStatusChange && onStatusChange(statusItem)
-                }
-                style={{
-                  cursor: isSubmitting ? "not-allowed" : "pointer",
-                  opacity: isSubmitting ? 0.7 : 1,
-                }}
-              >
-                <SStatusThemeText>{statusItem}</SStatusThemeText>
-              </SStatusTheme>
-            ) : (
-              <SStatusTheme key={statusItem} $active={status === statusItem}>
-                <SStatusThemeText>{statusItem}</SStatusThemeText>
-              </SStatusTheme>
-            )
+      <SPopBrowseStatus
+        style={{
+          display: "flex",
+          //alignItems: "center",
+          gap: "10px",
+        }}
+      >
+        <SStatusTitle
+          style={{
+            marginBottom: "0",
+            minWidth: "60px",
+          }}
+        >
+          Статус
+        </SStatusTitle>
+
+        <div style={{ flex: 1 }}>
+          {editMode ? (
+            // В режиме редактирования показываем ВСЕ статусы
+            <SStatusThemes>
+              {statuses.map((statusItem) => (
+                <SStatusTheme
+                  key={statusItem}
+                  $active={status === statusItem}
+                  onClick={() =>
+                    !isSubmitting &&
+                    onStatusChange &&
+                    onStatusChange(statusItem)
+                  }
+                  style={{
+                    cursor: isSubmitting ? "not-allowed" : "pointer",
+                    opacity: isSubmitting ? 0.7 : 1,
+                  }}
+                >
+                  <SStatusThemeText>{statusItem}</SStatusThemeText>
+                </SStatusTheme>
+              ))}
+            </SStatusThemes>
+          ) : (
+            // В режиме просмотра показываем ТОЛЬКО текущий статус
+            <SStatusTheme $active={true} style={{ display: "inline-block" }}>
+              <SStatusThemeText>{status}</SStatusThemeText>
+            </SStatusTheme>
           )}
-        </SStatusThemes>
+        </div>
       </SPopBrowseStatus>
     );
   };
 
-  
-  const DescriptionForm = ({ description, onChange, isEditing: editMode }) => (
-    <SPopBrowseForm>
-      <SFormBrowseBlock>
-        <label htmlFor="textArea01" className="subttl">
-          Описание задачи
-        </label>
-        <SFormBrowseArea
-          name="text"
-          id="textArea01"
-          readOnly={!editMode}
-          value={description}
-          onChange={onChange ? (e) => onChange(e.target.value) : undefined}
-          placeholder="Описание задачи отсутствует..."
-          disabled={isSubmitting || !editMode}
-        ></SFormBrowseArea>
-      </SFormBrowseBlock>
-    </SPopBrowseForm>
-  );
-
-  
-  {/* const CategorySection = ({ topic, onTopicChange, isEditing: editMode }) => {
-    const topicClass = getTopicClass(topic);
-    const topics = ["Web Design", "Research", "Copywriting"];
-
-    return (
-      <div className="theme-down__categories theme-down">
-        <p className="categories__p subttl">Категория</p>
-        {editMode ? (
-          <div style={{ display: "flex", gap: "7px", flexWrap: "wrap" }}>
-            {topics.map((topicItem) => (
-              <SCategoryTheme
-                key={topicItem}
-                className={`_${getTopicClass(topicItem)} ${
-                  topic === topicItem ? "_active-category" : ""
-                }`}
-                onClick={() =>
-                  !isSubmitting && onTopicChange && onTopicChange(topicItem)
-                }
-                style={{
-                  cursor: isSubmitting ? "not-allowed" : "pointer",
-                  opacity: isSubmitting ? 0.7 : 1,
-                }}
-              >
-                <p className={`_${getTopicClass(topicItem)}`}>{topicItem}</p>
-              </SCategoryTheme>
-            ))}
-          </div>
-        ) : (
-          <div className={`categories__theme _${topicClass} _active-category`}>
-            <p className={`_${topicClass}`}>{topic || "Web Design"}</p>
-          </div>
-        )}
-      </div>
-    );
-  }; */}
-
-  
   const TitleField = ({
     title,
     onChange,
@@ -392,92 +371,47 @@ const PopBrowse = ({ card, onClose }) => {
           onChange={(e) => onChange && onChange(e.target.value)}
           disabled={submitting}
           placeholder="Введите название задачи"
+          style={
+            isMobile
+              ? {
+                  fontSize: "18px",
+                  padding: "12px",
+                  marginTop: "10px",
+                }
+              : {}
+          }
         />
       );
     }
 
-    return <SPopBrowseTtl>{title || "Название задачи"}</SPopBrowseTtl>;
+    return (
+      <SPopBrowseTtl
+        style={
+          isMobile
+            ? {
+                fontSize: "20px",
+                lineHeight: "1.3",
+                textAlign: "left",
+              }
+            : {}
+        }
+      >
+        {title || "Название задачи"}
+      </SPopBrowseTtl>
+    );
   };
-
-  
-  const BrowseButtons = ({ onClose, onEdit, onDelete }) => (
-    <SPopBrowseBtnBrowse>
-      <SBtnGroup>
-        <SBtnEdit
-          className="btn-bor"
-          onClick={onEdit}
-          disabled={isSubmitting}
-          style={{ opacity: isSubmitting ? 0.7 : 1 }}
-        >
-          Редактировать задачу
-        </SBtnEdit>
-        <SBtnEdit
-          className="btn-delete"
-          onClick={onDelete}
-          disabled={isSubmitting}
-          style={{ opacity: isSubmitting ? 0.7 : 1 }}
-        >
-          Удалить задачу
-        </SBtnEdit>
-      </SBtnGroup>
-      <SBtnClose
-        onClick={onClose}
-        disabled={isSubmitting}
-        style={{ opacity: isSubmitting ? 0.7 : 1 }}
-      >
-        Закрыть
-      </SBtnClose>
-    </SPopBrowseBtnBrowse>
-  );
-  
-  const EditButtons = ({ onClose, onSave, onCancel, onDelete }) => (
-    <SPopBrowseBtnEdit>
-      <SBtnGroup>
-        <SBtnEdit
-          className="btn-bg"
-          onClick={onSave}
-          disabled={isSubmitting}
-          style={{ opacity: isSubmitting ? 0.7 : 1 }}
-        >
-          {isSubmitting ? "Сохранение..." : "Сохранить"}
-        </SBtnEdit>
-        <SBtnEdit
-          className="btn-bor"
-          onClick={onCancel}
-          disabled={isSubmitting}
-          style={{ opacity: isSubmitting ? 0.7 : 1 }}
-        >
-          Отменить
-        </SBtnEdit>
-        <SBtnEdit
-          className="btn-delete"
-          onClick={onDelete}
-          disabled={isSubmitting}
-          style={{ opacity: isSubmitting ? 0.7 : 1 }}
-        >
-          Удалить задачу
-        </SBtnEdit>
-      </SBtnGroup>
-      <SBtnClose
-        onClick={onClose}
-        disabled={isSubmitting}
-        style={{ opacity: isSubmitting ? 0.7 : 1 }}
-      >
-        Закрыть
-      </SBtnClose>
-    </SPopBrowseBtnEdit>
-  );
 
   const handleDateSelect = useCallback(
     (date) => {
       if (!isSubmitting && isEditing) {
+        // date приходит в формате DD.MM.YYYY из Calendar
         setSelectedDate(date);
+        setFormattedDate(date);
       }
     },
     [isSubmitting, isEditing]
   );
 
-  
   useEffect(() => {
     const handleEscKey = (e) => {
       if (e.key === "Escape") {
@@ -498,6 +432,55 @@ const PopBrowse = ({ card, onClose }) => {
 
   // Форматируем дату для отображения
   const displayDate = formatDisplayDate(selectedDate || card?.date);
+
+  // Функция для рендеринга категории
+  const renderCategory = () => {
+    const categoryElement = (
+      <div
+        className={`categories__theme _${getTopicClass(
+          selectedTopic
+        )} _active-category`}
+        style={{
+          display: "inline-block",
+          width: "auto",
+          height: "30px",
+          padding: "8px 20px",
+          borderRadius: "24px",
+          opacity: "1",
+          backgroundColor:
+            getTopicClass(selectedTopic) === "orange"
+              ? "#FFE4C2"
+              : getTopicClass(selectedTopic) === "green"
+              ? "#B4FDD1"
+              : getTopicClass(selectedTopic) === "purple"
+              ? "#E9D4FF"
+              : "#FFE4C2",
+        }}
+      >
+        <p
+          style={{
+            color:
+              getTopicClass(selectedTopic) === "orange"
+                ? "#FF6D00"
+                : getTopicClass(selectedTopic) === "green"
+                ? "#06B16E"
+                : getTopicClass(selectedTopic) === "purple"
+                ? "#9A48F1"
+                : "#FF6D00",
+            fontSize: "14px",
+            fontWeight: "600",
+            lineHeight: "14px",
+            whiteSpace: "nowrap",
+            margin: "0",
+          }}
+        >
+          {selectedTopic}
+        </p>
+      </div>
+    );
+
+    return categoryElement;
+  };
 
   return (
     <SPopBrowse style={{ display: "block" }} onClick={handleOverlayClick}>
@@ -520,63 +503,297 @@ const PopBrowse = ({ card, onClose }) => {
               </div>
             )}
 
-            <SPopBrowseTopBlock>
-              <TitleField
-                title={title}
-                onChange={setTitle}
-                isEditing={isEditing}
-                isSubmitting={isSubmitting}
-              />
-              {/* КАТЕГОРИЯ В ПРАВОМ ВЕРХНЕМ УГЛУ - ОТОБРАЖАЕТСЯ И В РЕЖИМЕ ПРОСМОТРА, И В РЕЖИМЕ РЕДАКТИРОВАНИЯ */}
-              {selectedTopic && (
-                <div
-                  className={`categories__theme theme-top _${getTopicClass(
-                    selectedTopic
-                  )} _active-category`}
+            {/* Для мобильной версии: название задачи сразу под Header */}
+            {isMobile ? (
+              <>
+                {/* 1. Название задачи под Header */}
+                <div style={{ marginBottom: "20px" }}>
+                  <TitleField
+                    title={title}
+                    onChange={setTitle}
+                    isEditing={isEditing}
+                    isSubmitting={isSubmitting}
+                  />
+                </div>
+
+                {/* 2. Статус */}
+                <StatusSection
+                  status={selectedStatus}
+                  onStatusChange={isEditing ? setSelectedStatus : undefined}
+                  isEditing={isEditing}
+                />
+
+                {/* 3. Описание задачи */}
+                <div style={{ marginBottom: "20px" }}>
+                  <label
+                    htmlFor="textArea01"
+                    className="subttl"
+                    style={{
+                      fontSize: "14px",
+                      fontWeight: "600",
+                      marginBottom: "8px",
+                      display: "block",
+                    }}
+                  >
+                    Описание задачи
+                  </label>
+
+                  <SFormBrowseArea
+                    name="text"
+                    id="textArea01"
+                    readOnly={!isEditing}
+                    value={description}
+                    onChange={
+                      isEditing
+                        ? (e) => setDescription(e.target.value)
+                        : undefined
+                    }
+                    placeholder="Описание задачи отсутствует..."
+                    disabled={isSubmitting || !isEditing}
+                  />
+                </div>
+
+                {/* 4. Календарь */}
+                <div style={{ marginBottom: "20px" }}>
+                  <Calendar
+                    mode={isEditing ? "new" : "browse"}
+                    selectedDate={isEditing ? formattedDate : displayDate}
+                    onDateSelect={isEditing ? handleDateSelect : undefined}
+                    isMobile={isMobile}
+                  />
+                </div>
+
+                {/* 5. Категория (для мобильной версии - после календаря) */}
+                {selectedTopic && (
+                  <div style={{ marginBottom: "20px" }}>
+                    <div
+                      className="subttl"
+                      style={{
+                        fontSize: "14px",
+                        fontWeight: "600",
+                        marginBottom: "14px",
+                      }}
+                    >
+                      Категория
+                    </div>
+                    {renderCategory()}
+                  </div>
+                )}
+              </>
+            ) : (
+              // Десктопная версия
+              <>
+                {/* 1. Название задачи и категория в правом верхнем углу */}
+                <SPopBrowseTopBlock>
+                  <TitleField
+                    title={title}
+                    onChange={setTitle}
+                    isEditing={isEditing}
+                    isSubmitting={isSubmitting}
+                  />
+
+                  {/* Категория в правом верхнем углу (только для десктопа) */}
+                  {selectedTopic && (
+                    <div style={{ alignSelf: "flex-start" }}>
+                      {renderCategory()}
+                    </div>
+                  )}
+                </SPopBrowseTopBlock>
+
+                {/* 2. Статус */}
+                <StatusSection
+                  status={selectedStatus}
+                  onStatusChange={isEditing ? setSelectedStatus : undefined}
+                  isEditing={isEditing}
+                />
+
+                {/* 3. Описание задачи и календарь - горизонтально */}
+                <SPopBrowseWrap>
+                  <SPopBrowseForm>
+                    <SFormBrowseBlock>
+                      <label
+                        htmlFor="textArea01"
+                        className="subttl"
+                        style={{
+                          fontSize: "14px",
+                          fontWeight: "600",
+                          marginBottom: "12px",
+                          display: "block",
+                        }}
+                      >
+                        Описание задачи
+                      </label>
+
+                      <SFormBrowseArea
+                        name="text"
+                        id="textArea01"
+                        readOnly={!isEditing}
+                        value={description}
+                        onChange={
+                          isEditing
+                            ? (e) => setDescription(e.target.value)
+                            : undefined
+                        }
+                        placeholder="Описание задачи отсутствует..."
+                        disabled={isSubmitting || !isEditing}
+                      />
+                    </SFormBrowseBlock>
+                  </SPopBrowseForm>
+
+                  {/* Календарь справа */}
+                  <Calendar
+                    mode={isEditing ? "new" : "browse"}
+                    selectedDate={isEditing ? formattedDate : displayDate}
+                    onDateSelect={isEditing ? handleDateSelect : undefined}
+                    isMobile={isMobile}
+                  />
+                </SPopBrowseWrap>
+              </>
+            )}
+
+            {/* 6. Кнопки */}
+            {isEditing ? (
+              <SPopBrowseBtnEdit
+                style={{
+                  display: "flex",
+                  flexDirection: isMobile ? "column" : "row",
+                  justifyContent: isMobile ? "center" : "space-between",
+                  alignItems: isMobile ? "center" : "flex-end",
+                  marginTop: "30px",
+                  gap: "10px",
+                }}
+              >
+                <SBtnGroup
                   style={{
-                    opacity: isEditing ? 1 : 1, // Всегда видна
-                    pointerEvents: isEditing ? "none" : "auto", // В режиме редактирования не кликабельна
+                    display: "flex",
+                    flexDirection: isMobile ? "column" : "row",
+                    gap: "8px",
+                    order: 1,
                   }}
                 >
-                  <p className={`_${getTopicClass(selectedTopic)}`}>
-                    {selectedTopic}
-                  </p>
-                </div>
-              )}
-            </SPopBrowseTopBlock>
+                  <SBtnEdit
+                    className="btn-bg"
+                    onClick={handleSave}
+                    disabled={isSubmitting}
+                    style={{ opacity: isSubmitting ? 0.7 : 1 }}
+                  >
+                    {isSubmitting ? "Сохранение..." : "Сохранить"}
+                  </SBtnEdit>
+                  <SBtnEdit
+                    className="btn-bor"
+                    onClick={handleCancelEdit}
+                    disabled={isSubmitting}
+                    style={{ opacity: isSubmitting ? 0.7 : 1 }}
+                  >
+                    Отменить
+                  </SBtnEdit>
+                  <SBtnEdit
+                    className="btn-delete"
+                    onClick={handleDelete}
+                    disabled={isSubmitting}
+                    style={{ opacity: isSubmitting ? 0.7 : 1 }}
+                  >
+                    Удалить задачу
+                  </SBtnEdit>
+                </SBtnGroup>
 
-            <StatusSection
-              status={selectedStatus}
-              onStatusChange={isEditing ? setSelectedStatus : undefined}
-              isEditing={isEditing}
-            />
+                {/* Кнопка Закрыть - для мобилки внизу, для десктопа справа */}
+                {!isMobile && (
+                  <SBtnClose
+                    onClick={handleClose}
+                    disabled={isSubmitting}
+                    style={{
+                      opacity: isSubmitting ? 0.7 : 1,
+                      order: 2, // Для десктопа - второй элемент
+                    }}
+                  >
+                    Закрыть
+                  </SBtnClose>
+                )}
 
-            <SPopBrowseWrap>
-              <DescriptionForm
-                description={description}
-                onChange={isEditing ? setDescription : undefined}
-                isEditing={isEditing}
-              />
-              <Calendar
-                mode={isEditing ? "new" : "browse"}
-                selectedDate={isEditing ? selectedDate : displayDate}
-                onDateSelect={isEditing ? handleDateSelect : undefined}
-              />
-            </SPopBrowseWrap>            
-
-            {isEditing ? (
-              <EditButtons
-                onClose={handleClose}
-                onSave={handleSave}
-                onCancel={handleCancelEdit}
-                onDelete={handleDelete}
-              />
+                {/* Для мобильной версии - кнопка Закрыть отдельно внизу */}
+                {isMobile && (
+                  <SBtnClose
+                    onClick={handleClose}
+                    disabled={isSubmitting}
+                    style={{
+                      opacity: isSubmitting ? 0.7 : 1,
+                      width: "100%",
+                      marginTop: "10px",
+                      order: 2, // Для мобилки - второй элемент (после всех кнопок)
+                    }}
+                  >
+                    Закрыть
+                  </SBtnClose>
+                )}
+              </SPopBrowseBtnEdit>
             ) : (
-              <BrowseButtons
-                onClose={handleClose}
-                onEdit={handleEditClick}
-                onDelete={handleDelete}
-              />
+              <SPopBrowseBtnBrowse
+                style={{
+                  display: "flex",
+                  flexDirection: isMobile ? "column" : "row",
+                  justifyContent: isMobile ? "center" : "space-between",
+                  alignItems: isMobile ? "center" : "flex-end",
+                  marginTop: "30px",
+                  gap: "10px",
+                }}
+              >
+                <SBtnGroup
+                  style={{
+                    display: "flex",
+                    flexDirection: isMobile ? "column" : "row",
+                    gap: "8px",
+                    order: 1,
+                  }}
+                >
+                  <SBtnEdit
+                    className="btn-bor"
+                    onClick={handleEditClick}
+                    disabled={isSubmitting}
+                    style={{ opacity: isSubmitting ? 0.7 : 1 }}
+                  >
+                    Редактировать задачу
+                  </SBtnEdit>
+                  <SBtnEdit
+                    className="btn-delete"
+                    onClick={handleDelete}
+                    disabled={isSubmitting}
+                    style={{ opacity: isSubmitting ? 0.7 : 1 }}
+                  >
+                    Удалить задачу
+                  </SBtnEdit>
+                </SBtnGroup>
+
+                {/* Кнопка Закрыть - для мобилки внизу, для десктопа справа */}
+                {!isMobile && (
+                  <SBtnClose
+                    onClick={handleClose}
+                    disabled={isSubmitting}
+                    style={{
+                      opacity: isSubmitting ? 0.7 : 1,
+                      order: 2, // Для десктопа - второй элемент
+                    }}
+                  >
+                    Закрыть
+                  </SBtnClose>
+                )}
+
+                {/* Для мобильной версии - кнопка Закрыть отдельно внизу */}
+                {isMobile && (
+                  <SBtnClose
+                    onClick={handleClose}
+                    disabled={isSubmitting}
+                    style={{
+                      opacity: isSubmitting ? 0.7 : 1,
+                      width: "100%",
+                      marginTop: "10px",
+                      order: 2, // Для мобилки - второй элемент (после всех кнопок)
+                    }}
+                  >
+                    Закрыть
+                  </SBtnClose>
+                )}
+              </SPopBrowseBtnBrowse>
             )}
           </SPopBrowseContent>
         </SPopBrowseBlock>

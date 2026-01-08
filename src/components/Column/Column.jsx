@@ -64,9 +64,10 @@ const Column = ({ title, cards, onCardDrop }) => {
         backgroundColor: isOver ? "rgba(86, 94, 239, 0.05)" : "transparent",
         borderRadius: "10px",
         transition: "background-color 0.3s ease",
-        minHeight: "500px",
+        minHeight: "auto",
         padding: "10px",
         border: isOver ? "2px dashed #565eef" : "none",
+        
       }}
     >
       <SColumnTitle>
@@ -93,7 +94,7 @@ const Column = ({ title, cards, onCardDrop }) => {
               color: "#94A6BE", 
               fontSize: "14px",
               textAlign: "center",
-              minHeight: "100px",
+              minHeight: "auto",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",

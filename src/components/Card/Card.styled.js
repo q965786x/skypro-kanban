@@ -44,12 +44,18 @@ export const SCardsCard = styled.div`
   @media screen and (max-width: 1200px) {
     width: 220px;
     height: 130px;
-    border-radius: 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: stretch;
-    padding: 15px 13px 19px;
+  }
+  
+  @media screen and (max-width: 495px) {
+    width: 210px;
+    height: 120px;
+    padding: 12px 10px 15px;
+  }
+  
+  @media screen and (max-width: 375px) {
+    width: 200px;
+    height: 110px;
+    padding: 10px 8px 12px;
   }
 `;
 

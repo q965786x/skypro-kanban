@@ -3,6 +3,7 @@ import Column from "../Column/Column";
 import { statuses } from "../../data";
 import { TasksContext } from "../../context/TaskContext";
 import DragDropNotification from "../DragDropNotification";
+import MobileCreateButton from "../MobileCreateButton";
 import {
   SMain,
   SMainBlock,
@@ -20,32 +21,33 @@ import { SContainer } from "../Header/Header.styled";
 const Main = () => {
   const { tasks, isLoading, error, refetchTasks, isOfflineMode, updateTask } =
     useContext(TasksContext);
-    const [notification, setNotification] = useState('');
-  
+  const [notification, setNotification] = useState("");
 
   // Функция для обновления статуса карточки при перетаскивании
-  const handleCardDrop = useCallback(async (cardId, newStatus) => {
-    const card = tasks.find(c => (c._id || c.id) === cardId);
-    if (card && card.status !== newStatus) {
-      try {
-        await updateTask(cardId, {
-          ...card,
-          status: newStatus,
-        });
+  const handleCardDrop = useCallback(
+    async (cardId, newStatus) => {
+      const card = tasks.find((c) => (c._id || c.id) === cardId);
+      if (card && card.status !== newStatus) {
+        try {
+          await updateTask(cardId, {
+            ...card,
+            status: newStatus,
+          });
 
-        // Показываем уведомление об успешном перемещении
-        setNotification(`Задача перемещена в "${newStatus}"`);
+          // Показываем уведомление об успешном перемещении
+          setNotification(`Задача перемещена в "${newStatus}"`);
 
-       // Автоматически скрываем через 3 секунды
-        setTimeout(() => setNotification(''), 3000);
-      } catch (error) {
-        console.error("Ошибка при перемещении карточки:", error);
-        setNotification("Ошибка при перемещении задачи");
-        setTimeout(() => setNotification(''), 3000);
-      } 
-    }
-  }, [tasks, updateTask]);
-
+          // Автоматически скрываем через 3 секунды
+          setTimeout(() => setNotification(""), 3000);
+        } catch (error) {
+          console.error("Ошибка при перемещении карточки:", error);
+          setNotification("Ошибка при перемещении задачи");
+          setTimeout(() => setNotification(""), 3000);
+        }
+      }
+    },
+    [tasks, updateTask]
+  );
 
   const handleRetry = () => {
     if (refetchTasks) {
@@ -57,12 +59,9 @@ const Main = () => {
     return tasks.filter((task) => task.status === status);
   };
 
-
-  
-
   if (isLoading) {
-    return (      
-        <>
+    return (
+      <>
         <SMain>
           <SContainer>
             <SMainBlock>
@@ -74,13 +73,14 @@ const Main = () => {
           </SContainer>
         </SMain>
         <DragDropNotification message={notification} />
+        <MobileCreateButton />
       </>
     );
   }
 
   if (error) {
-    return (      
-        <>
+    return (
+      <>
         <SMain>
           <SContainer>
             <SMainBlock>
@@ -99,13 +99,13 @@ const Main = () => {
           </SContainer>
         </SMain>
         <DragDropNotification message={notification} />
-      </> 
+      </>
     );
   }
 
   if (!tasks || tasks.length === 0) {
-    return (      
-        <>
+    return (
+      <>
         <SMain>
           <SContainer>
             <SMainBlock>
@@ -134,8 +134,8 @@ const Main = () => {
     );
   }
 
-  return (   
-      <>
+  return (
+    <>
       <SMain>
         <SContainer>
           <SMainBlock>
@@ -158,9 +158,9 @@ const Main = () => {
               {statuses.map((status) => {
                 const cards = getCardsByStatus(status);
                 return (
-                  <Column 
-                    key={status} 
-                    title={status} 
+                  <Column
+                    key={status}
+                    title={status}
                     cards={cards}
                     onCardDrop={handleCardDrop}
                   />

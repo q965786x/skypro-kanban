@@ -8,7 +8,10 @@ export const SHeader = styled.header`
   padding: 12px 0;
   box-shadow: ${props => props.theme.shadows.small};
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
-  position: relative;
+  position: fixed;
+  top: 0; /* Фиксируем сверху */
+  left: 0;
+  right: 0;
   z-index: 1000; 
   border-bottom: ${props => props.theme.mode === 'dark' ? '1px solid #2D2D2D' : 'none'};   
 `;
@@ -18,7 +21,20 @@ export const SContainer = styled.div`
   max-width: 1260px;
   width: 100%;
   margin: 0 auto;
-  padding: 0 30px;  
+  padding: 0 30px;
+  
+  @media screen and (max-width: 1200px) {
+    max-width: 100%;
+    padding: 0 20px;
+  }
+  
+  @media screen and (max-width: 495px) {
+    padding: 0 16px;
+  }
+  
+  @media screen and (max-width: 375px) {
+    padding: 0 12px;
+  }
 `;
 
 export const SHeaderBlock = styled.div`
@@ -33,11 +49,28 @@ export const SHeaderBlock = styled.div`
   top: 0;
   left: 0;
   padding: 0 10px;
+
+  @media screen and (max-width: 495px) {
+    height: 60px;
+    padding: 0 5px;
+  }
+  
+  @media screen and (max-width: 375px) {
+    height: 55px;
+  }
 `;
 
 export const SHeaderLogo = styled.div`
   // стили для .header__logo
   width: 85px;  
+
+  @media screen and (max-width: 495px) {
+    width: 75px;
+  }
+  
+  @media screen and (max-width: 375px) {
+    width: 70px;
+  }
 `;
 
 export const SHeaderNav = styled.nav`
@@ -47,6 +80,10 @@ export const SHeaderNav = styled.nav`
   display: flex;
   align-items: center;
   justify-content: center;
+
+   @media screen and (max-width: 495px) {
+    max-width: 200px;
+  }
 `;
 
 export const SHeaderUser = styled.div`
@@ -61,6 +98,14 @@ export const SHeaderUser = styled.div`
   color: ${props => props.theme.colors.primary};
   cursor: pointer;
   transition: color 0.3s ease;
+
+  @media screen and (max-width: 495px) {
+    font-size: 13px;
+  }
+  
+  @media screen and (max-width: 375px) {
+    font-size: 12px;
+  }
 
   &:hover {
     color: ${props => props.theme.colors.primaryHover};
@@ -78,6 +123,11 @@ export const SHeaderUser = styled.div`
     margin: -6px 0 0 5px;
     padding: 0;
     transition: border-color 0.3s ease;
+
+    @media screen and (max-width: 495px) {
+      width: 5px;
+      height: 5px;
+    }
   }
 
   &:hover::after {
@@ -120,14 +170,29 @@ export const SHeaderButton = styled.button`
   }
 
   @media screen and (max-width: 495px) {
-    z-index: 3;
-    position: fixed;
-    left: 16px;
-    bottom: 30px;
-    top: auto;
-    width: calc(100vw - 32px);
+    width: 40px;
     height: 40px;
-    border-radius: 4px;
-    margin-right: 0;
+    border-radius: 50%;
+    margin-right: 10px;
+    position: relative;
+    
+    a {
+      font-size: 0;
+    }
+    
+    &::before {
+      content: "+";
+      font-size: 24px;
+      font-weight: 500;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+  }
+  
+  @media screen and (max-width: 375px) {
+    width: 36px;
+    height: 36px;
   }
 `;

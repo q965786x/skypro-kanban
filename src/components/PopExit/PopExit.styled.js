@@ -46,6 +46,11 @@ export const SPopExitFormGroup = styled.div`
   align-items: center;
   justify-content: space-between;
 
+    @media screen and (max-width: 495px) {
+      display: flex;
+      flex-direction: column;
+    }
+
   .pop-exit__exit-yes {
     width: 153px;
     height: 30px;

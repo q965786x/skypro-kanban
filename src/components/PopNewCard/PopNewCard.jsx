@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import Calendar from "../Calendar/Calendar";
 import { TasksContext } from "../../context/TaskContext";
+import { useModal } from "../../context/Modal";
 import {
   SPopNewCard,
   SPopNewCardContainer,
@@ -14,7 +15,7 @@ import {
   SFormNewBlock,
   SFormNewInput,
   SFormNewArea,
-  SFormNewCreate,
+  SFormNewBtnCreate,
   SCategories,
   SCategoriesP,
   SCategoriesThemes,
@@ -29,7 +30,9 @@ const PopNewCard = ({ isOpen, onClose, onCreateCard }) => {
   const [selectedDate, setSelectedDate] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formError, setFormError] = useState("");
-
+  const [isMobile, setIsMobile] = useState(false);
+  const { openModal, closeModal } = useModal();
+  
   const navigate = useNavigate();
   const {
     addNewTask,
@@ -37,28 +40,47 @@ const PopNewCard = ({ isOpen, onClose, onCreateCard }) => {
     clearError,
   } = useContext(TasksContext);
 
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 495);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+
+    return () => {
+      window.removeEventListener("resize", checkMobile);
+    };
+  }, []);
+
   // Функция для форматирования даты в формат API
   const formatDateForAPI = useCallback((dateString) => {
     if (!dateString) return new Date().toISOString();
-    
+
     // Преобразуем DD.MM.YYYY в YYYY-MM-DD
     if (dateString.match(/\d{1,2}\.\d{1,2}\.\d{4}/)) {
-      const [day, month, year] = dateString.split('.');
-      const formattedDate = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+      const [day, month, year] = dateString.split(".");
+      const formattedDate = `${year}-${month.padStart(2, "0")}-${day.padStart(
+        2,
+        "0"
+      )}`;
       return new Date(formattedDate).toISOString();
     }
-    
+
     // Если дата уже в формате YYYY-MM-DD
     if (dateString.match(/\d{4}-\d{1,2}-\d{1,2}/)) {
       return new Date(dateString).toISOString();
     }
-    
+
     // Если дата в другом формате, возвращаем как есть
     return dateString;
   }, []);
 
   useEffect(() => {
+    console.log("PopNewCard: isOpen =", isOpen);
     if (isOpen) {
+      openModal();
+      console.log("PopNewCard: openModal called");
       const today = new Date();
       const formattedDate = `${today.getDate().toString().padStart(2, "0")}.${(
         today.getMonth() + 1
@@ -68,8 +90,21 @@ const PopNewCard = ({ isOpen, onClose, onCreateCard }) => {
       setSelectedDate(formattedDate);
       setFormError("");
       if (clearError) clearError();
+
+      // Блокируем скролл при открытии модалки
+      document.body.style.overflow = "hidden";
+    } else {
+      closeModal();
+      console.log("PopNewCard: closeModal called");
+      // Разблокируем скролл при закрытии
+      document.body.style.overflow = "";
     }
-  }, [isOpen, clearError]);
+
+    return () => {
+      closeModal();
+      document.body.style.overflow = "";
+    };
+  }, [isOpen, openModal, closeModal, clearError]);
 
   const validateForm = () => {
     if (!title.trim()) {
@@ -111,12 +146,9 @@ const PopNewCard = ({ isOpen, onClose, onCreateCard }) => {
           date: formatDateForAPI(selectedDate),
         };
 
-        console.log("Создание задачи с данными:", newCard);
-
         const success = await addNewTask(newCard);
 
         if (success) {
-          console.log("Задача успешно создана");
           setTitle("");
           setDescription("");
           setSelectedTopic("Web Design");
@@ -126,7 +158,6 @@ const PopNewCard = ({ isOpen, onClose, onCreateCard }) => {
           setFormError("Не удалось создать задачу");
         }
       } catch (error) {
-        console.error("Ошибка при создании задачи:", error);
         setFormError(error.message || "Произошла ошибка при создании задачи");
       } finally {
         setIsSubmitting(false);
@@ -145,8 +176,10 @@ const PopNewCard = ({ isOpen, onClose, onCreateCard }) => {
     ]
   );
 
-  const handleOverlayClick = (e) => {
-    if (e.target === e.currentTarget) {
+  const handleClose = () => {
+    if (onClose) {
+      onClose();
+    } else {
       navigate("/");
     }
   };
@@ -158,7 +191,7 @@ const PopNewCard = ({ isOpen, onClose, onCreateCard }) => {
   if (!isOpen) return null;
 
   return (
-    <SPopNewCard style={{ display: "block" }}>
+    <SPopNewCard>
       <SPopNewCardContainer>
         <SPopNewCardBlock>
           <SPopNewCardContent>
@@ -183,7 +216,17 @@ const PopNewCard = ({ isOpen, onClose, onCreateCard }) => {
             <SPopNewCardWrap>
               <SFormNew onSubmit={handleSubmit}>
                 <SFormNewBlock>
-                  <label htmlFor="formTitle" className="subttl">
+                  <label
+                    htmlFor="formTitle"
+                    className="subttl"
+                    style={{
+                      fontSize: isMobile ? "16px" : "14px",
+                      fontWeight: "600",                     
+                      display: "block", 
+                      textAlign: "left",  
+                      marginBottom: "15px",                                       
+                    }}
+                  >
                     Название задачи
                   </label>
                   <SFormNewInput
@@ -196,14 +239,24 @@ const PopNewCard = ({ isOpen, onClose, onCreateCard }) => {
                       setTitle(e.target.value);
                       if (formError) setFormError("");
                     }}
-                    autoFocus
+                    autoFocus={!isMobile}
                     required
                     disabled={isSubmitting}
                   />
                 </SFormNewBlock>
 
                 <SFormNewBlock>
-                  <label htmlFor="textArea" className="subttl">
+                  <label
+                    htmlFor="textArea"
+                    className="subttl"
+                    style={{
+                      fontSize: isMobile ? "16px" : "14px",
+                      fontWeight: "600",                      
+                      display: "block",                      
+                      textAlign: "left",
+                     
+                    }}
+                  >
                     Описание задачи
                   </label>
                   <SFormNewArea
@@ -215,57 +268,32 @@ const PopNewCard = ({ isOpen, onClose, onCreateCard }) => {
                       setDescription(e.target.value);
                       if (formError) setFormError("");
                     }}
-                    rows="4"
+                    rows={isMobile ? "4" : "4"}
                     disabled={isSubmitting}
                   ></SFormNewArea>
                 </SFormNewBlock>
               </SFormNew>
 
-              <Calendar
-                mode="new"
-                selectedDate={selectedDate}
-                onDateSelect={handleDateSelect}
-              />
+              <div>
+                <Calendar
+                  mode="new"
+                  selectedDate={selectedDate}
+                  onDateSelect={handleDateSelect}
+                  isMobile={isMobile}
+                />
+              </div>
             </SPopNewCardWrap>
 
-            {/* <div style={{ marginBottom: "20px" }}>
-              <SCategoriesP className="subttl">Статус задачи</SCategoriesP>
-              <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-                {[
-                  "Без статуса",
-                  "Нужно сделать",
-                  "В работе",
-                  "Тестирование",
-                  "Готово",
-                ].map((status) => (
-                  <button
-                    key={status}
-                    type="button"
-                    onClick={() => setSelectedStatus(status)}
-                    style={{
-                      padding: "8px 16px",
-                      border: `2px solid ${
-                        selectedStatus === status ? "#565eef" : "#d4dbe5"
-                      }`,
-                      background:
-                        selectedStatus === status ? "#565eef" : "white",
-                      color: selectedStatus === status ? "white" : "#565eef",
-                      borderRadius: "20px",
-                      fontSize: "14px",
-                      cursor: "pointer",
-                      transition: "all 0.3s ease",
-                      opacity: isSubmitting ? 0.7 : 1,
-                    }}
-                    disabled={isSubmitting}
-                  >
-                    {status}
-                  </button>
-                ))}
-              </div>
-            </div> */}
-
             <SCategories>
-              <SCategoriesP className="subttl">Категория</SCategoriesP>
+              <SCategoriesP
+                className="subttl"
+                style={{
+                  fontSize: isMobile ? "16px" : "14px",
+                  fontWeight: "600",                  
+                }}
+              >
+                Категория
+              </SCategoriesP>
               <SCategoriesThemes>
                 <SCategoriesTheme
                   className={`_orange ${
@@ -274,10 +302,8 @@ const PopNewCard = ({ isOpen, onClose, onCreateCard }) => {
                   onClick={() =>
                     !isSubmitting && setSelectedTopic("Web Design")
                   }
-                  style={{ 
-                    opacity: isSubmitting ? 0.7 : (selectedTopic === "Web Design" ? 1 : 0.4),
-                    cursor: isSubmitting ? "not-allowed" : "pointer"
-                  }}
+                  disabled={isSubmitting}
+                  $active={selectedTopic === "Web Design"}
                 >
                   <p className="_orange">Web Design</p>
                 </SCategoriesTheme>
@@ -286,7 +312,8 @@ const PopNewCard = ({ isOpen, onClose, onCreateCard }) => {
                     selectedTopic === "Research" ? "_active-category" : ""
                   }`}
                   onClick={() => !isSubmitting && setSelectedTopic("Research")}
-                  style={{ opacity: isSubmitting ? 0.7 : 1 }}
+                  disabled={isSubmitting}
+                  $active={selectedTopic === "Research"}
                 >
                   <p className="_green">Research</p>
                 </SCategoriesTheme>
@@ -297,34 +324,51 @@ const PopNewCard = ({ isOpen, onClose, onCreateCard }) => {
                   onClick={() =>
                     !isSubmitting && setSelectedTopic("Copywriting")
                   }
-                  style={{ 
-                    opacity: isSubmitting ? 0.7 : (selectedTopic === "Copywriting" ? 1 : 0.4),
-                    cursor: isSubmitting ? "not-allowed" : "pointer"
-                  }}
+                  disabled={isSubmitting}
+                  $active={selectedTopic === "Copywriting"}
                 >
                   <p className="_purple">Copywriting</p>
                 </SCategoriesTheme>
               </SCategoriesThemes>
             </SCategories>
 
-            <SFormNewCreate
-              className="_hover01"
-              id="btnCreate"
-              onClick={handleSubmit}
-              disabled={isSubmitting}
-              style={{ 
-                opacity: isSubmitting ? 0.7 : 1,
-                cursor: isSubmitting ? "not-allowed" : "pointer"
+            {/* Кнопка создания - исправлена позиция */}
+            <div
+              style={{
+                display: "flex",  
+                justifyContent: isMobile ? "center" : "flex-end",                    
+                marginTop: "20px",
+                clear: "both",                
               }}
             >
-              {isSubmitting ? (
-                <>
-                  <span className="spinner"></span> Создание...
-                </>
-              ) : (
-                "Создать задачу"
-              )}
-            </SFormNewCreate>
+              <SFormNewBtnCreate
+                id="btnCreate"
+                onClick={handleSubmit}
+                disabled={isSubmitting}
+                isMobile={isMobile} 
+              >
+                {isSubmitting ? (
+                  <>
+                    <span
+                      className="spinner"
+                      style={{
+                        display: "inline-block",
+                        width: "16px",
+                        height: "16px",
+                        border: "2px solid rgba(255, 255, 255, 0.3)",
+                        borderTopColor: "#ffffff",
+                        borderRadius: "50%",
+                        animation: "spin 1s linear infinite",
+                        marginRight: "8px",
+                      }}
+                    />
+                    Создание...
+                  </>
+                ) : (
+                  "Создать задачу"
+                )}
+              </SFormNewBtnCreate>
+            </div>
           </SPopNewCardContent>
         </SPopNewCardBlock>
       </SPopNewCardContainer>

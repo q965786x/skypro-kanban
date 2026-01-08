@@ -3,20 +3,18 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Roboto', Arial, sans-serif;
 }
 
 *:before,
 *:after {
-  box-sizing: border-box;
+  box-sizing: inherit;
 }
 
 html,
 body {
   width: 100%;
   height: 100%;
-  font-family: "Roboto", Arial, Helvetica, sans-serif;
-  color: #000000;
+  font-family: 'Roboto', Arial, Helvetica, sans-serif;
 }
 
 a,
@@ -25,8 +23,7 @@ a:visited {
   cursor: pointer;
 }
 
-button,
-._btn {
+button {
   cursor: pointer;
   outline: none;
 }
@@ -35,440 +32,107 @@ ul li {
   list-style: none;
 }
 
+/* WRAPPER - исправленный */
 .wrapper {
-  max-width: 100%;
   width: 100vw;
   min-height: 100vh;
-  overflow: hidden;
+  overflow-x: hidden;
   background-color: #F1F1F1;
+  padding-top: 94px; /* Компенсируем фиксированный header */
 }
 
-/* THEME VARIABLES */
-:root {
-  --primary-color: #565EEF;
-  --surface-color: #FFFFFF;
-  --text-color: #000000;
-  --background-color: #EAEEF6;
-  --border-color: rgba(148, 166, 190, 0.4);
+.wrapper.no-header {
+  padding-top: 0 !important;
 }
 
-body.dark-theme {
-  background-color: #1A1C1E;
-  color: #FFFFFF;
-}
-
-body.dark-theme .pop-new-card__block,
-body.dark-theme .pop-browse__block,
-body.dark-theme .pop-exit__block {
-  background-color: #2D2F33;
-  color: #FFFFFF;
-  border-color: rgba(166, 180, 204, 0.3);
-}
-
-/* ANIMATIONS */
-@keyframes card-animation {
-  0% {
-    height: 0;
-    opacity: 0;
-  }
-  100% {
-    height: auto;
-    opacity: 1;
+@media screen and (max-width: 495px) {
+  .wrapper {
+    padding-top: 70px;
   }
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+@media screen and (max-width: 375px) {
+  .wrapper {
+    padding-top: 65px;
+  }
 }
 
-@keyframes pulse {
-  0% { opacity: 0.6; transform: scale(0.98); }
-  50% { opacity: 1; transform: scale(1); }
-  100% { opacity: 0.6; transform: scale(0.98); }
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-@keyframes shimmer {
-  0% { background-position: -1000px 0; }
-  100% { background-position: 1000px 0; }
-}
-
-/* UTILITY */
-.pop-user-set:target,
-.pop-exit:target,
-.pop-new-card:target,
-.pop-browse:target {
+/* THEME TOGGLES - упрощено */
+._light {
   display: block;
-}
-
-._orange {
-  /*background-color: #FFE4C2;*/
-  color: #FF6D00;
-}
-
-._green {
-  /*background-color: #B4FDD1;*/
-  color: #06B16E;
-}
-
-._purple {
-  /*background-color: #E9D4FF;*/
-  color: #9A48F1;
-}
-
-._gray {
-  background: #94A6BE;
-  color: #FFFFFF;
-}
-
-._active-category {
-  opacity: 1 !important;
 }
 
 ._dark {
   display: none;
 }
 
-._light {
-  display: block !important;
-}
-
 body.dark-theme ._light {
-  display: none !important;
+  display: none;
 }
 
 body.dark-theme ._dark {
-  display: block !important;
+  display: block;
 }
 
+/* UTILITY CLASSES */
 ._show {
   display: block !important;
   visibility: visible !important;
   opacity: 1 !important;
 }
 
-/* CALENDAR */
-.calendar__p {
+._hide {
+  display: none !important;
+}
+
+/* TEXT COLORS */
+._orange {
+  color: #FF6D00;
+}
+
+._green {
+  color: #06B16E;
+}
+
+._purple {
+  color: #9A48F1;
+}
+
+._gray {
   color: #94A6BE;
-  font-size: 10px;
-  line-height: 1;
 }
 
-.calendar__p span {
-  color: #000000;
+/* ANIMATIONS - оптимизировано */
+@keyframes fadeIn {
+  from { 
+    opacity: 0; 
+    transform: translateY(20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
 }
 
-.calendar__day-name {
-  color: #94A6BE;
-  font-size: 10px;
-  font-weight: 500;
-  line-height: normal;
-  letter-spacing: -0.2px;
+@keyframes spin {
+  0% { 
+    transform: rotate(0deg); 
+  }
+  100% { 
+    transform: rotate(360deg); 
+  }
 }
 
-.calendar__cell {
-  width: 22px;
-  height: 22px;
-  margin: 2px;
-  border-radius: 50%;
-  display: flex;
-  flex-wrap: nowrap;
-  align-items: center;
-  justify-content: center;
-  color: #94A6BE;
-  font-size: 10px;
-  line-height: 1;
-  letter-spacing: -0.2px;
-  cursor: pointer;
+@keyframes shimmer {
+  0% { 
+    background-position: -1000px 0; 
+  }
+  100% { 
+    background-position: 1000px 0; 
+  }
 }
 
-.calendar__cell._cell-day:hover {
-  color: #94A6BE;
-  background-color: #EAEEF6;
-}
-
-.calendar__cell._active-day {
-  background-color: #94A6BE;
-  color: #FFFFFF;
-}
-
-body.dark-theme .calendar__cell {
-  color: #A6B4CC;
-}
-
-body.dark-theme .calendar__cell._cell-day:hover {
-  color: #A6B4CC;
-  background-color: #3A3D42;
-}
-
-body.dark-theme .calendar__cell._active-day {
-  background-color: #A6B4CC;
-  color: #2D2F33;
-}
-
-body.dark-theme .calendar__day-name {
-  color: #A6B4CC;
-}
-
-.nav__action svg {
-  fill: #94A6BE;
-}
-
-._other-month {
-  opacity: 0;
-}
-
-._current {
-  font-weight: 700;
-}
-
-/* CATEGORIES */
-.categories {
-  margin-bottom: 20px;
-}
-
-.categories__themes {
-  display: flex;
-  flex-wrap: nowrap;
-  align-items: flex-start;
-  justify-content: flex-start;
-}
-
-.categories__p {
-  margin-bottom: 14px;
-}
-
-.categories__theme {
-  display: inline-block;
-  width: auto;
-  height: 30px;
-  padding: 8px 20px;
-  border-radius: 24px;
-  margin-right: 7px;
-  opacity: 0.4;
-}
-
-.categories__theme p {
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 14px;
-  white-space: nowrap;
-}
-
-/* HEADER */
-.header__user::after {
-  content: "";
-  display: block;
-  width: 6px;
-  height: 6px;
-  border-radius: 1px;
-  border-left: 1.9px solid #565EEF;
-  border-bottom: 1.9px solid #565EEF;
-  transform: rotate(-45deg);
-  margin: -6px 0 0 5px;
-  padding: 0;
-}
-
-.header__pop-user-set {
-  display: none;
-  position: absolute;
-  top: 61px;
-  right: 0;
-  width: 213px;
-  height: 205px;
-  border-radius: 10px;
-  border: 0.7px solid rgba(148, 166, 190, 0.4);
-  background: #FFF;
-  box-shadow: 0px 10px 39px 0px rgba(26, 56, 101, 0.21);
-  padding: 34px;
-  text-align: center;
-  z-index: 2;
-}
-
-/* MAIN CONTENT */
-.column__title p {
-  color: #94A6BE;
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 1;
-  text-transform: uppercase;
-}
-
-/* POPUP стили */
-.pop-wrap {
-  position: relative;
-  top: 0;
-  left: 0;
-}
-
-.pop-exit__ttl h2 {
-  text-align: center;
-  font-size: 20px;
-  font-weight: 700;
-  line-height: 30px;
-  letter-spacing: -0.4px;
-  margin-bottom: 20px;
-}
-
-.pop-exit__exit-yes {
-  width: 153px;
-  height: 30px;
-  background-color: #565EEF;
-  border-radius: 4px;
-  border: none;
-  outline: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  line-height: 21px;
-  font-weight: 500;
-  letter-spacing: -0.14px;
-  color: #FFFFFF;
-  margin-right: 10px;
-}
-
-.pop-exit__exit-yes a {
-  width: 100%;
-  height: 100%;
-  color: #FFFFFF;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.pop-exit__exit-no {
-  width: 153px;
-  height: 30px;
-  background-color: transparent;
-  border-radius: 4px;
-  border: 0.7px solid #565EEF;
-  outline: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  line-height: 21px;
-  font-weight: 500;
-  letter-spacing: -0.14px;
-  color: #565EEF;
-}
-
-.pop-exit__exit-no a {
-  width: 100%;
-  height: 100%;
-  color: #565EEF;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.pop-user-set__name {
-  color: #000;
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 21px;
-  letter-spacing: -0.14px;
-  margin-bottom: 4px;
-}
-
-.pop-user-set__mail {
-  color: #94A6BE;
-  font-size: 14px;
-  line-height: 21px;
-  letter-spacing: -0.14px;
-  margin-bottom: 10px;
-}
-
-.pop-user-set__theme {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 30px;
-}
-
-.pop-user-set__theme p {
-  color: #000;
-  font-size: 14px;
-  line-height: 21px;
-  letter-spacing: -0.14px;
-}
-
-.pop-user-set__theme input[type=checkbox] {
-  position: relative;
-  width: 24px;
-  height: 13px;
-  border-radius: 100px;
-  background: #EAEEF6;
-  outline: none;
-  appearance: none;
-}
-
-.pop-user-set__theme input[type=checkbox]::before {
-  content: "";
-  position: absolute;
-  top: 1px;
-  left: 1px;
-  width: 11px;
-  height: 11px;
-  border-radius: 50%;
-  background-color: #94A6BE;
-  transition: 0.5s;
-}
-
-.pop-user-set__theme input:checked[type=checkbox]::before {
-  left: 12px;
-}
-
-.pop-user-set button {
-  width: 72px;
-  height: 30px;
-  background: transparent;
-  color: #565EEF;
-  border-radius: 4px;
-  border: 1px solid #565EEF;
-}
-
-.pop-user-set button a {
-  color: #565EEF;
-}
-
-.pop-browse__content .categories__theme {
-  opacity: 1;
-}
-
-.pop-browse__content .theme-down {
-  display: none;
-  margin-bottom: 20px;
-}
-
-.pop-browse__content .theme-top {
-  display: block;
-}
-
-.pop-browse__close-btn {
-  background: none !important;
-  border: none !important;
-  font-size: 20px !important;
-  cursor: pointer !important;
-  color: #94A6BE !important;
-  margin-left: 10px !important;
-  padding: 5px !important;
-  border-radius: 4px !important;
-  transition: color 0.3s ease, background-color 0.3s ease !important;
-}
-
-.pop-browse__close-btn:hover {
-  color: #000000 !important;
-  background-color: #f0f0f0 !important;
-}
-
-/* Стили анимации и загрузки */
+/* LOADING & SPINNERS */
 .loading-spinner {
   width: 50px;
   height: 50px;
@@ -477,12 +141,6 @@ body.dark-theme .calendar__day-name {
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin: 0 auto 20px;
-}
-
-.skeleton-loading {
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-  background-size: 1000px 100%;
-  animation: shimmer 2s infinite linear;
 }
 
 .spinner {
@@ -496,39 +154,25 @@ body.dark-theme .calendar__day-name {
   margin-right: 8px;
 }
 
-.cards__item {
-  animation: fadeIn 0.3s ease-out;
+.skeleton-loading {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite linear;
 }
 
-.pop-new-card,
-.pop-exit,
-.pop-browse {
-  animation: fadeIn 0.2s ease-out;
-}
-
-/* DRAG & DROP стили*/
+/* DRAG & DROP */
 .dragging {
-  opacity: 0.5 !important;
+  opacity: 0.5;
   transform: rotate(3deg);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2) !important;
-  z-index: 1000 !important;
-  cursor: grabbing !important;
-}
-
-.drop-zone {
-  transition: all 0.3s ease;
-  min-height: 150px;
+  z-index: 1000;
+  cursor: grabbing;
 }
 
 .drop-zone.drag-over {
   background-color: rgba(86, 94, 239, 0.1) !important;
   border: 2px dashed #565eef !important;
   border-radius: 10px;
-}
-
-.card-ghost {
-  opacity: 0.3;
-  transform: scale(0.95);
 }
 
 .empty-drop-zone {
@@ -554,7 +198,7 @@ body.dark-theme .calendar__day-name {
   transform: scale(1.02);
 }
 
-/* DRAG & DROP для темной темы */
+/* Темная тема для Drag & Drop */
 body.dark-theme .empty-drop-zone {
   background: rgba(42, 42, 54, 0.5);
   border-color: rgba(166, 180, 204, 0.3);
@@ -567,174 +211,84 @@ body.dark-theme .empty-drop-zone.drag-over {
   color: #6a73ff;
 }
 
-body.dark-theme .main__column.drag-over {
-  background: linear-gradient(145deg, rgba(106, 115, 255, 0.1), rgba(106, 115, 255, 0.15));
+/* Скрытие кнопок создания при модалках */
+body.modal-open .header__btn-main-new,
+body.modal-open .mobile-create-button {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
 }
 
-/* TRANSITIONS */
-* {
-  transition: background-color 0.3s ease, 
-              border-color 0.3s ease, 
-              color 0.3s ease,
-              box-shadow 0.3s ease,
-              opacity 0.3s ease;
+/* Z-INDEX для модальных окон */
+.pop-new-card,
+.pop-browse {
+  z-index: 2000 !important;
 }
 
-input, 
-textarea, 
-button,
-select {
-  transition: background-color 0.3s ease, 
-              border-color 0.3s ease, 
-              color 0.3s ease,
-              box-shadow 0.3s ease;
+.header {
+  z-index: 1000 !important;
 }
 
-/* Стили для адаптива */
+/* АДАПТИВНЫЕ СТИЛИ */
 @media screen and (max-width: 660px) {
-  .pop-new-card {
-    top: 70px;
-  }
-  
-  .pop-new-card__container {
-    padding: 0;
-    justify-content: flex-start;
-  }
-  
-  .pop-new-card__block {
-    border-radius: 0;
-  }
-  
-  .pop-new-card__wrap {
-    display: block;
-  }
-  
-  .calendar {
-    max-width: 340px;
-    width: 100%;
-  }
-  
-  .calendar__ttl, 
-  .calendar__nav, 
-  .calendar__period {
-    padding: 0;
-  }
-  
-  .calendar .date-create {
-    display: none;
-    margin-bottom: 7px;
-  }
-  
-  .calendar__p {
-    font-size: 14px;
-  }
-  
-  .calendar__day-name {
-    font-size: 14px;
-  }
-  
-  .calendar__cells {
-    width: 344px;
-    height: auto;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
-  }
-  
-  .calendar__cell {
-    width: 42px;
-    height: 42px;
-    font-size: 14px;
-  }
-  
+  .pop-new-card,
   .pop-browse {
     top: 70px;
   }
   
+  .pop-new-card__container,
   .pop-browse__container {
     padding: 0;
     justify-content: flex-start;
   }
   
+  .pop-new-card__block,
   .pop-browse__block {
     border-radius: 0;
   }
   
+  .pop-new-card__wrap,
   .pop-browse__wrap {
     display: block;
   }
 }
 
 @media screen and (max-width: 495px) {
-  .pop-new-card__container {
-    padding: 0;
-    justify-content: flex-start;
+  .form-new__create,
+  .pop-new-card__create {
+    position: static !important;
+    float: none !important;
+    margin: 20px auto 0 !important;
   }
   
-  .pop-new-card__block {
-    padding: 20px 16px 32px;
+  .pop-new-card__content {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 !important;
   }
   
-  .pop-new-card__form {
-    max-width: 100%;
-    width: 100%;
-    display: block;
+  .form-new__create,
+  .pop-new-card__create {
+    margin-top: auto !important;
+    margin-bottom: 20px !important;
   }
   
-  .pop-new-card__calendar {
-    width: 100%;
-  }
-  
-  .form-new__area {
-    max-width: 100%;
-    height: 34px;
-  }
-  
-  .form-new__create {
-    width: 100%;
-    height: 40px;
-  }
-  
-  .pop-browse__block {
-    padding: 20px 16px 32px;
-  }
-  
-  .pop-browse__content .theme-down {
-    display: block;
-    margin-bottom: 20px;
-  }
-  
-  .pop-browse__content .theme-top {
-    display: none;
-  }
-  
-  .pop-browse__form {
-    max-width: 100%;
-  }
-  
-  .pop-browse__calendar {
-    width: 100%;
-  }
-  
+  /* Исправляем кнопки в мобильной версии PopBrowse */
   .pop-browse__btn-browse button, 
-  .pop-browse__btn-edit button {
-    width: 100%;
-    height: 40px;
+  .pop-browse__btn-edit button,
+  .pop-browse__btn-browse .btn-close,
+  .pop-browse__btn-edit .btn-close {
+    width: 100% !important;
+    height: 40px !important;
+    margin-bottom: 10px !important;
   }
   
   .pop-browse__btn-browse .btn-group, 
   .pop-browse__btn-edit .btn-group {
-    width: 100%;
-  }
-  
-  .pop-browse__btn-browse .btn-group button, 
-  .pop-browse__btn-edit .btn-group button {
-    margin-right: 0px;
-  }
-  
-  .form-browse__area {
-    max-width: 100%;
-    height: 37px;
+    width: 100% !important;
+    flex-direction: column !important;
+    gap: 10px !important;
   }
 }
 
@@ -753,9 +307,5 @@ select {
   .pop-exit__exit-no {
     width: 100%;
     height: 40px;
-  }
-  
-  .pop-exit__form-group {
-    display: block;
   }
 }

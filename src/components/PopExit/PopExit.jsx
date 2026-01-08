@@ -26,7 +26,17 @@ const PopExit = ({ onConfirm, onCancel, isOpen = false }) => {
       <SPopExitContainer>
         <SPopExitBlock>
           <div className="pop-exit__ttl">
-            <h2>Выйти из аккаунта?</h2>
+            <h2 
+              style={{
+                textAlign: 'center',
+                fontSize: '20px',
+                fontWeight: '700',
+                lineHeight: '30px',
+                letterSpacing: '-0.4px',
+                marginBottom: '20px',
+              }}>
+              Выйти из аккаунта?
+            </h2>
           </div>
           <form className="pop-exit__form" id="formExit" action="#">
             <SPopExitFormGroup>

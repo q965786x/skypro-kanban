@@ -45,6 +45,10 @@ a {
   background-color: #eaeef6;
 }
 
+.wrapper.no-header {
+  padding-top: 0 !important;
+}
+
 .container-signup {
   display: block;
   width: 100vw;

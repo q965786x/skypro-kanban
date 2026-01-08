@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
 import { useTheme } from "../../context/Theme";
+import { useModal } from "../../context/Modal";
 import {
   SPopupContainer,
   SUserName,
@@ -20,6 +21,7 @@ const PopUser = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
   const { isDarkTheme, toggleTheme } = useTheme();
+  const { openModal, closeModal } = useModal();
 
   useEffect(() => {
     const popupClickOutside = (event) => {
@@ -35,15 +37,18 @@ const PopUser = ({ isOpen, onClose }) => {
     };
 
     if (isOpen) {
+      openModal('popuser');
       document.addEventListener("mousedown", popupClickOutside);
       document.addEventListener("keydown", handleEscape);
+    } else {
+      closeModal();
     }
 
     return () => {
       document.removeEventListener("mousedown", popupClickOutside);
       document.removeEventListener("keydown", handleEscape);
     };
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, openModal, closeModal]); // Убрали лишнюю запятую
 
   const handleExitClick = () => {
     navigate("/exit");

@@ -1,10 +1,12 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import "./App.css";
 import { ThemeProvider } from "./context/Theme";
 import AppRoutes from "./components/AppRoutes";
 import AuthProvider from "./context/AuthProvider";
 import TaskProvider from "./context/TaskProvider";
 import { AuthContext } from "./context/AuthContext";
+import MobileCreateButton from "./components/MobileCreateButton";
+import { ModalProvider } from "./context/Modal";
 
 // Упрощенный компонент загрузки
 const LoadingSpinner = () => (
@@ -33,8 +35,8 @@ const styles = {
     borderTop: "5px solid #565eef",
     borderRadius: "50%",
     animation: "spin 1s linear infinite",
-    marginBottom: "20px"
-  }
+    marginBottom: "20px",
+  },
 };
 
 // Компонент с проверкой авторизации
@@ -48,6 +50,7 @@ function AppContent() {
   return (
     <TaskProvider>
       <AppRoutes />
+      <MobileCreateButton />
     </TaskProvider>
   );
 }
@@ -55,11 +58,13 @@ function AppContent() {
 // Главный компонент
 function App() {
   return (
-    <ThemeProvider>
-      <AuthProvider>
-        <AppContent />
-      </AuthProvider>
-    </ThemeProvider>
+    <ModalProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <AppContent />
+        </AuthProvider>
+      </ThemeProvider>
+    </ModalProvider>
   );
 }
 
