@@ -7,6 +7,7 @@ import TaskProvider from "./context/TaskProvider";
 import { AuthContext } from "./context/AuthContext";
 import MobileCreateButton from "./components/MobileCreateButton";
 import { ModalProvider } from "./context/Modal";
+import { DragDropProvider } from "./context/DragDropContext";
 
 // Упрощенный компонент загрузки
 const LoadingSpinner = () => (
@@ -61,7 +62,9 @@ function App() {
     <ModalProvider>
       <ThemeProvider>
         <AuthProvider>
-          <AppContent />
+          <DragDropProvider>
+            <AppContent />
+          </DragDropProvider>
         </AuthProvider>
       </ThemeProvider>
     </ModalProvider>

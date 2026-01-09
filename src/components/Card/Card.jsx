@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import {
   SCardsItem,
@@ -11,9 +11,11 @@ import {
   SCardDate,
 } from "./Card.styled";
 
-const Card = ({ id, topic, title, date, status, onDragStart, onDragEnd }) => {
+const Card = ({ id, topic, title, date, status, onDragStart, onDragEnd, onTouchStart,
+  onTouchMove, onTouchEnd, isMobileDragging  }) => {
   const cardId = id;
   const [isDragging, setIsDragging] = useState(false);
+  const cardRef = useRef(null);
 
   
   const getTopicClass = (topicName) => {
@@ -56,24 +58,65 @@ const Card = ({ id, topic, title, date, status, onDragStart, onDragEnd }) => {
     e.dataTransfer.dropEffect = "move";
   };
 
+  // Мобильные события
+  const handleTouchStartMobile = (e) => {
+    const card = { id: cardId, topic, title, date, status };
+    if (onTouchStart) {
+      onTouchStart(e, card);
+    }
+  };
+
+  const handleTouchMoveMobile = (e) => {
+    if (onTouchMove) {
+      onTouchMove(e);
+    }
+  };
+
+  const handleTouchEndMobile = (e) => {
+    if (onTouchEnd) {
+      onTouchEnd(e);
+    }
+  };
+
+  // Эффект для визуальной обратной связи при перетаскивании
+  useEffect(() => {
+    if (cardRef.current) {
+      if (isMobileDragging) {
+        cardRef.current.style.opacity = "0.5";
+        cardRef.current.style.transform = "scale(0.95)";
+      } else {
+        cardRef.current.style.opacity = "";
+        cardRef.current.style.transform = "";
+      }
+    }
+  }, [isMobileDragging]);
+
+  
   return (
     <SCardsItem
+      ref={cardRef}
       draggable="true"
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       onDragOver={handleDragOver}
+      // Мобильные обработчики
+      onTouchStart={handleTouchStartMobile}
+      onTouchMove={handleTouchMoveMobile}
+      onTouchEnd={handleTouchEndMobile}
       style={{
-        opacity: isDragging ? 0.5 : 1,
+        opacity: isDragging || isMobileDragging ? 0.5 : 1,
         cursor: "grab",
-        transition: "opacity 0.2s ease",
+        transition: "opacity 0.2s ease, transform 0.2s ease",
+        touchAction: "none",
       }}
+      className="draggable-card"
     >
       <SCardsCard>
         <SCardGroup>
           <SCardTheme className={`${topicClass}`}>
             <p className={topicClass}>{topic}</p>
           </SCardTheme>
-          <Link to={`/card/${cardId}`}>
+          <Link to={`/card/${cardId}`} onClick={(e) => isMobileDragging && e.preventDefault()}>
             <SCardButton>
               <div></div>
               <div></div>
@@ -82,7 +125,7 @@ const Card = ({ id, topic, title, date, status, onDragStart, onDragEnd }) => {
           </Link>
         </SCardGroup>
         <SCardContent>
-          <Link to={`/card/${cardId}`}>
+          <Link to={`/card/${cardId}`} onClick={(e) => isMobileDragging && e.preventDefault()}>
             <SCardTitle>{title}</SCardTitle>
           </Link>
           <SCardDate>

@@ -309,3 +309,73 @@ body.modal-open .mobile-create-button {
     height: 40px;
   }
 }
+
+/* Стили для мобильного Drag&Drop */
+@media (max-width: 768px) {
+  .draggable-card {
+    user-select: none;
+    -webkit-user-drag: none;
+    touch-action: none;
+  }
+  
+  .draggable-card:active {
+    cursor: grabbing !important;
+  }
+  
+  .main-column.drag-over {
+    background-color: rgba(86, 94, 239, 0.1) !important;
+    border: 2px dashed #565eef !important;
+    transition: all 0.2s ease;
+  }
+  
+  /* Предотвращаем выделение текста при перетаскивании */
+  body.dragging {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+  }
+  
+  /* Анимация для перетаскиваемой карточки */
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+  }
+  
+  .draggable-card.dragging {
+    animation: pulse 0.5s ease-in-out infinite;
+  }
+}
+
+/* Индикатор перетаскивания для десктопа */
+.dragging {
+  opacity: 0.7;
+  transform: rotate(2deg);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+  transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+
+/* Общие стили для перетаскивания */
+[draggable="true"] {
+  cursor: grab;
+}
+
+[draggable="true"]:active {
+  cursor: grabbing;
+}
+
+/* Стили для placeholder при перетаскивании */
+.card-placeholder {
+  height: 100px;
+  border: 2px dashed #d4dbe5;
+  border-radius: 10px;
+  margin: 5px;
+  background-color: rgba(212, 219, 229, 0.1);
+  transition: all 0.3s ease;
+}
+
+.card-placeholder.drag-over {
+  border-color: #565eef;
+  background-color: rgba(86, 94, 239, 0.05);
+}
