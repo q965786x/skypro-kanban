@@ -12,12 +12,12 @@ export const SMainColumn = styled.div`
     flex-shrink: 0;
     margin: 0;
   }
-  
+
   @media screen and (max-width: 495px) {
     width: 250px;
     min-width: 250px;
   }
-  
+
   @media screen and (max-width: 375px) {
     width: 220px;
     min-width: 220px;
@@ -35,7 +35,7 @@ export const SColumnTitle = styled.div`
   }
 
   p {
-    color: ${props => props.theme.colors.textSecondary};
+    color: ${(props) => props.theme.colors.textSecondary};
     font-size: 14px;
     font-weight: 600;
     line-height: 1;

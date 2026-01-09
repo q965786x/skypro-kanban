@@ -3,7 +3,6 @@ import { fetchTasks, postTask, editTask, deleteTask } from "../services/api";
 import { AuthContext } from "./AuthContext";
 import { TasksContext } from "./TaskContext";
 
-
 const TaskProvider = ({ children }) => {
   const [tasks, setTasks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -11,11 +10,10 @@ const TaskProvider = ({ children }) => {
   const [isOfflineMode, setIsOfflineMode] = useState(false);
   const { user } = useContext(AuthContext);
 
-  // Функция для локального обновления статуса карточки
   const updateTaskStatus = useCallback((taskId, newStatus) => {
-    setTasks(prevTasks => 
-      prevTasks.map(task => 
-        (task._id === taskId || task.id === taskId) 
+    setTasks((prevTasks) =>
+      prevTasks.map((task) =>
+        task._id === taskId || task.id === taskId
           ? { ...task, status: newStatus }
           : task
       )
@@ -54,7 +52,6 @@ const TaskProvider = ({ children }) => {
     loadTasks();
   }, [loadTasks]);
 
-  
   const addNewTask = useCallback(
     async (task) => {
       if (!user?.token) {
@@ -62,7 +59,6 @@ const TaskProvider = ({ children }) => {
         return false;
       }
 
-      
       if (!task.title || !task.title.trim()) {
         setError("Название задачи не может быть пустым");
         return false;
@@ -103,8 +99,6 @@ const TaskProvider = ({ children }) => {
         return false;
       }
 
-
-      
       if (!taskData.title || !taskData.title.trim()) {
         setError("Название задачи не может быть пустым");
         return false;
@@ -116,10 +110,8 @@ const TaskProvider = ({ children }) => {
       }
 
       try {
-        // Сначала обновляем локально для мгновенной обратной связи
         updateTaskStatus(id, taskData.status);
-        
-        // Затем отправляем на сервер
+
         const updatedTasks = await editTask({
           token: user?.token,
           id,
@@ -129,15 +121,14 @@ const TaskProvider = ({ children }) => {
             description: taskData.description?.trim() || taskData.description,
           },
         });
-      // Если сервер вернул обновленный список, используем его
+
         if (updatedTasks && Array.isArray(updatedTasks)) {
           setTasks(updatedTasks);
         }
-        
+
         return true;
       } catch (error) {
-        // Если ошибка, возвращаем предыдущее состояние
-        loadTasks(); // Перезагружаем задачи с сервера
+        loadTasks();
         setError(error.message || "Ошибка редактирования задачи");
         return false;
       }
@@ -175,8 +166,8 @@ const TaskProvider = ({ children }) => {
         updateTask,
         removeTask,
         refetchTasks: loadTasks,
-        clearError: () => setError(""),  
-        updateTaskStatus, // Экспортируем новую функцию      
+        clearError: () => setError(""),
+        updateTaskStatus,
       }}
     >
       {children}

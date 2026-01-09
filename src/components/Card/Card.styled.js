@@ -25,7 +25,8 @@ export const SCardsCard = styled.div`
   // стили для .cards__card
   width: 220px;
   height: 130px;
-  background-color: ${props => props.theme.mode === 'dark' ? '#1E1E1E' : '#FFFFFF'};
+  background-color: ${(props) =>
+    props.theme.mode === "dark" ? "#1E1E1E" : "#FFFFFF"};
   border-radius: 10px;
   display: flex;
   flex-direction: column;
@@ -33,11 +34,12 @@ export const SCardsCard = styled.div`
   justify-content: stretch;
   padding: 15px 13px 19px;
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
-  box-shadow: ${props => props.theme.shadows.small};
-  border: ${props => props.theme.mode === 'dark' ? '1px solid #2D2D2D' : 'none'};
+  box-shadow: ${(props) => props.theme.shadows.small};
+  border: ${(props) =>
+    props.theme.mode === "dark" ? "1px solid #2D2D2D" : "none"};
 
   &:hover {
-    box-shadow: ${props => props.theme.shadows.medium};
+    box-shadow: ${(props) => props.theme.shadows.medium};
     transform: translateY(-2px);
   }
 
@@ -45,13 +47,13 @@ export const SCardsCard = styled.div`
     width: 220px;
     height: 130px;
   }
-  
+
   @media screen and (max-width: 495px) {
     width: 210px;
     height: 120px;
     padding: 12px 10px 15px;
   }
-  
+
   @media screen and (max-width: 375px) {
     width: 200px;
     height: 110px;
@@ -71,8 +73,8 @@ export const SCardGroup = styled.div`
 
 export const SCardTheme = styled.div`
   background-color: ${(props) => {
-    if (props.theme.mode === 'dark') {
-    switch (props.topic) {
+    if (props.theme.mode === "dark") {
+      switch (props.topic) {
         case "Web Design":
           return "#2D2319";
         case "Research":
@@ -81,8 +83,8 @@ export const SCardTheme = styled.div`
           return "#2A1B3D";
         default:
           return "#2D2319";
-    }
-  } else {
+      }
+    } else {
       switch (props.topic) {
         case "Web Design":
           return "#FFE4C2";
@@ -93,10 +95,10 @@ export const SCardTheme = styled.div`
         default:
           return "#FFE4C2";
       }
-        }
-  }}; 
+    }
+  }};
   color: ${(props) => {
-    if (props.theme.mode === 'dark') {
+    if (props.theme.mode === "dark") {
       switch (props.topic) {
         case "Web Design":
           return "#FFA726";
@@ -120,7 +122,7 @@ export const SCardTheme = styled.div`
       }
     }
   }};
-  
+
   padding: 5px 14px;
   border-radius: 18px;
   font-size: 10px;
@@ -143,12 +145,12 @@ export const SCardButton = styled.div`
     width: 4px;
     height: 4px;
     border-radius: 50%;
-    background-color: ${props => props.theme.colors.textSecondary};
+    background-color: ${(props) => props.theme.colors.textSecondary};
     transition: background-color 0.3s ease;
   }
 
   &:hover div {
-    background-color: ${props => props.theme.colors.primary};
+    background-color: ${(props) => props.theme.colors.primary};
   }
 `;
 
@@ -166,7 +168,7 @@ export const SCardTitle = styled.h3`
   font-size: 14px;
   font-weight: 500;
   line-height: 18px;
-  color: ${props => props.theme.colors.text};
+  color: ${(props) => props.theme.colors.text};
   margin-bottom: 10px;
 `;
 
@@ -178,9 +180,9 @@ export const SCardDate = styled.div`
 
   svg {
     width: 13px;
-    
+
     path {
-      stroke: ${props => props.theme.colors.textSecondary};
+      stroke: ${(props) => props.theme.colors.textSecondary};
       transition: stroke 0.3s ease;
     }
   }
@@ -189,7 +191,7 @@ export const SCardDate = styled.div`
     margin-left: 6px;
     font-size: 10px;
     line-height: 13px;
-    color: ${props => props.theme.colors.textSecondary};
+    color: ${(props) => props.theme.colors.textSecondary};
     letter-spacing: 0.2px;
     transition: color 0.3s ease;
   }
@@ -197,7 +199,7 @@ export const SCardDate = styled.div`
 
 export const SDraggingCard = styled(SCardsCard)`
   transform: rotate(3deg);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
   z-index: 1000;
   opacity: 0.8;
 `;

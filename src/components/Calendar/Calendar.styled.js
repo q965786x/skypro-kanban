@@ -1,4 +1,4 @@
-import styled, { keyframes } from 'styled-components';
+import styled, { keyframes } from "styled-components";
 
 // Анимация для переключения месяцев
 const fadeIn = keyframes`
@@ -21,118 +21,118 @@ const bounce = keyframes`
   }
 `;
 
-export const SCalendar = styled.div `
-// стили для .calendar
-    max-width: 370px;
-    width: 100%;
-    position: relative;
+export const SCalendar = styled.div`
+  // стили для .calendar
+  max-width: 370px;
+  width: 100%;
+  position: relative;
 
-   &.calendar-mobile {
+  &.calendar-mobile {
     max-width: 343px;
     width: 100%;
     margin: 0 auto;
-  } 
+  }
 `;
 
-export const SCalendarTitle = styled.p `
-// стили для .calendar__ttl subttl
-    margin-bottom: 10px;
-    color: ${props => props.theme.colors.textPrimary};
-    font-size: 14px;
-    font-weight: 600;
-    line-height: 1;
-    text-align: left; 
+export const SCalendarTitle = styled.p`
+  // стили для .calendar__ttl subttl
+  margin-bottom: 10px;
+  color: ${(props) => props.theme.colors.textPrimary};
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+  text-align: left;
 `;
 
-export const SCalendarBlock = styled.div `
-// стили для .calendar__block 
-    width: 100%;
+export const SCalendarBlock = styled.div`
+  // стили для .calendar__block
+  width: 100%;
 `;
 
-export const SCalendarNav = styled.div `
-// стили для .calendar__nav
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: 10px;
-    position: relative;
+export const SCalendarNav = styled.div`
+  // стили для .calendar__nav
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+  position: relative;
 `;
 
-export const SCalendarMonth = styled.div `
-// стили для .calendar__month
-    color: ${props => props.theme.colors.textPrimary};
-    font-size: 14px;
-    font-weight: 600;
-    flex: 1;
+export const SCalendarMonth = styled.div`
+  // стили для .calendar__month
+  color: ${(props) => props.theme.colors.textPrimary};
+  font-size: 14px;
+  font-weight: 600;
+  flex: 1;
 `;
 
-export const SCalendarContent = styled.div `
-// стили для .calendar__content
-   width: 100%;
+export const SCalendarContent = styled.div`
+  // стили для .calendar__content
+  width: 100%;
 `;
 
-export const SCalendarDaysNames = styled.div `
-// стили для .calendar__days-names
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 2px;
-    margin-bottom: 5px;
+export const SCalendarDaysNames = styled.div`
+  // стили для .calendar__days-names
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  margin-bottom: 5px;
 `;
 
-export const SCalendarCells = styled.div `
-// стили для .calendar__cells
-    width: 100%;
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 2px;
+export const SCalendarCells = styled.div`
+  // стили для .calendar__cells
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
 `;
 
-export const SNavActions = styled.div `
-// стили для .nav__actions
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 5px;
+export const SNavActions = styled.div`
+  // стили для .nav__actions
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 5px;
 
-     @media screen and (max-width: 495px) {
-      position: absolute;
-      right: 0;
-      top: 50%;
-      transform: translateY(-50%);
-      gap: 15px;
-    }
+  @media screen and (max-width: 495px) {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    gap: 15px;
+  }
 `;
 
-export const SNavAction = styled.div `
-// стили для .nav__action
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-   
-    svg {
-    fill: ${props => props.theme.colors.textSecondary};
-    
+export const SNavAction = styled.div`
+  // стили для .nav__action
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    fill: ${(props) => props.theme.colors.textSecondary};
+
     path {
-      fill: ${props => props.theme.colors.textSecondary};
+      fill: ${(props) => props.theme.colors.textSecondary};
     }
 
     &:hover {
       animation: ${bounce} 0.3s ease;
-      
+
       svg {
-        fill: ${props => props.theme.colors.primary};
-        
+        fill: ${(props) => props.theme.colors.primary};
+
         path {
-          fill: ${props => props.theme.colors.primary};
+          fill: ${(props) => props.theme.colors.primary};
         }
       }
     }
 
     &:active {
       transform: scale(0.95);
-    }   
+    }
   }
 `;
 
@@ -152,14 +152,14 @@ export const MobileStyles = styled.div`
       font-size: 16px;
       text-align: left; /* Название слева */
       margin-bottom: 15px;
-      color: #94A6BE;
+      color: #94a6be;
       font-weight: 600;
     }
 
     ${SCalendarMonth} {
       font-size: 16px;
       font-weight: 600;
-      color: #94A6BE;
+      color: #94a6be;
     }
 
     ${SCalendarDaysNames} {
@@ -170,7 +170,7 @@ export const MobileStyles = styled.div`
     ${SCalendarCells} {
       gap: 4px;
     }
-    
+
     /* Анимация при переключении месяцев */
     .calendar__month {
       animation: ${fadeIn} 0.3s ease;

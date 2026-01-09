@@ -6,7 +6,7 @@ import Main from "../components/Main/Main";
 import { AuthContext } from "../context/AuthContext";
 
 const ExitPage = () => {
-  const { logout } = useContext(AuthContext); // Используем logout из контекста
+  const { logout } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleClose = () => {

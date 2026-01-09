@@ -32,7 +32,7 @@ const PopNewCard = ({ isOpen, onClose, onCreateCard }) => {
   const [formError, setFormError] = useState("");
   const [isMobile, setIsMobile] = useState(false);
   const { openModal, closeModal } = useModal();
-  
+
   const navigate = useNavigate();
   const {
     addNewTask,
@@ -53,7 +53,6 @@ const PopNewCard = ({ isOpen, onClose, onCreateCard }) => {
     };
   }, []);
 
-  // Функция для форматирования даты в формат API
   const formatDateForAPI = useCallback((dateString) => {
     if (!dateString) return new Date().toISOString();
 
@@ -77,10 +76,9 @@ const PopNewCard = ({ isOpen, onClose, onCreateCard }) => {
   }, []);
 
   useEffect(() => {
-    console.log("PopNewCard: isOpen =", isOpen);
     if (isOpen) {
       openModal();
-      console.log("PopNewCard: openModal called");
+
       const today = new Date();
       const formattedDate = `${today.getDate().toString().padStart(2, "0")}.${(
         today.getMonth() + 1
@@ -91,12 +89,10 @@ const PopNewCard = ({ isOpen, onClose, onCreateCard }) => {
       setFormError("");
       if (clearError) clearError();
 
-      // Блокируем скролл при открытии модалки
       document.body.style.overflow = "hidden";
     } else {
       closeModal();
-      console.log("PopNewCard: closeModal called");
-      // Разблокируем скролл при закрытии
+
       document.body.style.overflow = "";
     }
 
@@ -221,10 +217,10 @@ const PopNewCard = ({ isOpen, onClose, onCreateCard }) => {
                     className="subttl"
                     style={{
                       fontSize: isMobile ? "16px" : "14px",
-                      fontWeight: "600",                     
-                      display: "block", 
-                      textAlign: "left",  
-                      marginBottom: "15px",                                       
+                      fontWeight: "600",
+                      display: "block",
+                      textAlign: "left",
+                      marginBottom: "15px",
                     }}
                   >
                     Название задачи
@@ -251,10 +247,9 @@ const PopNewCard = ({ isOpen, onClose, onCreateCard }) => {
                     className="subttl"
                     style={{
                       fontSize: isMobile ? "16px" : "14px",
-                      fontWeight: "600",                      
-                      display: "block",                      
+                      fontWeight: "600",
+                      display: "block",
                       textAlign: "left",
-                     
                     }}
                   >
                     Описание задачи
@@ -289,7 +284,7 @@ const PopNewCard = ({ isOpen, onClose, onCreateCard }) => {
                 className="subttl"
                 style={{
                   fontSize: isMobile ? "16px" : "14px",
-                  fontWeight: "600",                  
+                  fontWeight: "600",
                 }}
               >
                 Категория
@@ -332,20 +327,20 @@ const PopNewCard = ({ isOpen, onClose, onCreateCard }) => {
               </SCategoriesThemes>
             </SCategories>
 
-            {/* Кнопка создания - исправлена позиция */}
+            {/* Кнопка создания */}
             <div
               style={{
-                display: "flex",  
-                justifyContent: isMobile ? "center" : "flex-end",                    
+                display: "flex",
+                justifyContent: isMobile ? "center" : "flex-end",
                 marginTop: "20px",
-                clear: "both",                
+                clear: "both",
               }}
             >
               <SFormNewBtnCreate
                 id="btnCreate"
                 onClick={handleSubmit}
                 disabled={isSubmitting}
-                isMobile={isMobile} 
+                isMobile={isMobile}
               >
                 {isSubmitting ? (
                   <>

@@ -47,10 +47,8 @@ const PopBrowse = ({ card, onClose }) => {
       setDescription(card.description || "");
       setSelectedStatus(card.status || "Без статуса");
 
-      // Нормализуем дату при загрузке
       const normalizedDate = normalizeDate(card.date || "");
 
-      // Устанавливаем оба состояния
       setSelectedDate(normalizedDate);
       setFormattedDate(normalizedDate);
 
@@ -59,7 +57,6 @@ const PopBrowse = ({ card, onClose }) => {
   }, [card]);
 
   useEffect(() => {
-    // Проверка на мобильное устройство
     const checkMobile = () => {
       setIsMobile(window.innerWidth <= 495);
     };
@@ -128,7 +125,6 @@ const PopBrowse = ({ card, onClose }) => {
         setDescription(card.description || "");
         setSelectedStatus(card.status || "Без статуса");
 
-        // Восстанавливаем исходную дату
         const normalizedDate = normalizeDate(card.date || "");
         setSelectedDate(normalizedDate);
         setFormattedDate(normalizedDate);
@@ -139,7 +135,6 @@ const PopBrowse = ({ card, onClose }) => {
     [card]
   );
 
-  // Функция для нормализации даты
   const normalizeDate = (dateString) => {
     if (!dateString) return "";
 
@@ -170,7 +165,6 @@ const PopBrowse = ({ card, onClose }) => {
     return dateString;
   };
 
-  // Функция для форматирования даты для отображения
   const formatDisplayDate = (dateString) => {
     if (!dateString) return "не установлен";
 
@@ -179,17 +173,14 @@ const PopBrowse = ({ card, onClose }) => {
       return dateString;
     }
 
-    // Если пришла "не установлен"
     if (dateString === "не установлен") {
       return dateString;
     }
 
-    // Пробуем нормализовать
     const normalized = normalizeDate(dateString);
     return normalized || "не установлен";
   };
 
-  // Функция для форматирования даты в формат API
   const formatDateForAPI = useCallback((dateString) => {
     if (!dateString || dateString === "не установлен") {
       return new Date().toISOString();
@@ -210,7 +201,7 @@ const PopBrowse = ({ card, onClose }) => {
       return dateString;
     }
 
-    return new Date().toISOString(); // Возвращаем текущую дату как запасной вариант
+    return new Date().toISOString();
   }, []);
 
   const handleSave = useCallback(
@@ -297,7 +288,6 @@ const PopBrowse = ({ card, onClose }) => {
     [card, isSubmitting, removeTask, onClose]
   );
 
-  // Вспомогательный компонент для StatusSection
   const StatusSection = ({ status, onStatusChange, isEditing: editMode }) => {
     const statuses = [
       "Без статуса",
@@ -311,7 +301,7 @@ const PopBrowse = ({ card, onClose }) => {
       <SPopBrowseStatus
         style={{
           display: "flex",
-          //alignItems: "center",
+
           gap: "10px",
         }}
       >
@@ -430,10 +420,8 @@ const PopBrowse = ({ card, onClose }) => {
     };
   }, [isEditing, handleCancelEdit, handleClose]);
 
-  // Форматируем дату для отображения
   const displayDate = formatDisplayDate(selectedDate || card?.date);
 
-  // Функция для рендеринга категории
   const renderCategory = () => {
     const categoryElement = (
       <div

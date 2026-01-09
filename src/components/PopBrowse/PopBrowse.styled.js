@@ -15,11 +15,10 @@ export const SPopBrowse = styled.div`
   overflow: auto;
   padding-top: 94px;
 
-  /* Модалка не должна перекрывать Header */
   pointer-events: none;
 
   & > * {
-    pointer-events: auto; /* Но контент модалки кликабелен */
+    pointer-events: auto;
   }
 
   @media screen and (max-width: 495px) {

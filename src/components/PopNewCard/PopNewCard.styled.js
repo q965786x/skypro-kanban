@@ -15,11 +15,10 @@ export const SPopNewCard = styled.div`
   overflow-y: auto;
   padding-top: 94px;
 
-  /* Модалка не должна перекрывать Header */
   pointer-events: none;
 
   & > * {
-    pointer-events: auto; /* Но контент модалки кликабелен */
+    pointer-events: auto;
   }
 
   @media screen and (max-width: 495px) {
@@ -372,9 +371,11 @@ export const SCategoriesTheme = styled.div.withConfig({
   `}
 `;
 
-export const SFormNewBtnCreate = styled.button`
+export const SFormNewBtnCreate = styled.button.withConfig({
+  shouldForwardProp: (prop) => prop !== 'isMobile',
+})`
   //стили для .form-new__create
-  width: ${(props) => (props.isMobile ? "343px" : "132px")} !important;
+  width: 132px !important;
   height: 30px !important;
   background-color: ${(props) => props.theme.colors.primary} !important;
   border-radius: 4px !important;

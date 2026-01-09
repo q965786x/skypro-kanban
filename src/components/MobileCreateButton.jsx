@@ -1,29 +1,31 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import styled from 'styled-components';
-
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import styled from "styled-components";
 
 const MobileButtonWrapper = styled.div`
   position: fixed;
   left: 50%;
   bottom: 20px;
   transform: translateX(-50%);
-  width: 343px; /* Фиксированная ширина */
+  width: 343px;
   z-index: 999;
-  
+
   @media screen and (max-width: 375px) {
-    width: calc(100% - 30px); /* Для очень маленьких экранов */
+    width: calc(100% - 30px);
     max-width: 343px;
   }
-  
+
   @media screen and (min-width: 496px) {
     display: none;
   }
 
   transition: opacity 0.3s ease, transform 0.3s ease;
-  opacity: ${props => props.$visible ? 1 : 0};
-  transform: ${props => props.$visible ? 'translateX(-50%) translateY(0)' : 'translateX(-50%) translateY(20px)'};
-  pointer-events: ${props => props.$visible ? 'auto' : 'none'};
+  opacity: ${(props) => (props.$visible ? 1 : 0)};
+  transform: ${(props) =>
+    props.$visible
+      ? "translateX(-50%) translateY(0)"
+      : "translateX(-50%) translateY(20px)"};
+  pointer-events: ${(props) => (props.$visible ? "auto" : "none")};
 `;
 
 const StyledButton = styled(Link)`
@@ -58,19 +60,19 @@ const MobileCreateButton = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
 
-  // Проверяем мобильное устройство и видимость
   useEffect(() => {
     const updateVisibility = () => {
       const mobile = window.innerWidth <= 495;
       setIsMobile(mobile);
-      
+
       if (mobile) {
         const pathname = window.location.pathname;
-        const hasModalOpen = document.body.classList.contains('modal-open');
-        const isOnCreatePage = pathname.includes('/card/new');
-        const isOnMainPage = pathname === '/';
-        
-        const shouldBeVisible = isOnMainPage && !hasModalOpen && !isOnCreatePage;
+        const hasModalOpen = document.body.classList.contains("modal-open");
+        const isOnCreatePage = pathname.includes("/card/new");
+        const isOnMainPage = pathname === "/";
+
+        const shouldBeVisible =
+          isOnMainPage && !hasModalOpen && !isOnCreatePage;
         setIsVisible(shouldBeVisible);
       } else {
         setIsVisible(false);
@@ -78,32 +80,27 @@ const MobileCreateButton = () => {
     };
 
     updateVisibility();
-    window.addEventListener('resize', updateVisibility);
-    window.addEventListener('popstate', updateVisibility);
-    window.addEventListener('hashchange', updateVisibility);
+    window.addEventListener("resize", updateVisibility);
+    window.addEventListener("popstate", updateVisibility);
+    window.addEventListener("hashchange", updateVisibility);
 
-    // Проверяем каждые 500мс на случай изменения класса modal-open
     const interval = setInterval(updateVisibility, 500);
 
     return () => {
-      window.removeEventListener('resize', updateVisibility);
-      window.removeEventListener('popstate', updateVisibility);
-      window.removeEventListener('hashchange', updateVisibility);
+      window.removeEventListener("resize", updateVisibility);
+      window.removeEventListener("popstate", updateVisibility);
+      window.removeEventListener("hashchange", updateVisibility);
       clearInterval(interval);
     };
-  }, []);    
+  }, []);
 
-  // Если не мобильное устройство или не видимо - не рендерим
   if (!isMobile || !isVisible) {
     return null;
   }
 
-  
   return (
     <MobileButtonWrapper $visible={isVisible}>
-      <StyledButton to="/card/new">
-        Создать новую задачу
-      </StyledButton>
+      <StyledButton to="/card/new">Создать новую задачу</StyledButton>
     </MobileButtonWrapper>
   );
 };

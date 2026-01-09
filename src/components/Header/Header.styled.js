@@ -4,16 +4,18 @@ export const SHeader = styled.header`
   // стили для .header
   width: 100%;
   margin: 0 auto;
-  background-color: ${props => props.theme.mode === 'dark' ? '#1E1E1E' : props.theme.colors.surface};
+  background-color: ${(props) =>
+    props.theme.mode === "dark" ? "#1E1E1E" : props.theme.colors.surface};
   padding: 12px 0;
-  box-shadow: ${props => props.theme.shadows.small};
+  box-shadow: ${(props) => props.theme.shadows.small};
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
   position: fixed;
-  top: 0; /* Фиксируем сверху */
+  top: 0;
   left: 0;
   right: 0;
-  z-index: 1000; 
-  border-bottom: ${props => props.theme.mode === 'dark' ? '1px solid #2D2D2D' : 'none'};   
+  z-index: 1000;
+  border-bottom: ${(props) =>
+    props.theme.mode === "dark" ? "1px solid #2D2D2D" : "none"};
 `;
 
 export const SContainer = styled.div`
@@ -22,16 +24,16 @@ export const SContainer = styled.div`
   width: 100%;
   margin: 0 auto;
   padding: 0 30px;
-  
+
   @media screen and (max-width: 1200px) {
     max-width: 100%;
     padding: 0 20px;
   }
-  
+
   @media screen and (max-width: 495px) {
     padding: 0 16px;
   }
-  
+
   @media screen and (max-width: 375px) {
     padding: 0 12px;
   }
@@ -54,7 +56,7 @@ export const SHeaderBlock = styled.div`
     height: 60px;
     padding: 0 5px;
   }
-  
+
   @media screen and (max-width: 375px) {
     height: 55px;
   }
@@ -62,12 +64,12 @@ export const SHeaderBlock = styled.div`
 
 export const SHeaderLogo = styled.div`
   // стили для .header__logo
-  width: 85px;  
+  width: 85px;
 
   @media screen and (max-width: 495px) {
     width: 75px;
   }
-  
+
   @media screen and (max-width: 375px) {
     width: 70px;
   }
@@ -81,7 +83,7 @@ export const SHeaderNav = styled.nav`
   align-items: center;
   justify-content: center;
 
-   @media screen and (max-width: 495px) {
+  @media screen and (max-width: 495px) {
     max-width: 200px;
   }
 `;
@@ -95,20 +97,20 @@ export const SHeaderUser = styled.div`
   justify-content: center;
   font-size: 14px;
   line-height: 20px;
-  color: ${props => props.theme.colors.primary};
+  color: ${(props) => props.theme.colors.primary};
   cursor: pointer;
   transition: color 0.3s ease;
 
   @media screen and (max-width: 495px) {
     font-size: 13px;
   }
-  
+
   @media screen and (max-width: 375px) {
     font-size: 12px;
   }
 
   &:hover {
-    color: ${props => props.theme.colors.primaryHover};
+    color: ${(props) => props.theme.colors.primaryHover};
   }
 
   &::after {
@@ -117,8 +119,8 @@ export const SHeaderUser = styled.div`
     width: 6px;
     height: 6px;
     border-radius: 1px;
-    border-left: 1.9px solid ${props => props.theme.colors.primary};
-    border-bottom: 1.9px solid ${props => props.theme.colors.primary};
+    border-left: 1.9px solid ${(props) => props.theme.colors.primary};
+    border-bottom: 1.9px solid ${(props) => props.theme.colors.primary};
     transform: rotate(-45deg);
     margin: -6px 0 0 5px;
     padding: 0;
@@ -131,18 +133,18 @@ export const SHeaderUser = styled.div`
   }
 
   &:hover::after {
-    border-left-color: ${props => props.theme.colors.primaryHover};
-    border-bottom-color: ${props => props.theme.colors.primaryHover};
+    border-left-color: ${(props) => props.theme.colors.primaryHover};
+    border-bottom-color: ${(props) => props.theme.colors.primaryHover};
   }
 `;
 
 export const SHeaderButton = styled.button`
   // стили для .header__btn-main-new
- width: 178px;
+  width: 178px;
   height: 30px;
   border-radius: 4px;
-  background-color: ${props => props.theme.colors.primary};
-  color: #FFFFFF;
+  background-color: ${(props) => props.theme.colors.primary};
+  color: #ffffff;
   border: none;
   font-size: 14px;
   line-height: 1;
@@ -155,13 +157,13 @@ export const SHeaderButton = styled.button`
   transition: all 0.3s ease;
 
   &:hover {
-    background-color: ${props => props.theme.colors.primaryHover};
+    background-color: ${(props) => props.theme.colors.primaryHover};
     transform: translateY(-1px);
     box-shadow: 0 4px 8px rgba(86, 94, 239, 0.3);
   }
 
   a {
-    color: #FFFFFF;
+    color: #ffffff;
     width: 100%;
     height: 100%;
     display: flex;
@@ -175,11 +177,11 @@ export const SHeaderButton = styled.button`
     border-radius: 50%;
     margin-right: 10px;
     position: relative;
-    
+
     a {
       font-size: 0;
     }
-    
+
     &::before {
       content: "+";
       font-size: 24px;
@@ -190,7 +192,7 @@ export const SHeaderButton = styled.button`
       transform: translate(-50%, -50%);
     }
   }
-  
+
   @media screen and (max-width: 375px) {
     width: 36px;
     height: 36px;

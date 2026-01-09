@@ -18,7 +18,6 @@ const Header = () => {
   const { isModalOpen } = useModal();
   const [isModalWindowOpen, setIsModalWindowOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  
 
   useEffect(() => {
     const checkMobile = () => {
@@ -32,7 +31,6 @@ const Header = () => {
       window.removeEventListener("resize", checkMobile);
     };
   }, []);
-
 
   const handleClick = () => {
     setIsModalWindowOpen(!isModalWindowOpen);
@@ -86,7 +84,6 @@ const Header = () => {
             )}
 
             {/* МОБИЛЬНАЯ ВЕРСИЯ: кнопка НЕ отображается в Header */}
-            {/* Вместо нее будет плавающая кнопка внизу страницы через MobileCreateButton */}
 
             <SHeaderUser className="_hover02" onClick={handleClick}>
               {user?.name || user?.login || "Пользователь"}

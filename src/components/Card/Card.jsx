@@ -11,13 +11,23 @@ import {
   SCardDate,
 } from "./Card.styled";
 
-const Card = ({ id, topic, title, date, status, onDragStart, onDragEnd, onTouchStart,
-  onTouchMove, onTouchEnd, isMobileDragging  }) => {
+const Card = ({
+  id,
+  topic,
+  title,
+  date,
+  status,
+  onDragStart,
+  onDragEnd,
+  onTouchStart,
+  onTouchMove,
+  onTouchEnd,
+  isMobileDragging,
+}) => {
   const cardId = id;
   const [isDragging, setIsDragging] = useState(false);
   const cardRef = useRef(null);
 
-  
   const getTopicClass = (topicName) => {
     switch (topicName) {
       case "Web Design":
@@ -41,17 +51,16 @@ const Card = ({ id, topic, title, date, status, onDragStart, onDragEnd, onTouchS
 
     // Устанавливаем эффект перемещения
     e.dataTransfer.effectAllowed = "move";
-    
+
     // Добавляем класс для визуальной обратной связи
     e.currentTarget.classList.add("dragging");
-  };    
+  };
 
   const handleDragEnd = (e) => {
     setIsDragging(false);
     e.currentTarget.classList.remove("dragging");
     if (onDragEnd) onDragEnd();
   };
-
 
   const handleDragOver = (e) => {
     e.preventDefault();
@@ -91,7 +100,6 @@ const Card = ({ id, topic, title, date, status, onDragStart, onDragEnd, onTouchS
     }
   }, [isMobileDragging]);
 
-  
   return (
     <SCardsItem
       ref={cardRef}
@@ -116,7 +124,10 @@ const Card = ({ id, topic, title, date, status, onDragStart, onDragEnd, onTouchS
           <SCardTheme className={`${topicClass}`}>
             <p className={topicClass}>{topic}</p>
           </SCardTheme>
-          <Link to={`/card/${cardId}`} onClick={(e) => isMobileDragging && e.preventDefault()}>
+          <Link
+            to={`/card/${cardId}`}
+            onClick={(e) => isMobileDragging && e.preventDefault()}
+          >
             <SCardButton>
               <div></div>
               <div></div>
@@ -125,7 +136,10 @@ const Card = ({ id, topic, title, date, status, onDragStart, onDragEnd, onTouchS
           </Link>
         </SCardGroup>
         <SCardContent>
-          <Link to={`/card/${cardId}`} onClick={(e) => isMobileDragging && e.preventDefault()}>
+          <Link
+            to={`/card/${cardId}`}
+            onClick={(e) => isMobileDragging && e.preventDefault()}
+          >
             <SCardTitle>{title}</SCardTitle>
           </Link>
           <SCardDate>

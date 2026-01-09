@@ -1,11 +1,11 @@
-import React, { createContext, useState, useContext, useCallback } from 'react';
+import React, { createContext, useState, useContext, useCallback } from "react";
 
 const DragDropContext = createContext();
 
 export const useDragDrop = () => {
   const context = useContext(DragDropContext);
   if (!context) {
-    throw new Error('useDragDrop must be used within DragDropProvider');
+    throw new Error("useDragDrop must be used within DragDropProvider");
   }
   return context;
 };
@@ -14,7 +14,7 @@ export const DragDropProvider = ({ children }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [draggedItem, setDraggedItem] = useState(null);
   const [dropTarget, setDropTarget] = useState(null);
-  const [notification, setNotification] = useState('');
+  const [notification, setNotification] = useState("");
 
   const startDrag = useCallback((item) => {
     setIsDragging(true);
@@ -33,7 +33,7 @@ export const DragDropProvider = ({ children }) => {
 
   const showNotification = useCallback((message) => {
     setNotification(message);
-    setTimeout(() => setNotification(''), 3000);
+    setTimeout(() => setNotification(""), 3000);
   }, []);
 
   const value = {

@@ -14,7 +14,7 @@ html,
 body {
   width: 100%;
   height: 100%;
-  font-family: 'Roboto', Arial, Helvetica, sans-serif;
+  font-family: "Roboto", Arial, Helvetica, sans-serif;
 }
 
 a,
@@ -37,7 +37,7 @@ ul li {
   width: 100vw;
   min-height: 100vh;
   overflow-x: hidden;
-  background-color: #F1F1F1;
+  background-color: #f1f1f1;
   padding-top: 94px; /* Компенсируем фиксированный header */
 }
 
@@ -87,48 +87,48 @@ body.dark-theme ._dark {
 
 /* TEXT COLORS */
 ._orange {
-  color: #FF6D00;
+  color: #ff6d00;
 }
 
 ._green {
-  color: #06B16E;
+  color: #06b16e;
 }
 
 ._purple {
-  color: #9A48F1;
+  color: #9a48f1;
 }
 
 ._gray {
-  color: #94A6BE;
+  color: #94a6be;
 }
 
 /* ANIMATIONS - оптимизировано */
 @keyframes fadeIn {
-  from { 
-    opacity: 0; 
-    transform: translateY(20px); 
+  from {
+    opacity: 0;
+    transform: translateY(20px);
   }
-  to { 
-    opacity: 1; 
-    transform: translateY(0); 
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
 @keyframes spin {
-  0% { 
-    transform: rotate(0deg); 
+  0% {
+    transform: rotate(0deg);
   }
-  100% { 
-    transform: rotate(360deg); 
+  100% {
+    transform: rotate(360deg);
   }
 }
 
 @keyframes shimmer {
-  0% { 
-    background-position: -1000px 0; 
+  0% {
+    background-position: -1000px 0;
   }
-  100% { 
-    background-position: 1000px 0; 
+  100% {
+    background-position: 1000px 0;
   }
 }
 
@@ -182,7 +182,7 @@ body.dark-theme ._dark {
   padding: 30px 20px;
   margin: 5px;
   text-align: center;
-  color: #94A6BE;
+  color: #94a6be;
   font-size: 14px;
   transition: all 0.3s ease;
   min-height: 150px;
@@ -202,7 +202,7 @@ body.dark-theme ._dark {
 body.dark-theme .empty-drop-zone {
   background: rgba(42, 42, 54, 0.5);
   border-color: rgba(166, 180, 204, 0.3);
-  color: #A6B4CC;
+  color: #a6b4cc;
 }
 
 body.dark-theme .empty-drop-zone.drag-over {
@@ -236,18 +236,18 @@ body.modal-open .mobile-create-button {
   .pop-browse {
     top: 70px;
   }
-  
+
   .pop-new-card__container,
   .pop-browse__container {
     padding: 0;
     justify-content: flex-start;
   }
-  
+
   .pop-new-card__block,
   .pop-browse__block {
     border-radius: 0;
   }
-  
+
   .pop-new-card__wrap,
   .pop-browse__wrap {
     display: block;
@@ -261,21 +261,21 @@ body.modal-open .mobile-create-button {
     float: none !important;
     margin: 20px auto 0 !important;
   }
-  
+
   .pop-new-card__content {
     display: flex !important;
     flex-direction: column !important;
     flex: 1 !important;
   }
-  
+
   .form-new__create,
   .pop-new-card__create {
     margin-top: auto !important;
     margin-bottom: 20px !important;
   }
-  
+
   /* Исправляем кнопки в мобильной версии PopBrowse */
-  .pop-browse__btn-browse button, 
+  .pop-browse__btn-browse button,
   .pop-browse__btn-edit button,
   .pop-browse__btn-browse .btn-close,
   .pop-browse__btn-edit .btn-close {
@@ -283,8 +283,8 @@ body.modal-open .mobile-create-button {
     height: 40px !important;
     margin-bottom: 10px !important;
   }
-  
-  .pop-browse__btn-browse .btn-group, 
+
+  .pop-browse__btn-browse .btn-group,
   .pop-browse__btn-edit .btn-group {
     width: 100% !important;
     flex-direction: column !important;
@@ -296,14 +296,14 @@ body.modal-open .mobile-create-button {
   .pop-exit__block {
     padding: 50px 20px;
   }
-  
+
   .pop-exit__exit-yes {
     width: 100%;
     height: 40px;
     margin-right: 0;
     margin-bottom: 10px;
   }
-  
+
   .pop-exit__exit-no {
     width: 100%;
     height: 40px;
@@ -317,17 +317,17 @@ body.modal-open .mobile-create-button {
     -webkit-user-drag: none;
     touch-action: none;
   }
-  
+
   .draggable-card:active {
     cursor: grabbing !important;
   }
-  
+
   .main-column.drag-over {
     background-color: rgba(86, 94, 239, 0.1) !important;
     border: 2px dashed #565eef !important;
     transition: all 0.2s ease;
   }
-  
+
   /* Предотвращаем выделение текста при перетаскивании */
   body.dragging {
     user-select: none;
@@ -335,14 +335,20 @@ body.modal-open .mobile-create-button {
     -moz-user-select: none;
     -ms-user-select: none;
   }
-  
+
   /* Анимация для перетаскиваемой карточки */
   @keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.02); }
-    100% { transform: scale(1); }
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.02);
+    }
+    100% {
+      transform: scale(1);
+    }
   }
-  
+
   .draggable-card.dragging {
     animation: pulse 0.5s ease-in-out infinite;
   }
@@ -352,7 +358,7 @@ body.modal-open .mobile-create-button {
 .dragging {
   opacity: 0.7;
   transform: rotate(2deg);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
   transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s;
 }
 

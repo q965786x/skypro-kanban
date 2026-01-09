@@ -33,14 +33,10 @@ const Main = () => {
     handleTouchStart,
     handleTouchMove,
     handleTouchEnd,
-  } = useMobileDragDrop(
-    async (cardId, newStatus) => {
-      await handleCardDrop(cardId, newStatus);
-    },
-    ""
-  );
+  } = useMobileDragDrop(async (cardId, newStatus) => {
+    await handleCardDrop(cardId, newStatus);
+  }, "");
 
-  
   // Функция для обновления статуса карточки при перетаскивании
   const handleCardDrop = useCallback(
     async (cardId, newStatus) => {
@@ -52,10 +48,8 @@ const Main = () => {
             status: newStatus,
           });
 
-          // Показываем уведомление об успешном перемещении
           setNotification(`Задача перемещена в "${newStatus}"`);
 
-          // Автоматически скрываем через 3 секунды
           setTimeout(() => setNotification(""), 3000);
         } catch (error) {
           console.error("Ошибка при перемещении карточки:", error);
@@ -67,65 +61,89 @@ const Main = () => {
     [tasks, updateTask]
   );
 
-  // Эффект для отслеживания мобильного перетаскивания
   useEffect(() => {
     if (isMobileDragging) {
-      // Добавляем стили для всего документа при перетаскивании
-      document.body.style.overflow = 'hidden';
-      document.body.style.userSelect = 'none';
-      
-      // Показываем индикатор перетаскивания
+      document.body.style.overflow = "hidden";
+      document.body.style.userSelect = "none";
+
       setMobileDraggedCard(mobileDraggedCardData);
     } else {
-      // Восстанавливаем стили
-      document.body.style.overflow = '';
-      document.body.style.userSelect = '';
+      document.body.style.overflow = "";
+      document.body.style.userSelect = "";
       setMobileDraggedCard(null);
     }
   }, [isMobileDragging, mobileDraggedCardData]);
 
-  // Рендерим перетаскиваемую карточку поверх всего
   const renderDraggedCard = () => {
     if (!isMobileDragging || !mobileDraggedCardData || !dragPosition) {
       return null;
     }
 
-   return (
+    return (
       <div
         style={{
-          position: 'fixed',
+          position: "fixed",
           left: dragPosition.x,
           top: dragPosition.y,
-          width: '300px',
+          width: "300px",
           zIndex: 10000,
-          pointerEvents: 'none',
+          pointerEvents: "none",
           opacity: 0.9,
-          transform: 'scale(1.05)',
-          boxShadow: '0 10px 30px rgba(0,0,0,0.3)',
-          borderRadius: '10px',
-          background: 'white',
-          padding: '15px',
+          transform: "scale(1.05)",
+          boxShadow: "0 10px 30px rgba(0,0,0,0.3)",
+          borderRadius: "10px",
+          background: "white",
+          padding: "15px",
         }}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-          <span style={{ 
-            padding: '4px 8px', 
-            borderRadius: '4px', 
-            background: mobileDraggedCardData.topic === 'Web Design' ? '#FFE4C2' : 
-                       mobileDraggedCardData.topic === 'Research' ? '#B4FDD1' : 
-                       mobileDraggedCardData.topic === 'Copywriting' ? '#E9D4FF' : '#FFE4C2',
-            fontSize: '10px',
-            color: mobileDraggedCardData.topic === 'Web Design' ? '#FF6D00' : 
-                   mobileDraggedCardData.topic === 'Research' ? '#06B16E' : 
-                   mobileDraggedCardData.topic === 'Copywriting' ? '#9A48F1' : '#FF6D00'
-          }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "10px",
+          }}
+        >
+          <span
+            style={{
+              padding: "4px 8px",
+              borderRadius: "4px",
+              background:
+                mobileDraggedCardData.topic === "Web Design"
+                  ? "#FFE4C2"
+                  : mobileDraggedCardData.topic === "Research"
+                  ? "#B4FDD1"
+                  : mobileDraggedCardData.topic === "Copywriting"
+                  ? "#E9D4FF"
+                  : "#FFE4C2",
+              fontSize: "10px",
+              color:
+                mobileDraggedCardData.topic === "Web Design"
+                  ? "#FF6D00"
+                  : mobileDraggedCardData.topic === "Research"
+                  ? "#06B16E"
+                  : mobileDraggedCardData.topic === "Copywriting"
+                  ? "#9A48F1"
+                  : "#FF6D00",
+            }}
+          >
             {mobileDraggedCardData.topic}
           </span>
         </div>
-        <div style={{ fontSize: '14px', fontWeight: '500', marginBottom: '8px' }}>
+        <div
+          style={{ fontSize: "14px", fontWeight: "500", marginBottom: "8px" }}
+        >
           {mobileDraggedCardData.title}
         </div>
-        <div style={{ fontSize: '12px', color: '#94A6BE', display: 'flex', alignItems: 'center', gap: '6px' }}>
+        <div
+          style={{
+            fontSize: "12px",
+            color: "#94A6BE",
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+          }}
+        >
           📅 {new Date(mobileDraggedCardData.date).toLocaleDateString("ru-RU")}
         </div>
       </div>
@@ -135,22 +153,24 @@ const Main = () => {
   // Добавляем инструкцию для пользователей
   const renderMobileInstructions = () => {
     return (
-      <div style={{
-        backgroundColor: '#f8f9fa',
-        padding: '10px',
-        borderRadius: '8px',
-        marginBottom: '20px',
-        border: '1px solid #e9ecef',
-        fontSize: '12px',
-        color: '#6c757d',
-        textAlign: 'center',
-        display: window.innerWidth <= 768 ? 'block' : 'none'
-      }}>
-        📱 Для перемещения задачи: зажмите и удерживайте карточку, затем перетащите в нужную колонку
+      <div
+        style={{
+          backgroundColor: "#f8f9fa",
+          padding: "10px",
+          borderRadius: "8px",
+          marginBottom: "20px",
+          border: "1px solid #e9ecef",
+          fontSize: "12px",
+          color: "#6c757d",
+          textAlign: "center",
+          display: window.innerWidth <= 768 ? "block" : "none",
+        }}
+      >
+        📱 Для перемещения задачи: зажмите и удерживайте карточку, затем
+        перетащите в нужную колонку
       </div>
     );
   };
-
 
   const handleRetry = () => {
     if (refetchTasks) {

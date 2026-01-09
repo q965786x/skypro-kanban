@@ -12,7 +12,6 @@ export async function signIn(userData) {
 
     return response.data.user;
   } catch (error) {
-    // Всегда бросаем одну и ту же ошибку для формы входа
     throw new Error("Неверный логин или пароль");
   }
 }

@@ -14,7 +14,7 @@ import {
   SSwitchThumb,
   SExitButtonContainer,
   SExitButton,
-} from "./PopUser.styled"
+} from "./PopUser.styled";
 
 const PopUser = ({ isOpen, onClose }) => {
   const popupRef = useRef(null);
@@ -37,7 +37,7 @@ const PopUser = ({ isOpen, onClose }) => {
     };
 
     if (isOpen) {
-      openModal('popuser');
+      openModal("popuser");
       document.addEventListener("mousedown", popupClickOutside);
       document.addEventListener("keydown", handleEscape);
     } else {
@@ -71,7 +71,7 @@ const PopUser = ({ isOpen, onClose }) => {
 
         <SThemeRow $isDarkTheme={isDarkTheme} onClick={toggleTheme}>
           <SThemeLabel $isDarkTheme={isDarkTheme}>Темная тема</SThemeLabel>
-          
+
           <SSwitchContainer>
             <SSwitchBackground $isDarkTheme={isDarkTheme} />
             <SSwitchThumb $isDarkTheme={isDarkTheme} />
@@ -79,9 +79,7 @@ const PopUser = ({ isOpen, onClose }) => {
         </SThemeRow>
 
         <SExitButtonContainer>
-          <SExitButton onClick={handleExitClick}>
-            Выйти
-          </SExitButton>
+          <SExitButton onClick={handleExitClick}>Выйти</SExitButton>
         </SExitButtonContainer>
       </div>
     </SPopupContainer>

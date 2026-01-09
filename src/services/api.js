@@ -2,30 +2,33 @@ import axios from "axios";
 
 const API_URL = "https://wedev-api.sky.pro/api/kanban";
 
-const handleApiError = (error) => {  
+const handleApiError = (error) => {
   if (error.response?.status === 401) {
     throw new Error("Сессия истекла. Пожалуйста, войдите снова.");
   }
-  
+
   if (error.response?.status === 400) {
     throw new Error(error.response?.data?.error || "Некорректные данные");
   }
-  
+
   if (error.response?.status === 404) {
     throw new Error("Ресурс не найден");
   }
-  
+
   if (error.response?.status === 500) {
     throw new Error("Ошибка сервера. Попробуйте позже.");
   }
-  
-  if (!error.response) {
-    throw new Error("Нет соединения с сервером. Проверьте интернет-соединение.");
-  }
-  
-  throw new Error(error.response?.data?.error || error.message || "Произошла ошибка");
-};
 
+  if (!error.response) {
+    throw new Error(
+      "Нет соединения с сервером. Проверьте интернет-соединение."
+    );
+  }
+
+  throw new Error(
+    error.response?.data?.error || error.message || "Произошла ошибка"
+  );
+};
 
 export async function fetchTasks({ token }) {
   try {
@@ -36,10 +39,10 @@ export async function fetchTasks({ token }) {
     });
 
     return response.data;
-  } catch (error) {    
-      handleApiError(error);
+  } catch (error) {
+    handleApiError(error);
   }
-}    
+}
 
 export async function postTask({ token, task }) {
   try {
@@ -52,7 +55,7 @@ export async function postTask({ token, task }) {
 
     return response.data;
   } catch (error) {
-    handleApiError(error);    
+    handleApiError(error);
   }
 }
 

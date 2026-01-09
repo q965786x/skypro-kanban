@@ -10,5 +10,5 @@ export const TasksContext = createContext({
   removeTask: () => {},
   refetchTasks: () => {},
   clearError: () => {},
-  updateTaskStatus: () => {}, 
+  updateTaskStatus: () => {},
 });

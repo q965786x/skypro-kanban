@@ -3,7 +3,7 @@ import { AuthContext } from "./AuthContext";
 
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true); // Добавляем состояние проверки
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -18,13 +18,13 @@ const AuthProvider = ({ children }) => {
               setUser(userData);
               return;
             }
-          } catch (e) {            
+          } catch (e) {
             localStorage.removeItem("userInfo");
           }
         }
 
         setUser(null);
-      } catch (error) {        
+      } catch (error) {
         setUser(null);
       } finally {
         setIsCheckingAuth(false);
@@ -60,7 +60,7 @@ const AuthProvider = ({ children }) => {
         login,
         logout,
         updateUserInfo,
-        isCheckingAuth, 
+        isCheckingAuth,
       }}
     >
       {children}

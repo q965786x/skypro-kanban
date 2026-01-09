@@ -37,16 +37,12 @@ const AuthForm = ({ isSignUp }) => {
   const [hasEmptyFields, setHasEmptyFields] = useState(false);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
-  // Определяем, есть ли ошибка для изменения высоты формы
   const hasError = !!serverError || !!validationError;
 
-  // Рассчитываем высоту формы динамически
   const getFormHeight = () => {
     if (isSignUp) {
-      // Форма регистрации
       return hasError ? "406px" : "345px";
     } else {
-      // Форма входа
       return hasError ? "390px" : "329px";
     }
   };
@@ -56,7 +52,6 @@ const AuthForm = ({ isSignUp }) => {
     let isValid = true;
     let hasEmpty = false;
 
-    // Проверка на пустые поля
     if (isSignUp && !formData.name.trim()) {
       newErrors.name = true;
       isValid = false;
@@ -89,7 +84,6 @@ const AuthForm = ({ isSignUp }) => {
       return false;
     }
 
-    // Валидация email (только для регистрации)
     if (isSignUp && !formData.login.includes("@")) {
       newErrors.login = true;
       isValid = false;
@@ -98,7 +92,6 @@ const AuthForm = ({ isSignUp }) => {
       );
     }
 
-    // Валидация пароля (минимальная длина 3 символа) - только для регистрации
     if (isSignUp && formData.password.length < 3) {
       newErrors.password = true;
       isValid = false;
@@ -131,7 +124,6 @@ const AuthForm = ({ isSignUp }) => {
     if (validationError) setValidationError("");
     setHasEmptyFields(false);
 
-    // Сбрасываем disabled состояние кнопки если были ошибки
     if (isButtonDisabled && value.trim() !== "") {
       setIsButtonDisabled(false);
     }
@@ -146,7 +138,7 @@ const AuthForm = ({ isSignUp }) => {
     }
 
     setIsSubmitting(true);
-    setIsButtonDisabled(true); // Делаем кнопку неактивной при отправке
+    setIsButtonDisabled(true);
     setServerError("");
     setValidationError("");
 
@@ -160,26 +152,22 @@ const AuthForm = ({ isSignUp }) => {
         navigate("/");
       }
     } catch (err) {
-      // Для формы входа показываем специальное сообщение
       if (!isSignUp) {
         setServerError(
           "Введенные вами данные не распознаны. Проверьте свой логин и пароль и повторите попытку входа."
         );
       } else {
-        // Для регистрации - общее сообщение
         setServerError(
           "Введенные вами данные не корректны. Чтобы завершить регистрацию, введите данные корректно и повторите попытку."
         );
       }
 
-      // Подсвечиваем все поля при серверной ошибке
       setErrors({
         name: true,
         login: true,
         password: true,
       });
 
-      // Кнопка остается неактивной при серверной ошибке
       setIsButtonDisabled(true);
     } finally {
       setIsSubmitting(false);
@@ -190,10 +178,12 @@ const AuthForm = ({ isSignUp }) => {
     <SSignInWrapper>
       <SContainerSignIn>
         <SModal>
-          <SModalBlock style={{ 
-            height: getFormHeight(),
-            transition: 'height 0.3s ease'
-          }}>
+          <SModalBlock
+            style={{
+              height: getFormHeight(),
+              transition: "height 0.3s ease",
+            }}
+          >
             <SModalTtl>{isSignUp ? "Регистрация" : "Вход"}</SModalTtl>
             <form onSubmit={handleSubmit}>
               <SInputWrapper>
@@ -231,7 +221,6 @@ const AuthForm = ({ isSignUp }) => {
                 />
               </SInputWrapper>
 
-              {/* Сообщения об ошибках */}
               {(serverError || validationError) && (
                 <SErrorText>{serverError || validationError}</SErrorText>
               )}

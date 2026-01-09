@@ -30,13 +30,13 @@ export const SPopExitBlock = styled.div`
   // стили для .pop-exit__block
   display: block;
   margin: 0 auto;
-  background-color: ${props => props.theme.colors.surface};
+  background-color: ${(props) => props.theme.colors.surface};
   max-width: 370px;
   width: 100%;
   padding: 50px 60px;
   border-radius: 10px;
-  border: 0.7px solid ${props => props.theme.colors.border};
-  box-shadow: ${props => props.theme.shadows.medium};
+  border: 0.7px solid ${(props) => props.theme.colors.border};
+  box-shadow: ${(props) => props.theme.shadows.medium};
 `;
 
 export const SPopExitFormGroup = styled.div`
@@ -46,15 +46,15 @@ export const SPopExitFormGroup = styled.div`
   align-items: center;
   justify-content: space-between;
 
-    @media screen and (max-width: 495px) {
-      display: flex;
-      flex-direction: column;
-    }
+  @media screen and (max-width: 495px) {
+    display: flex;
+    flex-direction: column;
+  }
 
   .pop-exit__exit-yes {
     width: 153px;
     height: 30px;
-    background-color: ${props => props.theme.colors.primary};
+    background-color: ${(props) => props.theme.colors.primary};
     border-radius: 4px;
     border: none;
     outline: none;
@@ -71,7 +71,7 @@ export const SPopExitFormGroup = styled.div`
     transition: background-color 0.3s ease;
 
     &:hover {
-      background-color: ${props => props.theme.colors.primaryHover};
+      background-color: ${(props) => props.theme.colors.primaryHover};
     }
 
     span {
@@ -87,7 +87,7 @@ export const SPopExitFormGroup = styled.div`
     height: 30px;
     background-color: transparent;
     border-radius: 4px;
-    border: 0.7px solid ${props => props.theme.colors.primary};
+    border: 0.7px solid ${(props) => props.theme.colors.primary};
     outline: none;
     display: flex;
     align-items: center;
@@ -96,12 +96,12 @@ export const SPopExitFormGroup = styled.div`
     line-height: 21px;
     font-weight: 500;
     letter-spacing: -0.14px;
-    color: ${props => props.theme.colors.primary};
+    color: ${(props) => props.theme.colors.primary};
     cursor: pointer;
     transition: all 0.3s ease;
 
     &:hover {
-      background-color: ${props => props.theme.colors.primary};
+      background-color: ${(props) => props.theme.colors.primary};
       color: #ffffff;
     }
 
