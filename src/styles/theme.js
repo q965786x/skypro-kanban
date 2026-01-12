@@ -41,7 +41,7 @@ export const lightTheme = {
 export const darkTheme = {
   mode: "dark",
   colors: {
-    primary: "#565EEF", // Сохраняем тот же синий цвет для кнопок
+    primary: "#565EEF",
     primaryHover: "#6a73ff",
     secondary: "#A6B4CC",
     background: "#151419",

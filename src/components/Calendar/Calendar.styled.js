@@ -1,6 +1,5 @@
 import styled, { keyframes } from "styled-components";
 
-// Анимация для переключения месяцев
 const fadeIn = keyframes`
   from {
     opacity: 0;

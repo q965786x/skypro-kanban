@@ -21,7 +21,6 @@ export const ModalProvider = ({ children }) => {
     setIsModalOpen(false);
   };
 
-  // Управляем классом на body
   useEffect(() => {
     if (isModalOpen) {
       document.body.classList.add("modal-open");

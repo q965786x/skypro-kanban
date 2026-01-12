@@ -110,30 +110,40 @@ const TaskProvider = ({ children }) => {
       }
 
       try {
-        updateTaskStatus(id, taskData.status);
+        setTasks((prevTasks) => {
+          return prevTasks.map((task) =>
+            task._id === id || task.id === id
+              ? {
+                  ...task,
+                  ...taskData,
+                  title: taskData.title.trim(),
+                  description: taskData.description.trim(),
+                }
+              : task
+          );
+        });
 
-        const updatedTasks = await editTask({
+        const response = await editTask({
           token: user?.token,
           id,
           task: {
             ...taskData,
-            title: taskData.title?.trim() || taskData.title,
-            description: taskData.description?.trim() || taskData.description,
+            title: taskData.title.trim(),
+            description: taskData.description.trim(),
           },
         });
 
-        if (updatedTasks && Array.isArray(updatedTasks)) {
-          setTasks(updatedTasks);
+        if (response?.tasks && Array.isArray(response.tasks)) {
+          setTasks(response.tasks);
         }
 
         return true;
       } catch (error) {
-        loadTasks();
-        setError(error.message || "Ошибка редактирования задачи");
-        return false;
+        await loadTasks();
+        throw error;
       }
     },
-    [user?.token, updateTaskStatus, loadTasks]
+    [user?.token, loadTasks]
   );
 
   const removeTask = useCallback(
@@ -144,8 +154,13 @@ const TaskProvider = ({ children }) => {
       }
 
       try {
-        const updatedTasks = await deleteTask({ token: user?.token, id });
-        setTasks(updatedTasks || []);
+        const response = await deleteTask({ token: user?.token, id });
+
+        if (response && response.tasks && Array.isArray(response.tasks)) {
+          setTasks(response.tasks);
+        } else {
+          setTasks([]);
+        }
         return true;
       } catch (error) {
         setError(error.message || "Ошибка удаления задачи");

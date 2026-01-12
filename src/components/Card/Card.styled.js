@@ -3,22 +3,34 @@ import styled from "styled-components";
 export const SCardsContainer = styled.div`
   // стили для .cards
   width: 100%;
-  display: block;
-  position: relative;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 10px 5px;
+  margin-bottom: 10px;
 
-  @media screen and (max-width: 1200px) {
-    width: 100%;
-    display: flex;
-    overflow-y: auto;
+  @media screen and (min-width: 1201px) {
+    display: block;
+    overflow-x: visible;
+    padding: 0;
+    margin-bottom: 0;
   }
 `;
 
 export const SCardsItem = styled.div`
   // стили для .cards__item
-  padding: 5px;
-  animation-name: card-animation;
-  animation-duration: 500ms;
-  animation-timing-function: linear;
+
+  flex: 0 0 auto;
+  cursor: grab;
+
+  &:active {
+    cursor: grabbing;
+  }
+
+  @media screen and (min-width: 1201px) {
+    padding: 5px;
+  }
 `;
 
 export const SCardsCard = styled.div`
@@ -49,14 +61,14 @@ export const SCardsCard = styled.div`
   }
 
   @media screen and (max-width: 495px) {
-    width: 210px;
-    height: 120px;
+    width: 220px;
+    height: 130px;
     padding: 12px 10px 15px;
   }
 
   @media screen and (max-width: 375px) {
-    width: 200px;
-    height: 110px;
+    width: 220px;
+    height: 130px;
     padding: 10px 8px 12px;
   }
 `;

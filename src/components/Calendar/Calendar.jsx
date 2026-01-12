@@ -34,7 +34,6 @@ const Calendar = ({
     }
   }, [isMobile]);
 
-  // Определяем сегодняшнюю дату
   const today = useMemo(() => {
     const now = new Date();
     return {
@@ -44,11 +43,9 @@ const Calendar = ({
     };
   }, []);
 
-  // Парсим выбранную дату, если она передана
   const parsedSelectedDate = useMemo(() => {
     if (!selectedDate) return null;
 
-    // Пробуем разные форматы даты
     const formats = [
       /(\d{1,2})\.(\d{1,2})\.(\d{4})/, // DD.MM.YYYY
       /(\d{4})-(\d{1,2})-(\d{1,2})/, // YYYY-MM-DD
@@ -68,16 +65,13 @@ const Calendar = ({
     return null;
   }, [selectedDate]);
 
-  // Форматируем выбранную дату для отображения
   const displayDate = useMemo(() => {
     if (!selectedDate) return "не выбран";
 
-    // Если дата в формате DD.MM.YYYY, оставляем как есть
     if (selectedDate.match(/\d{1,2}\.\d{1,2}\.\d{4}/)) {
       return selectedDate;
     }
 
-    // Если дата в формате YYYY-MM-DD, конвертируем
     if (selectedDate.match(/\d{4}-\d{1,2}-\d{1,2}/)) {
       const [year, month, day] = selectedDate.split("-");
       return `${day.padStart(2, "0")}.${month.padStart(2, "0")}.${year}`;
@@ -86,12 +80,10 @@ const Calendar = ({
     return selectedDate;
   }, [selectedDate]);
 
-  // Генерируем дни для текущего месяца
   const { days, monthName, year, month } = useMemo(() => {
     const year = currentMonthDate.getFullYear();
     const month = currentMonthDate.getMonth();
 
-    // Название месяца на русском
     const monthNames = [
       "Январь",
       "Февраль",
@@ -108,16 +100,14 @@ const Calendar = ({
     ];
     const monthName = monthNames[month];
 
-    // Первый день месяца
     const firstDay = new Date(year, month, 1);
-    // Последний день месяца
+
     const lastDay = new Date(year, month + 1, 0);
-    // День недели первого дня (0 - воскресенье, 1 - понедельник)
+
     const firstDayOfWeek = firstDay.getDay();
     const adjustedFirstDayOfWeek =
       firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
 
-    // Дни предыдущего месяца
     const prevMonthLastDay = new Date(year, month, 0).getDate();
     const prevMonthDays = [];
     for (let i = adjustedFirstDayOfWeek - 1; i >= 0; i--) {
@@ -134,7 +124,6 @@ const Calendar = ({
       });
     }
 
-    // Дни текущего месяца
     const currentMonthDays = [];
     for (let i = 1; i <= lastDay.getDate(); i++) {
       const isToday =
@@ -163,8 +152,7 @@ const Calendar = ({
       });
     }
 
-    // Дни следующего месяца
-    const totalCells = 42; // 6 недель по 7 дней
+    const totalCells = 42;
     const nextMonthDays = [];
     const remainingCells =
       totalCells - (prevMonthDays.length + currentMonthDays.length);
@@ -195,7 +183,6 @@ const Calendar = ({
   const handleDayClick = (day) => {
     if (!day.isCurrentMonth || mode === "browse") return;
 
-    // Форматируем дату в формат DD.MM.YYYY
     const formattedDate = `${day.day.toString().padStart(2, "0")}.${(
       day.month + 1
     )

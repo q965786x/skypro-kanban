@@ -2,25 +2,12 @@ import styled from "styled-components";
 
 export const SMainColumn = styled.div`
   // стили для .main__column
-  width: 20%;
+  width: 100%;
   margin: 0 auto;
   display: block;
 
-  @media screen and (max-width: 1200px) {
-    width: 280px;
-    min-width: 280px;
-    flex-shrink: 0;
-    margin: 0;
-  }
-
-  @media screen and (max-width: 495px) {
-    width: 250px;
-    min-width: 250px;
-  }
-
-  @media screen and (max-width: 375px) {
-    width: 220px;
-    min-width: 220px;
+  @media screen and (min-width: 1201px) {
+    width: 20%;
   }
 `;
 

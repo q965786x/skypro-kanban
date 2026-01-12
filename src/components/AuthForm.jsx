@@ -74,13 +74,11 @@ const AuthForm = ({ isSignUp }) => {
     setErrors(newErrors);
 
     if (hasEmpty) {
-      if (isSignUp) {
-        setValidationError(
-          "Введенные вами данные не корректны. Чтобы завершить регистрацию, заполните все поля в форме."
-        );
-      } else {
-        setValidationError("");
-      }
+      setValidationError(
+        "Введенные вами данные не корректны. Чтобы " +
+          (isSignUp ? "завершить регистрацию" : "войти") +
+          ", заполните все поля в форме."
+      );
       return false;
     }
 

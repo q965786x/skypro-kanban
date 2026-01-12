@@ -24,6 +24,7 @@ export const SContainer = styled.div`
   width: 100%;
   margin: 0 auto;
   padding: 0 30px;
+  box-sizing: border-box;
 
   @media screen and (max-width: 1200px) {
     max-width: 100%;

@@ -7,9 +7,7 @@ import TaskProvider from "./context/TaskProvider";
 import { AuthContext } from "./context/AuthContext";
 import MobileCreateButton from "./components/MobileCreateButton";
 import { ModalProvider } from "./context/Modal";
-import { DragDropProvider } from "./context/DragDropContext";
 
-// Упрощенный компонент загрузки
 const LoadingSpinner = () => (
   <div style={styles.loadingContainer}>
     <div style={styles.spinner}></div>
@@ -17,7 +15,6 @@ const LoadingSpinner = () => (
   </div>
 );
 
-// Стили
 const styles = {
   loadingContainer: {
     display: "flex",
@@ -40,7 +37,6 @@ const styles = {
   },
 };
 
-// Компонент с проверкой авторизации
 function AppContent() {
   const { isCheckingAuth } = useContext(AuthContext);
 
@@ -56,15 +52,12 @@ function AppContent() {
   );
 }
 
-// Главный компонент
 function App() {
   return (
     <ModalProvider>
       <ThemeProvider>
         <AuthProvider>
-          <DragDropProvider>
-            <AppContent />
-          </DragDropProvider>
+          <AppContent />
         </AuthProvider>
       </ThemeProvider>
     </ModalProvider>

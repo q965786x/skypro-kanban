@@ -91,18 +91,17 @@ export const SLoadingText = styled.p`
 export const SMain = styled.main`
   // стили для Main
   width: 100%;
+  max-width: 100%;
   background-color: ${(props) =>
     props.theme.mode === "dark" ? "#151419" : props.theme.colors.background};
   min-height: calc(100vh - 94px);
   transition: background-color 0.3s ease;
-  padding: 94px 0 20px 0; /* Увеличиваем верхний padding */
+  padding: 94px 0 20px 0;
 
-  /* Планшет (768px - 1200px) */
   @media screen and (max-width: 1200px) {
     padding: 80px 0 20px 0;
   }
 
-  /* Мобильные */
   @media screen and (max-width: 495px) {
     padding: 60px 0 20px 0;
   }
@@ -115,31 +114,19 @@ export const SMain = styled.main`
 export const SMainBlock = styled.div`
   // стили для main__block
   width: 100%;
+  max-width: 100%;
   margin: 0 auto;
   padding: 25px 0 49px;
   transition: all 0.3s ease;
 
-  /* Десктоп большой */
-  @media screen and (min-width: 1440px) {
-    max-width: 1400px;
-  }
-
-  /* Десктоп обычный */
-  @media screen and (max-width: 1440px) {
-    padding: 20px 30px 40px;
-  }
-
-  /* Планшет горизонтальный (992px - 1200px) */
   @media screen and (max-width: 1200px) {
     padding: 20px 25px 35px;
   }
 
-  /* Планшет вертикальный (768px - 991px) */
   @media screen and (max-width: 991px) {
     padding: 15px 20px 30px;
   }
 
-  /* Мобильные (до 495px) */
   @media screen and (max-width: 495px) {
     padding: 10px 15px 25px;
   }
@@ -153,42 +140,21 @@ export const SMainContent = styled.div`
   // стили для .main__content
   width: 100%;
   display: flex;
+  flex-wrap: nowrap;
   gap: 20px;
 
-  /* Десктоп большой - больше отступов */
-  @media screen and (min-width: 1440px) {
-    gap: 24px;
-  }
-
-  /* Планшет горизонтальный (992px - 1200px) */
   @media screen and (max-width: 1200px) {
-    gap: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
   }
 
-  /* Планшет вертикальный (768px - 991px) */
-  @media screen and (max-width: 991px) {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
-    padding-bottom: 20px;
-  }
-
-  /* Мобильные средние (496px - 767px) */
-  @media screen and (max-width: 767px) {
-    grid-template-columns: 1fr;
-    gap: 14px;
-    padding-bottom: 15px;
-  }
-
-  /* Мобильные маленькие (до 495px) */
   @media screen and (max-width: 495px) {
-    gap: 12px;
-    padding-bottom: 12px;
+    gap: 25px;
   }
 
   @media screen and (max-width: 375px) {
-    gap: 10px;
-    padding-bottom: 10px;
+    gap: 20px;
   }
 `;
 
@@ -199,13 +165,11 @@ export const HeaderSection = styled.div`
   margin-bottom: 30px;
   padding: 0 20px;
 
-  /* Планшет */
   @media screen and (max-width: 991px) {
     margin-bottom: 25px;
     padding: 0 15px;
   }
 
-  /* Мобильные */
   @media screen and (max-width: 495px) {
     margin-bottom: 20px;
     padding: 0 10px;
@@ -220,12 +184,10 @@ export const WelcomeText = styled.h1`
   color: ${(props) => props.theme.colors.primary};
   font-weight: 600;
 
-  /* Планшет */
   @media screen and (max-width: 991px) {
     font-size: 22px;
   }
 
-  /* Мобильные */
   @media screen and (max-width: 495px) {
     font-size: 20px;
   }
@@ -249,13 +211,11 @@ export const AddCardButton = styled.button`
     box-shadow: 0 4px 8px rgba(86, 94, 239, 0.3);
   }
 
-  /* Планшет */
   @media screen and (max-width: 991px) {
     padding: 9px 18px;
     font-size: 13px;
   }
 
-  /* Мобильные */
   @media screen and (max-width: 495px) {
     padding: 8px 16px;
     font-size: 12px;
@@ -274,13 +234,11 @@ export const SErrorContainer = styled.div`
   gap: 20px;
   background: ${(props) => props.theme.colors.background};
 
-  /* Планшет */
   @media screen and (max-width: 991px) {
     height: 350px;
     gap: 15px;
   }
 
-  /* Мобильные */
   @media screen and (max-width: 495px) {
     height: 300px;
     gap: 12px;
@@ -293,13 +251,11 @@ export const SErrorText = styled.div`
   color: ${(props) => props.theme.colors.error};
   text-align: center;
 
-  /* Планшет */
   @media screen and (max-width: 991px) {
     font-size: 16px;
     padding: 0 20px;
   }
 
-  /* Мобильные */
   @media screen and (max-width: 495px) {
     font-size: 14px;
     padding: 0 15px;
@@ -321,13 +277,11 @@ export const SRetryButton = styled.button`
     transform: translateY(-1px);
   }
 
-  /* Планшет */
   @media screen and (max-width: 991px) {
     padding: 9px 18px;
     font-size: 13px;
   }
 
-  /* Мобильные */
   @media screen and (max-width: 495px) {
     padding: 8px 16px;
     font-size: 12px;
@@ -348,14 +302,12 @@ export const SOfflineIndicator = styled.div`
   font-weight: 500;
   transition: all 0.3s ease;
 
-  /* Планшет */
   @media screen and (max-width: 991px) {
     padding: 10px 15px;
     font-size: 13px;
     margin-bottom: 15px;
   }
 
-  /* Мобильные */
   @media screen and (max-width: 495px) {
     padding: 8px 12px;
     font-size: 12px;

@@ -22,7 +22,7 @@ import {
   SCategoriesTheme,
 } from "./PopNewCard.styled";
 
-const PopNewCard = ({ isOpen, onClose, onCreateCard }) => {
+const PopNewCard = ({ isOpen, onClose }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [selectedTopic, setSelectedTopic] = useState("Web Design");
@@ -38,41 +38,14 @@ const PopNewCard = ({ isOpen, onClose, onCreateCard }) => {
     addNewTask,
     error: contextError,
     clearError,
+    refetchTasks,
   } = useContext(TasksContext);
 
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 495);
-    };
-
+    const checkMobile = () => setIsMobile(window.innerWidth <= 495);
     checkMobile();
     window.addEventListener("resize", checkMobile);
-
-    return () => {
-      window.removeEventListener("resize", checkMobile);
-    };
-  }, []);
-
-  const formatDateForAPI = useCallback((dateString) => {
-    if (!dateString) return new Date().toISOString();
-
-    // Преобразуем DD.MM.YYYY в YYYY-MM-DD
-    if (dateString.match(/\d{1,2}\.\d{1,2}\.\d{4}/)) {
-      const [day, month, year] = dateString.split(".");
-      const formattedDate = `${year}-${month.padStart(2, "0")}-${day.padStart(
-        2,
-        "0"
-      )}`;
-      return new Date(formattedDate).toISOString();
-    }
-
-    // Если дата уже в формате YYYY-MM-DD
-    if (dateString.match(/\d{4}-\d{1,2}-\d{1,2}/)) {
-      return new Date(dateString).toISOString();
-    }
-
-    // Если дата в другом формате, возвращаем как есть
-    return dateString;
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   useEffect(() => {
@@ -85,14 +58,15 @@ const PopNewCard = ({ isOpen, onClose, onCreateCard }) => {
       )
         .toString()
         .padStart(2, "0")}.${today.getFullYear()}`;
+
       setSelectedDate(formattedDate);
       setFormError("");
+
       if (clearError) clearError();
 
       document.body.style.overflow = "hidden";
     } else {
       closeModal();
-
       document.body.style.overflow = "";
     }
 
@@ -101,6 +75,21 @@ const PopNewCard = ({ isOpen, onClose, onCreateCard }) => {
       document.body.style.overflow = "";
     };
   }, [isOpen, openModal, closeModal, clearError]);
+
+  const formatDateForAPI = useCallback((dateString) => {
+    if (!dateString) return new Date().toISOString();
+
+    if (dateString.match(/\d{1,2}\.\d{1,2}\.\d{4}/)) {
+      const [day, month, year] = dateString.split(".");
+      const formattedDate = `${year}-${month.padStart(2, "0")}-${day.padStart(
+        2,
+        "0"
+      )}`;
+      return new Date(formattedDate).toISOString();
+    }
+
+    return new Date().toISOString();
+  }, []);
 
   const validateForm = () => {
     if (!title.trim()) {
@@ -132,6 +121,7 @@ const PopNewCard = ({ isOpen, onClose, onCreateCard }) => {
       if (!validateForm()) return;
 
       setIsSubmitting(true);
+      setFormError("");
 
       try {
         const newCard = {
@@ -145,10 +135,19 @@ const PopNewCard = ({ isOpen, onClose, onCreateCard }) => {
         const success = await addNewTask(newCard);
 
         if (success) {
+          if (refetchTasks) {
+            await refetchTasks();
+          }
+
+          if (onClose) {
+            onClose();
+          }
+
           setTitle("");
           setDescription("");
           setSelectedTopic("Web Design");
           setSelectedStatus("Без статуса");
+
           navigate("/");
         } else {
           setFormError("Не удалось создать задачу");
@@ -169,6 +168,8 @@ const PopNewCard = ({ isOpen, onClose, onCreateCard }) => {
       addNewTask,
       navigate,
       formatDateForAPI,
+      onClose,
+      refetchTasks,
     ]
   );
 
@@ -184,6 +185,19 @@ const PopNewCard = ({ isOpen, onClose, onCreateCard }) => {
     setSelectedDate(date);
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === "Escape" && !isSubmitting) {
+      handleClose();
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isSubmitting]);
+
   if (!isOpen) return null;
 
   return (
@@ -192,7 +206,13 @@ const PopNewCard = ({ isOpen, onClose, onCreateCard }) => {
         <SPopNewCardBlock>
           <SPopNewCardContent>
             <SPopNewCardTtl>Создание задачи</SPopNewCardTtl>
-            <SPopNewCardClose onClick={onClose}>&#10006;</SPopNewCardClose>
+            <SPopNewCardClose
+              onClick={handleClose}
+              disabled={isSubmitting}
+              style={{ opacity: isSubmitting ? 0.5 : 1 }}
+            >
+              &#10006;
+            </SPopNewCardClose>
 
             {(formError || contextError) && (
               <div
@@ -275,6 +295,7 @@ const PopNewCard = ({ isOpen, onClose, onCreateCard }) => {
                   selectedDate={selectedDate}
                   onDateSelect={handleDateSelect}
                   isMobile={isMobile}
+                  disabled={isSubmitting}
                 />
               </div>
             </SPopNewCardWrap>
@@ -341,6 +362,7 @@ const PopNewCard = ({ isOpen, onClose, onCreateCard }) => {
                 onClick={handleSubmit}
                 disabled={isSubmitting}
                 isMobile={isMobile}
+                type="button"
               >
                 {isSubmitting ? (
                   <>
@@ -355,6 +377,7 @@ const PopNewCard = ({ isOpen, onClose, onCreateCard }) => {
                         borderRadius: "50%",
                         animation: "spin 1s linear infinite",
                         marginRight: "8px",
+                        verticalAlign: "middle",
                       }}
                     />
                     Создание...

@@ -372,7 +372,7 @@ export const SCategoriesTheme = styled.div.withConfig({
 `;
 
 export const SFormNewBtnCreate = styled.button.withConfig({
-  shouldForwardProp: (prop) => prop !== 'isMobile',
+  shouldForwardProp: (prop) => prop !== "isMobile",
 })`
   //стили для .form-new__create
   width: 132px !important;

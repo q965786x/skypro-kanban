@@ -1,5 +1,11 @@
 import React from "react";
-import { NotFoundContainer, Title, Text, HomeLink } from "./NotFound.styled";
+import { 
+  NotFoundContainer, 
+  Title, 
+  Text, 
+  Description,
+  HomeLink 
+} from "./NotFound.styled";
 
 const NotFound = () => {
   return (

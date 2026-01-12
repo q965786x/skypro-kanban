@@ -76,14 +76,11 @@ const Header = () => {
             </Link>
           </SHeaderLogo>
           <SHeaderNav>
-            {/* ТОЛЬКО ДЕСКТОПНАЯ ВЕРСИЯ: кнопка в Header */}
             {!isMobile && (
               <SHeaderButton className="_hover01">
                 <Link to="card/new">Создать новую задачу</Link>
               </SHeaderButton>
             )}
-
-            {/* МОБИЛЬНАЯ ВЕРСИЯ: кнопка НЕ отображается в Header */}
 
             <SHeaderUser className="_hover02" onClick={handleClick}>
               {user?.name || user?.login || "Пользователь"}

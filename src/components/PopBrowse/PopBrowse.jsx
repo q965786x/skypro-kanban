@@ -1,7 +1,12 @@
-import React, { useState, useContext, useEffect, useCallback } from "react";
+import React, {
+  useState,
+  useContext,
+  useEffect,
+  useCallback,
+  useMemo,
+} from "react";
 import Calendar from "../Calendar/Calendar";
 import { TasksContext } from "../../context/TaskContext";
-import { useModal } from "../../context/Modal";
 import {
   SPopBrowse,
   SPopBrowseContainer,
@@ -26,56 +31,69 @@ import {
   SPopBrowseTitleInput,
 } from "./PopBrowse.styled";
 
-const PopBrowse = ({ card, onClose }) => {
+const PopBrowse = ({ card: initialCard, onClose }) => {
+  const tasksContext = useContext(TasksContext);
+
+  if (!tasksContext) {
+    return (
+      <div style={{ padding: "20px", color: "red" }}>
+        Ошибка: контекст задач не доступен
+      </div>
+    );
+  }
+
+  const { tasks, updateTask, removeTask } = tasksContext;
+
+  const [currentCard, setCurrentCard] = useState(initialCard);
   const [isEditing, setIsEditing] = useState(false);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState("");
+  const [title, setTitle] = useState(initialCard?.title || "");
+  const [description, setDescription] = useState(
+    initialCard?.description || ""
+  );
+  const [selectedStatus, setSelectedStatus] = useState(
+    initialCard?.status || "Без статуса"
+  );
+  const [selectedTopic, setSelectedTopic] = useState(
+    initialCard?.topic || "Web Design"
+  );
   const [selectedDate, setSelectedDate] = useState("");
   const [formattedDate, setFormattedDate] = useState("");
-  const [selectedTopic, setSelectedTopic] = useState("");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDeleted, setIsDeleted] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const { openModal, closeModal } = useModal();
-
-  const { updateTask, removeTask } = useContext(TasksContext);
 
   useEffect(() => {
-    if (card) {
-      setTitle(card.title || "");
-      setDescription(card.description || "");
-      setSelectedStatus(card.status || "Без статуса");
-
-      const normalizedDate = normalizeDate(card.date || "");
-
-      setSelectedDate(normalizedDate);
-      setFormattedDate(normalizedDate);
-
-      setSelectedTopic(card.topic || "Web Design");
+    if (initialCard?._id && tasks?.length > 0) {
+      const updatedCard = tasks.find(
+        (task) => task._id === initialCard._id || task.id === initialCard._id
+      );
+      if (updatedCard) {
+        setCurrentCard(updatedCard);
+      }
     }
-  }, [card]);
+  }, [tasks, initialCard]);
 
   useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 495);
-    };
+    if (currentCard) {
+      setTitle(currentCard.title || "");
+      setDescription(currentCard.description || "");
+      setSelectedStatus(currentCard.status || "Без статуса");
+      setSelectedTopic(currentCard.topic || "Web Design");
 
+      if (currentCard.date) {
+        const normalizedDate = normalizeDate(currentCard.date);
+        setSelectedDate(normalizedDate);
+      }
+    }
+  }, [currentCard]);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth <= 495);
     checkMobile();
     window.addEventListener("resize", checkMobile);
-
-    return () => {
-      window.removeEventListener("resize", checkMobile);
-    };
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
-
-  useEffect(() => {
-    openModal();
-
-    return () => {
-      closeModal();
-    };
-  }, [openModal, closeModal]);
 
   const getTopicClass = (topic) => {
     switch (topic) {
@@ -90,13 +108,109 @@ const PopBrowse = ({ card, onClose }) => {
     }
   };
 
+  const normalizeDate = (dateString) => {
+    if (!dateString) return "";
+    if (dateString.includes("T") && dateString.endsWith("Z")) {
+      try {
+        const date = new Date(dateString);
+        const day = date.getDate().toString().padStart(2, "0");
+        const month = (date.getMonth() + 1).toString().padStart(2, "0");
+        const year = date.getFullYear();
+        return `${day}.${month}.${year}`;
+      } catch (error) {
+        return "";
+      }
+    }
+    return dateString;
+  };
+
+  const formatDateForAPI = useCallback((dateString) => {
+    if (!dateString) return new Date().toISOString();
+    if (dateString.match(/\d{1,2}\.\d{1,2}\.\d{4}/)) {
+      const [day, month, year] = dateString.split(".");
+      return new Date(`${year}-${month}-${day}`).toISOString();
+    }
+    return dateString;
+  }, []);
+
+  const formatDisplayDate = (dateString) => {
+    if (!dateString) return "не установлен";
+
+    if (dateString.match(/\d{1,2}\.\d{1,2}\.\d{4}/)) {
+      return dateString;
+    }
+
+    if (dateString === "не установлен") {
+      return dateString;
+    }
+
+    const normalized = normalizeDate(dateString);
+    return normalized || "не установлен";
+  };
+
+  const handleSave = useCallback(
+    async (e) => {
+      e.preventDefault();
+
+      if (isSubmitting) return;
+
+      if (!currentCard) {
+        setError("Карточка не найдена");
+        return;
+      }
+
+      if (!title.trim()) {
+        setError("Название задачи не может быть пустым");
+        return;
+      }
+
+      if (!description.trim()) {
+        setError("Описание задачи не может быть пустым");
+        return;
+      }
+
+      setIsSubmitting(true);
+      setError("");
+
+      try {
+        const success = await updateTask(currentCard._id || currentCard.id, {
+          title: title.trim(),
+          description: description.trim(),
+          topic: selectedTopic,
+          status: selectedStatus,
+          date: formatDateForAPI(selectedDate) || new Date().toISOString(),
+        });
+
+        if (success) {
+          setIsEditing(false);
+        } else {
+          setError("Не удалось сохранить");
+        }
+      } catch (err) {
+        setError(err.message || "Произошла ошибка при сохранении");
+      } finally {
+        setIsSubmitting(false);
+      }
+    },
+    [
+      currentCard,
+      isSubmitting,
+      title,
+      description,
+      selectedTopic,
+      selectedStatus,
+      selectedDate,
+      formatDateForAPI,
+      updateTask,
+    ]
+  );
+
   const handleClose = useCallback(
     (e) => {
       e.preventDefault();
-      closeModal();
       onClose();
     },
-    [closeModal, onClose]
+    [onClose]
   );
 
   const handleOverlayClick = useCallback(
@@ -120,173 +234,94 @@ const PopBrowse = ({ card, onClose }) => {
       setIsEditing(false);
       setError("");
 
-      if (card) {
-        setTitle(card.title || "");
-        setDescription(card.description || "");
-        setSelectedStatus(card.status || "Без статуса");
+      if (currentCard) {
+        setTitle(currentCard.title || "");
+        setDescription(currentCard.description || "");
+        setSelectedStatus(currentCard.status || "Без статуса");
+        setSelectedTopic(currentCard.topic || "Web Design");
 
-        const normalizedDate = normalizeDate(card.date || "");
-        setSelectedDate(normalizedDate);
-        setFormattedDate(normalizedDate);
-
-        setSelectedTopic(card.topic || "Web Design");
+        if (currentCard.date) {
+          const normalizedDate = normalizeDate(currentCard.date);
+          setSelectedDate(normalizedDate);
+        }
       }
     },
-    [card]
-  );
-
-  const normalizeDate = (dateString) => {
-    if (!dateString) return "";
-
-    // 1. ISO формат (2026-01-17T00:00:00.000Z)
-    if (dateString.includes("T") && dateString.endsWith("Z")) {
-      try {
-        const date = new Date(dateString);
-        if (!isNaN(date.getTime())) {
-          const day = date.getDate().toString().padStart(2, "0");
-          const month = (date.getMonth() + 1).toString().padStart(2, "0");
-          const year = date.getFullYear();
-          return `${day}.${month}.${year}`;
-        }
-      } catch (error) {}
-    }
-
-    // 2. Формат DD.MM.YYYY - возвращаем как есть
-    if (dateString.match(/\d{1,2}\.\d{1,2}\.\d{4}/)) {
-      return dateString;
-    }
-
-    // 3. Формат YYYY-MM-DD
-    if (dateString.match(/\d{4}-\d{1,2}-\d{1,2}/)) {
-      const [year, month, day] = dateString.split("-");
-      return `${day.padStart(2, "0")}.${month.padStart(2, "0")}.${year}`;
-    }
-
-    return dateString;
-  };
-
-  const formatDisplayDate = (dateString) => {
-    if (!dateString) return "не установлен";
-
-    // Если дата уже в формате DD.MM.YYYY
-    if (dateString.match(/\d{1,2}\.\d{1,2}\.\d{4}/)) {
-      return dateString;
-    }
-
-    if (dateString === "не установлен") {
-      return dateString;
-    }
-
-    const normalized = normalizeDate(dateString);
-    return normalized || "не установлен";
-  };
-
-  const formatDateForAPI = useCallback((dateString) => {
-    if (!dateString || dateString === "не установлен") {
-      return new Date().toISOString();
-    }
-
-    // Если дата уже в формате DD.MM.YYYY
-    if (dateString.match(/\d{1,2}\.\d{1,2}\.\d{4}/)) {
-      const [day, month, year] = dateString.split(".");
-      const formattedDate = `${year}-${month.padStart(2, "0")}-${day.padStart(
-        2,
-        "0"
-      )}`;
-      return new Date(formattedDate).toISOString();
-    }
-
-    // Если дата уже в ISO формате
-    if (dateString.includes("T") && dateString.endsWith("Z")) {
-      return dateString;
-    }
-
-    return new Date().toISOString();
-  }, []);
-
-  const handleSave = useCallback(
-    async (e) => {
-      e.preventDefault();
-
-      if (isSubmitting || !card) return;
-
-      if (!title.trim()) {
-        setError("Название задачи не может быть пустым");
-        return;
-      }
-
-      if (!description.trim()) {
-        setError("Описание задачи не может быть пустым");
-        return;
-      }
-
-      setIsSubmitting(true);
-      setError("");
-
-      try {
-        const updatedTask = {
-          title: title.trim(),
-          description: description.trim(),
-          topic: selectedTopic,
-          status: selectedStatus,
-          date: formatDateForAPI(formattedDate),
-        };
-
-        const success = await updateTask(card._id || card.id, updatedTask);
-
-        if (success) {
-          setIsEditing(false);
-        } else {
-          setError("Не удалось сохранить изменения");
-        }
-      } catch (err) {
-        setError(err.message || "Произошла ошибка при сохранении");
-      } finally {
-        setIsSubmitting(false);
-      }
-    },
-    [
-      card,
-      isSubmitting,
-      title,
-      description,
-      selectedTopic,
-      selectedStatus,
-      formattedDate,
-      updateTask,
-      formatDateForAPI,
-    ]
+    [currentCard]
   );
 
   const handleDelete = useCallback(
     async (e) => {
       e.preventDefault();
+      e.stopPropagation();
 
-      if (isSubmitting || !card) return;
+      if (isSubmitting) return;
 
-      if (!window.confirm("Вы уверены, что хотите удалить эту задачу?")) {
-        return;
-      }
+      if (!currentCard) return;
+
+      const isConfirmed = window.confirm(
+        `Вы уверены, что хотите удалить задачу "${currentCard.title}"?`
+      );
+
+      if (!isConfirmed) return;
 
       setIsSubmitting(true);
       setError("");
+      setIsDeleted(true);
 
       try {
-        const success = await removeTask(card._id || card.id);
+        const success = await removeTask(currentCard._id || currentCard.id);
 
         if (success) {
-          onClose();
+          setTimeout(() => {
+            onClose();
+          }, 300);
         } else {
           setError("Не удалось удалить задачу");
+          setIsDeleted(false);
         }
       } catch (err) {
         setError(err.message || "Произошла ошибка при удалении");
+        setIsDeleted(false);
       } finally {
         setIsSubmitting(false);
       }
     },
-    [card, isSubmitting, removeTask, onClose]
+    [currentCard, isSubmitting, removeTask, onClose]
   );
+
+  const handleDateSelect = useCallback(
+    (date) => {
+      if (!isSubmitting && isEditing) {
+        // date приходит в формате DD.MM.YYYY из Calendar
+        setSelectedDate(date);
+        setFormattedDate(date);
+      }
+    },
+    [isSubmitting, isEditing]
+  );
+
+  useEffect(() => {
+    const handleEscKey = (e) => {
+      if (e.key === "Escape") {
+        if (isEditing) {
+          handleCancelEdit(e);
+        } else {
+          handleClose(e);
+        }
+      }
+    };
+
+    document.addEventListener("keydown", handleEscKey);
+
+    return () => {
+      document.removeEventListener("keydown", handleEscKey);
+    };
+  }, [isEditing, handleCancelEdit, handleClose]);
+
+  // Получаем актуальную дату для отображения
+  const displayDate = useMemo(() => {
+    return formatDisplayDate(selectedDate || currentCard?.date);
+  }, [selectedDate, currentCard]);
 
   const StatusSection = ({ status, onStatusChange, isEditing: editMode }) => {
     const statuses = [
@@ -301,7 +336,6 @@ const PopBrowse = ({ card, onClose }) => {
       <SPopBrowseStatus
         style={{
           display: "flex",
-
           gap: "10px",
         }}
       >
@@ -391,37 +425,6 @@ const PopBrowse = ({ card, onClose }) => {
     );
   };
 
-  const handleDateSelect = useCallback(
-    (date) => {
-      if (!isSubmitting && isEditing) {
-        // date приходит в формате DD.MM.YYYY из Calendar
-        setSelectedDate(date);
-        setFormattedDate(date);
-      }
-    },
-    [isSubmitting, isEditing]
-  );
-
-  useEffect(() => {
-    const handleEscKey = (e) => {
-      if (e.key === "Escape") {
-        if (isEditing) {
-          handleCancelEdit(e);
-        } else {
-          handleClose(e);
-        }
-      }
-    };
-
-    document.addEventListener("keydown", handleEscKey);
-
-    return () => {
-      document.removeEventListener("keydown", handleEscKey);
-    };
-  }, [isEditing, handleCancelEdit, handleClose]);
-
-  const displayDate = formatDisplayDate(selectedDate || card?.date);
-
   const renderCategory = () => {
     const categoryElement = (
       <div
@@ -469,6 +472,40 @@ const PopBrowse = ({ card, onClose }) => {
 
     return categoryElement;
   };
+
+  if (isDeleted) {
+    return (
+      <div
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: "rgba(0,0,0,0.5)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          zIndex: 1000,
+        }}
+      >
+        <div
+          style={{
+            background: "white",
+            padding: "30px",
+            borderRadius: "10px",
+            textAlign: "center",
+          }}
+        >
+          <div
+            className="loading-spinner"
+            style={{ margin: "0 auto 15px" }}
+          ></div>
+          <p style={{ color: "#565eef" }}>Задача удалена. Перенаправление...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <SPopBrowse style={{ display: "block" }} onClick={handleOverlayClick}>
@@ -526,19 +563,31 @@ const PopBrowse = ({ card, onClose }) => {
                     Описание задачи
                   </label>
 
-                  <SFormBrowseArea
-                    name="text"
-                    id="textArea01"
-                    readOnly={!isEditing}
-                    value={description}
-                    onChange={
-                      isEditing
-                        ? (e) => setDescription(e.target.value)
-                        : undefined
-                    }
-                    placeholder="Описание задачи отсутствует..."
-                    disabled={isSubmitting || !isEditing}
-                  />
+                  {isEditing ? (
+                    <SFormBrowseArea
+                      name="text"
+                      id="textArea01"
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      placeholder="Описание задачи отсутствует..."
+                      disabled={isSubmitting}
+                    />
+                  ) : (
+                    <div
+                      style={{
+                        background: "#F5F5F5",
+                        padding: "15px",
+                        borderRadius: "8px",
+                        minHeight: "100px",
+                        marginTop: "10px",
+                        color: "#000000",
+                        fontSize: "14px",
+                        lineHeight: "1.5",
+                      }}
+                    >
+                      {description || "Описание задачи отсутствует..."}
+                    </div>
+                  )}
                 </div>
 
                 {/* 4. Календарь */}
@@ -571,7 +620,6 @@ const PopBrowse = ({ card, onClose }) => {
             ) : (
               // Десктопная версия
               <>
-                {/* 1. Название задачи и категория в правом верхнем углу */}
                 <SPopBrowseTopBlock>
                   <TitleField
                     title={title}
@@ -580,7 +628,6 @@ const PopBrowse = ({ card, onClose }) => {
                     isSubmitting={isSubmitting}
                   />
 
-                  {/* Категория в правом верхнем углу (только для десктопа) */}
                   {selectedTopic && (
                     <div style={{ alignSelf: "flex-start" }}>
                       {renderCategory()}
@@ -588,14 +635,12 @@ const PopBrowse = ({ card, onClose }) => {
                   )}
                 </SPopBrowseTopBlock>
 
-                {/* 2. Статус */}
                 <StatusSection
                   status={selectedStatus}
                   onStatusChange={isEditing ? setSelectedStatus : undefined}
                   isEditing={isEditing}
                 />
 
-                {/* 3. Описание задачи и календарь - горизонтально */}
                 <SPopBrowseWrap>
                   <SPopBrowseForm>
                     <SFormBrowseBlock>
@@ -612,23 +657,34 @@ const PopBrowse = ({ card, onClose }) => {
                         Описание задачи
                       </label>
 
-                      <SFormBrowseArea
-                        name="text"
-                        id="textArea01"
-                        readOnly={!isEditing}
-                        value={description}
-                        onChange={
-                          isEditing
-                            ? (e) => setDescription(e.target.value)
-                            : undefined
-                        }
-                        placeholder="Описание задачи отсутствует..."
-                        disabled={isSubmitting || !isEditing}
-                      />
+                      {isEditing ? (
+                        <SFormBrowseArea
+                          name="text"
+                          id="textArea01"
+                          value={description}
+                          onChange={(e) => setDescription(e.target.value)}
+                          placeholder="Описание задачи отсутствует..."
+                          disabled={isSubmitting}
+                        />
+                      ) : (
+                        <div
+                          style={{
+                            background: "#F5F5F5",
+                            padding: "15px",
+                            borderRadius: "8px",
+                            minHeight: "200px",
+                            marginTop: "10px",
+                            color: "#000000",
+                            fontSize: "14px",
+                            lineHeight: "1.5",
+                          }}
+                        >
+                          {description || "Описание задачи отсутствует..."}
+                        </div>
+                      )}
                     </SFormBrowseBlock>
                   </SPopBrowseForm>
 
-                  {/* Календарь справа */}
                   <Calendar
                     mode={isEditing ? "new" : "browse"}
                     selectedDate={isEditing ? formattedDate : displayDate}
@@ -639,7 +695,6 @@ const PopBrowse = ({ card, onClose }) => {
               </>
             )}
 
-            {/* 6. Кнопки */}
             {isEditing ? (
               <SPopBrowseBtnEdit
                 style={{
@@ -685,21 +740,19 @@ const PopBrowse = ({ card, onClose }) => {
                   </SBtnEdit>
                 </SBtnGroup>
 
-                {/* Кнопка Закрыть - для мобилки внизу, для десктопа справа */}
                 {!isMobile && (
                   <SBtnClose
                     onClick={handleClose}
                     disabled={isSubmitting}
                     style={{
                       opacity: isSubmitting ? 0.7 : 1,
-                      order: 2, // Для десктопа - второй элемент
+                      order: 2,
                     }}
                   >
                     Закрыть
                   </SBtnClose>
                 )}
 
-                {/* Для мобильной версии - кнопка Закрыть отдельно внизу */}
                 {isMobile && (
                   <SBtnClose
                     onClick={handleClose}
@@ -708,7 +761,7 @@ const PopBrowse = ({ card, onClose }) => {
                       opacity: isSubmitting ? 0.7 : 1,
                       width: "100%",
                       marginTop: "10px",
-                      order: 2, // Для мобилки - второй элемент (после всех кнопок)
+                      order: 2,
                     }}
                   >
                     Закрыть
@@ -752,21 +805,19 @@ const PopBrowse = ({ card, onClose }) => {
                   </SBtnEdit>
                 </SBtnGroup>
 
-                {/* Кнопка Закрыть - для мобилки внизу, для десктопа справа */}
                 {!isMobile && (
                   <SBtnClose
                     onClick={handleClose}
                     disabled={isSubmitting}
                     style={{
                       opacity: isSubmitting ? 0.7 : 1,
-                      order: 2, // Для десктопа - второй элемент
+                      order: 2,
                     }}
                   >
                     Закрыть
                   </SBtnClose>
                 )}
 
-                {/* Для мобильной версии - кнопка Закрыть отдельно внизу */}
                 {isMobile && (
                   <SBtnClose
                     onClick={handleClose}
@@ -775,7 +826,7 @@ const PopBrowse = ({ card, onClose }) => {
                       opacity: isSubmitting ? 0.7 : 1,
                       width: "100%",
                       marginTop: "10px",
-                      order: 2, // Для мобилки - второй элемент (после всех кнопок)
+                      order: 2,
                     }}
                   >
                     Закрыть

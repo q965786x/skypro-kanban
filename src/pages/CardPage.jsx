@@ -11,7 +11,7 @@ const CardPage = () => {
   const { tasks } = useContext(TasksContext);
   const navigate = useNavigate();
   const { id } = useParams();
-  const [cardNotFound, setCardNotFound] = useState(false);
+  const [shouldRedirect, setShouldRedirect] = useState(false);
 
   const card = tasks.find((card) => card._id === id || card.id === id);
 
@@ -20,36 +20,24 @@ const CardPage = () => {
   };
 
   useEffect(() => {
-    const handleEscape = (e) => {
-      if (e.key === "Escape") {
-        handleClose();
-      }
-    };
-
-    document.addEventListener("keydown", handleEscape);
-
-    return () => {
-      document.removeEventListener("keydown", handleEscape);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!card && id) {
-      const timer = setTimeout(() => {
-        const updatedCard = tasks.find((c) => c._id === id || c.id === id);
-        if (!updatedCard) {
-          setCardNotFound(true);
-          setTimeout(() => {
-            navigate("/");
-          }, 2000);
-        }
-      }, 500);
-
-      return () => clearTimeout(timer);
+    if (!card && id && tasks.length > 0) {
+      setTimeout(() => {
+        navigate("/");
+      }, 100);
     }
   }, [card, id, tasks, navigate]);
 
-  if (cardNotFound) {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (shouldRedirect) {
+        navigate("/");
+      }
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [shouldRedirect, navigate]);
+
+  if (!card) {
     return (
       <div className="wrapper">
         <Header />
@@ -71,33 +59,16 @@ const CardPage = () => {
           <div
             style={{
               background: "white",
-              padding: "20px",
+              padding: "30px",
               borderRadius: "10px",
               textAlign: "center",
-              maxWidth: "400px",
-              width: "90%",
             }}
           >
-            <h3 style={{ color: "#565eef", marginBottom: "15px" }}>
-              Задача не найдена
-            </h3>
-            <p style={{ color: "#94a6be", marginBottom: "20px" }}>
-              Задача была удалена или не существует.
-            </p>
-            <button
-              onClick={handleClose}
-              style={{
-                padding: "10px 20px",
-                background: "#565eef",
-                color: "white",
-                border: "none",
-                borderRadius: "4px",
-                cursor: "pointer",
-                fontSize: "14px",
-              }}
-            >
-              Вернуться на главную
-            </button>
+            <div
+              className="loading-spinner"
+              style={{ margin: "0 auto 15px" }}
+            ></div>
+            <p style={{ color: "#565eef" }}>Перенаправление на главную...</p>
           </div>
         </div>
       </div>
@@ -147,7 +118,13 @@ const CardPage = () => {
       <Header />
       <Main />
 
-      {card && <PopBrowse card={card} onClose={handleClose} />}
+      <PopBrowse
+        card={card}
+        onClose={() => {
+          setShouldRedirect(true);
+          setTimeout(() => navigate("/"), 100);
+        }}
+      />
     </div>
   );
 };

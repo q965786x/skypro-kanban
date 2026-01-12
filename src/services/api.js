@@ -3,31 +3,31 @@ import axios from "axios";
 const API_URL = "https://wedev-api.sky.pro/api/kanban";
 
 const handleApiError = (error) => {
-  if (error.response?.status === 401) {
-    throw new Error("Сессия истекла. Пожалуйста, войдите снова.");
-  }
-
-  if (error.response?.status === 400) {
-    throw new Error(error.response?.data?.error || "Некорректные данные");
-  }
-
-  if (error.response?.status === 404) {
-    throw new Error("Ресурс не найден");
-  }
-
-  if (error.response?.status === 500) {
-    throw new Error("Ошибка сервера. Попробуйте позже.");
-  }
-
   if (!error.response) {
     throw new Error(
       "Нет соединения с сервером. Проверьте интернет-соединение."
     );
   }
 
-  throw new Error(
-    error.response?.data?.error || error.message || "Произошла ошибка"
-  );
+  const { status, data } = error.response;
+
+  if (status === 401) {
+    throw new Error("Сессия истекла. Пожалуйста, войдите снова.");
+  }
+
+  if (status === 400) {
+    throw new Error(data?.error || "Некорректные данные");
+  }
+
+  if (status === 404) {
+    throw new Error("Ресурс не найден");
+  }
+
+  if (status === 500) {
+    throw new Error("Ошибка сервера. Попробуйте позже.");
+  }
+
+  throw new Error(data?.error || error.message || "Произошла ошибка");
 };
 
 export async function fetchTasks({ token }) {
@@ -55,7 +55,7 @@ export async function postTask({ token, task }) {
 
     return response.data;
   } catch (error) {
-    handleApiError(error);
+    throw handleApiError(error);
   }
 }
 
@@ -80,7 +80,7 @@ export async function editTask({ token, id, task }) {
         "Content-Type": "",
       },
     });
-    return response.data.tasks;
+    return response.data;
   } catch (error) {
     handleApiError(error);
   }
@@ -93,7 +93,7 @@ export async function deleteTask({ token, id }) {
         Authorization: `Bearer ${token}`,
       },
     });
-    return response.data.tasks;
+    return response.data;
   } catch (error) {
     handleApiError(error);
   }
