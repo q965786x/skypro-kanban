@@ -26,9 +26,10 @@ const PopNewCard = ({ isOpen, onClose }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [selectedTopic, setSelectedTopic] = useState("Web Design");
-  const [selectedStatus, setSelectedStatus] = useState("Без статуса"); // Добавляем состояние статуса
+  const [selectedStatus, setSelectedStatus] = useState("Без статуса");
   const [selectedDate, setSelectedDate] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
   const [formError, setFormError] = useState("");
   const [isMobile, setIsMobile] = useState(false);
   const { openModal, closeModal } = useModal();
@@ -61,6 +62,7 @@ const PopNewCard = ({ isOpen, onClose }) => {
 
       setSelectedDate(formattedDate);
       setFormError("");
+      setIsSuccess(false);
 
       if (clearError) clearError();
 
@@ -75,6 +77,30 @@ const PopNewCard = ({ isOpen, onClose }) => {
       document.body.style.overflow = "";
     };
   }, [isOpen, openModal, closeModal, clearError]);
+
+  // Сброс состояния формы при закрытии
+  useEffect(() => {
+    if (!isOpen) {
+      resetForm();
+    }
+  }, [isOpen]);
+
+  const resetForm = () => {
+    setTitle("");
+    setDescription("");
+    setSelectedTopic("Web Design");
+    setSelectedStatus("Без статуса");
+    const today = new Date();
+    const formattedDate = `${today.getDate().toString().padStart(2, "0")}.${(
+      today.getMonth() + 1
+    )
+      .toString()
+      .padStart(2, "0")}.${today.getFullYear()}`;
+    setSelectedDate(formattedDate);
+    setFormError("");
+    setIsSubmitting(false);
+    setIsSuccess(false);
+  };
 
   const formatDateForAPI = useCallback((dateString) => {
     if (!dateString) return new Date().toISOString();
@@ -122,6 +148,7 @@ const PopNewCard = ({ isOpen, onClose }) => {
 
       setIsSubmitting(true);
       setFormError("");
+      setIsSuccess(false);
 
       try {
         const newCard = {
@@ -135,26 +162,33 @@ const PopNewCard = ({ isOpen, onClose }) => {
         const success = await addNewTask(newCard);
 
         if (success) {
+          // Устанавливаем флаг успешного создания
+          setIsSuccess(true);
+
+          // Обновляем список задач
           if (refetchTasks) {
             await refetchTasks();
           }
 
-          if (onClose) {
-            onClose();
-          }
+          // Задержка перед закрытием для отображения успешного состояния
+          setTimeout(() => {
+            // Закрываем модальное окно
+            if (onClose) {
+              onClose();
+            }
 
-          setTitle("");
-          setDescription("");
-          setSelectedTopic("Web Design");
-          setSelectedStatus("Без статуса");
+            // Сбрасываем форму
+            resetForm();
 
-          navigate("/");
+            // Делаем навигацию на главную
+            navigate("/", { replace: true });
+          }, 1000); // 1 секунда задержки для отображения успеха
         } else {
           setFormError("Не удалось создать задачу");
+          setIsSubmitting(false);
         }
       } catch (error) {
         setFormError(error.message || "Произошла ошибка при создании задачи");
-      } finally {
         setIsSubmitting(false);
       }
     },
@@ -174,10 +208,13 @@ const PopNewCard = ({ isOpen, onClose }) => {
   );
 
   const handleClose = () => {
-    if (onClose) {
-      onClose();
-    } else {
-      navigate("/");
+    if (!isSubmitting) {
+      resetForm();
+      if (onClose) {
+        onClose();
+      } else {
+        navigate("/", { replace: true });
+      }
     }
   };
 
@@ -226,6 +263,25 @@ const PopNewCard = ({ isOpen, onClose }) => {
                 }}
               >
                 {formError || contextError}
+              </div>
+            )}
+
+            {isSuccess && (
+              <div
+                style={{
+                  background: "#E8F5E9",
+                  color: "#2E7D32",
+                  padding: "10px",
+                  borderRadius: "4px",
+                  marginBottom: "20px",
+                  fontSize: "14px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                }}
+              >
+                <span style={{ fontSize: "18px" }}>✓</span>
+                Задача успешно создана! Перенаправление...
               </div>
             )}
 
@@ -293,9 +349,11 @@ const PopNewCard = ({ isOpen, onClose }) => {
                 <Calendar
                   mode="new"
                   selectedDate={selectedDate}
-                  onDateSelect={handleDateSelect}
+                  onDateSelect={
+                    isSubmitting || isSuccess ? undefined : handleDateSelect
+                  }
                   isMobile={isMobile}
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || isSuccess}
                 />
               </div>
             </SPopNewCardWrap>
@@ -316,9 +374,11 @@ const PopNewCard = ({ isOpen, onClose }) => {
                     selectedTopic === "Web Design" ? "_active-category" : ""
                   }`}
                   onClick={() =>
-                    !isSubmitting && setSelectedTopic("Web Design")
+                    !isSubmitting &&
+                    !isSuccess &&
+                    setSelectedTopic("Web Design")
                   }
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || isSuccess}
                   $active={selectedTopic === "Web Design"}
                 >
                   <p className="_orange">Web Design</p>
@@ -327,8 +387,10 @@ const PopNewCard = ({ isOpen, onClose }) => {
                   className={`_green ${
                     selectedTopic === "Research" ? "_active-category" : ""
                   }`}
-                  onClick={() => !isSubmitting && setSelectedTopic("Research")}
-                  disabled={isSubmitting}
+                  onClick={() =>
+                    !isSubmitting && !isSuccess && setSelectedTopic("Research")
+                  }
+                  disabled={isSubmitting || isSuccess}
                   $active={selectedTopic === "Research"}
                 >
                   <p className="_green">Research</p>
@@ -338,9 +400,11 @@ const PopNewCard = ({ isOpen, onClose }) => {
                     selectedTopic === "Copywriting" ? "_active-category" : ""
                   }`}
                   onClick={() =>
-                    !isSubmitting && setSelectedTopic("Copywriting")
+                    !isSubmitting &&
+                    !isSuccess &&
+                    setSelectedTopic("Copywriting")
                   }
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || isSuccess}
                   $active={selectedTopic === "Copywriting"}
                 >
                   <p className="_purple">Copywriting</p>
@@ -360,7 +424,7 @@ const PopNewCard = ({ isOpen, onClose }) => {
               <SFormNewBtnCreate
                 id="btnCreate"
                 onClick={handleSubmit}
-                disabled={isSubmitting}
+                disabled={isSubmitting || isSuccess}
                 isMobile={isMobile}
                 type="button"
               >
@@ -381,6 +445,11 @@ const PopNewCard = ({ isOpen, onClose }) => {
                       }}
                     />
                     Создание...
+                  </>
+                ) : isSuccess ? (
+                  <>
+                    <span style={{ marginRight: "8px" }}>✓</span>
+                    Успешно!
                   </>
                 ) : (
                   "Создать задачу"

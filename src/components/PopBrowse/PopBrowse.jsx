@@ -5,6 +5,7 @@ import React, {
   useCallback,
   useMemo,
 } from "react";
+import { useNavigate } from "react-router-dom";
 import Calendar from "../Calendar/Calendar";
 import { TasksContext } from "../../context/TaskContext";
 import {
@@ -33,14 +34,7 @@ import {
 
 const PopBrowse = ({ card: initialCard, onClose }) => {
   const tasksContext = useContext(TasksContext);
-
-  if (!tasksContext) {
-    return (
-      <div style={{ padding: "20px", color: "red" }}>
-        Ошибка: контекст задач не доступен
-      </div>
-    );
-  }
+  const navigate = useNavigate();
 
   const { tasks, updateTask, removeTask } = tasksContext;
 
@@ -62,6 +56,7 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleted, setIsDeleted] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
 
   useEffect(() => {
     if (initialCard?._id && tasks?.length > 0) {
@@ -94,6 +89,23 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
+
+  // Эффект для редиректа после успешного сохранения
+  useEffect(() => {
+    if (saveSuccess) {
+      // Задержка для отображения сообщения об успехе
+      const timer = setTimeout(() => {
+        // Закрываем модальное окно и делаем редирект
+        if (onClose) {
+          onClose();
+        }
+        // Редирект на главную страницу
+        navigate("/", { replace: true });
+      }, 1000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [saveSuccess, onClose, navigate]);
 
   const getTopicClass = (topic) => {
     switch (topic) {
@@ -152,7 +164,7 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
     async (e) => {
       e.preventDefault();
 
-      if (isSubmitting) return;
+      if (isSubmitting || saveSuccess) return;
 
       if (!currentCard) {
         setError("Карточка не найдена");
@@ -171,6 +183,7 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
 
       setIsSubmitting(true);
       setError("");
+      setSaveSuccess(false);
 
       try {
         const success = await updateTask(currentCard._id || currentCard.id, {
@@ -182,19 +195,20 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
         });
 
         if (success) {
-          setIsEditing(false);
+          setSaveSuccess(true);
         } else {
           setError("Не удалось сохранить");
+          setIsSubmitting(false);
         }
       } catch (err) {
         setError(err.message || "Произошла ошибка при сохранении");
-      } finally {
         setIsSubmitting(false);
       }
     },
     [
       currentCard,
       isSubmitting,
+      saveSuccess,
       title,
       description,
       selectedTopic,
@@ -208,24 +222,32 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
   const handleClose = useCallback(
     (e) => {
       e.preventDefault();
-      onClose();
+      // Закрываем модальное окно и делаем редирект на главную
+      if (onClose) {
+        onClose();
+      }
+      navigate("/", { replace: true });
     },
-    [onClose]
+    [onClose, navigate]
   );
 
   const handleOverlayClick = useCallback(
     (e) => {
       if (e.target === e.currentTarget) {
-        onClose();
+        if (onClose) {
+          onClose();
+        }
+        navigate("/", { replace: true });
       }
     },
-    [onClose]
+    [onClose, navigate]
   );
 
   const handleEditClick = useCallback((e) => {
     e.preventDefault();
     setIsEditing(true);
     setError("");
+    setSaveSuccess(false);
   }, []);
 
   const handleCancelEdit = useCallback(
@@ -233,6 +255,7 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
       e.preventDefault();
       setIsEditing(false);
       setError("");
+      setSaveSuccess(false);
 
       if (currentCard) {
         setTitle(currentCard.title || "");
@@ -273,7 +296,10 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
 
         if (success) {
           setTimeout(() => {
-            onClose();
+            if (onClose) {
+              onClose();
+            }
+            navigate("/", { replace: true });
           }, 300);
         } else {
           setError("Не удалось удалить задачу");
@@ -291,19 +317,19 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
 
   const handleDateSelect = useCallback(
     (date) => {
-      if (!isSubmitting && isEditing) {
+      if (!isSubmitting && isEditing && !saveSuccess) {
         // date приходит в формате DD.MM.YYYY из Calendar
         setSelectedDate(date);
         setFormattedDate(date);
       }
     },
-    [isSubmitting, isEditing]
+    [isSubmitting, isEditing, saveSuccess]
   );
 
   useEffect(() => {
     const handleEscKey = (e) => {
       if (e.key === "Escape") {
-        if (isEditing) {
+        if (isEditing && !saveSuccess) {
           handleCancelEdit(e);
         } else {
           handleClose(e);
@@ -316,7 +342,7 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
     return () => {
       document.removeEventListener("keydown", handleEscKey);
     };
-  }, [isEditing, handleCancelEdit, handleClose]);
+  }, [isEditing, saveSuccess, handleCancelEdit, handleClose]);
 
   // Получаем актуальную дату для отображения
   const displayDate = useMemo(() => {
@@ -349,7 +375,7 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
         </SStatusTitle>
 
         <div style={{ flex: 1 }}>
-          {editMode ? (
+          {editMode && !saveSuccess ? (
             // В режиме редактирования показываем ВСЕ статусы
             <SStatusThemes>
               {statuses.map((statusItem) => (
@@ -358,12 +384,14 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
                   $active={status === statusItem}
                   onClick={() =>
                     !isSubmitting &&
+                    !saveSuccess &&
                     onStatusChange &&
                     onStatusChange(statusItem)
                   }
                   style={{
-                    cursor: isSubmitting ? "not-allowed" : "pointer",
-                    opacity: isSubmitting ? 0.7 : 1,
+                    cursor:
+                      isSubmitting || saveSuccess ? "not-allowed" : "pointer",
+                    opacity: isSubmitting || saveSuccess ? 0.7 : 1,
                   }}
                 >
                   <SStatusThemeText>{statusItem}</SStatusThemeText>
@@ -386,8 +414,9 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
     onChange,
     isEditing: editMode,
     isSubmitting: submitting,
+    saveSuccess: success,
   }) => {
-    if (editMode) {
+    if (editMode && !success) {
       return (
         <SPopBrowseTitleInput
           type="text"
@@ -512,6 +541,26 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
       <SPopBrowseContainer>
         <SPopBrowseBlock>
           <SPopBrowseContent>
+            {/* Отображение сообщения об успехе */}
+            {saveSuccess && (
+              <div
+                style={{
+                  background: "#E8F5E9",
+                  color: "#565EEF",
+                  padding: "10px",
+                  borderRadius: "4px",
+                  marginBottom: "20px",
+                  fontSize: "14px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                }}
+              >
+                <span style={{ fontSize: "18px" }}>✓</span>
+                Задача успешно сохранена! Перенаправление...
+              </div>
+            )}
+
             {/* Отображение ошибок */}
             {error && (
               <div
@@ -538,6 +587,7 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
                     onChange={setTitle}
                     isEditing={isEditing}
                     isSubmitting={isSubmitting}
+                    saveSuccess={saveSuccess}
                   />
                 </div>
 
@@ -593,10 +643,15 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
                 {/* 4. Календарь */}
                 <div style={{ marginBottom: "20px" }}>
                   <Calendar
-                    mode={isEditing ? "new" : "browse"}
-                    selectedDate={isEditing ? formattedDate : displayDate}
-                    onDateSelect={isEditing ? handleDateSelect : undefined}
+                    mode={isEditing && !saveSuccess ? "new" : "browse"}
+                    selectedDate={
+                      isEditing && !saveSuccess ? formattedDate : displayDate
+                    }
+                    onDateSelect={
+                      isEditing && !saveSuccess ? handleDateSelect : undefined
+                    }
                     isMobile={isMobile}
+                    disabled={isSubmitting || saveSuccess}
                   />
                 </div>
 
@@ -626,6 +681,7 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
                     onChange={setTitle}
                     isEditing={isEditing}
                     isSubmitting={isSubmitting}
+                    saveSuccess={saveSuccess}
                   />
 
                   {selectedTopic && (
@@ -637,7 +693,9 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
 
                 <StatusSection
                   status={selectedStatus}
-                  onStatusChange={isEditing ? setSelectedStatus : undefined}
+                  onStatusChange={
+                    isEditing && !saveSuccess ? setSelectedStatus : undefined
+                  }
                   isEditing={isEditing}
                 />
 
@@ -686,10 +744,15 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
                   </SPopBrowseForm>
 
                   <Calendar
-                    mode={isEditing ? "new" : "browse"}
-                    selectedDate={isEditing ? formattedDate : displayDate}
-                    onDateSelect={isEditing ? handleDateSelect : undefined}
+                    mode={isEditing && !saveSuccess ? "new" : "browse"}
+                    selectedDate={
+                      isEditing && !saveSuccess ? formattedDate : displayDate
+                    }
+                    onDateSelect={
+                      isEditing && !saveSuccess ? handleDateSelect : undefined
+                    }
                     isMobile={isMobile}
+                    disabled={isSubmitting || saveSuccess}
                   />
                 </SPopBrowseWrap>
               </>
@@ -706,66 +769,104 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
                   gap: "10px",
                 }}
               >
-                <SBtnGroup
-                  style={{
-                    display: "flex",
-                    flexDirection: isMobile ? "column" : "row",
-                    gap: "8px",
-                    order: 1,
-                  }}
-                >
-                  <SBtnEdit
-                    className="btn-bg"
-                    onClick={handleSave}
-                    disabled={isSubmitting}
-                    style={{ opacity: isSubmitting ? 0.7 : 1 }}
-                  >
-                    {isSubmitting ? "Сохранение..." : "Сохранить"}
-                  </SBtnEdit>
-                  <SBtnEdit
-                    className="btn-bor"
-                    onClick={handleCancelEdit}
-                    disabled={isSubmitting}
-                    style={{ opacity: isSubmitting ? 0.7 : 1 }}
-                  >
-                    Отменить
-                  </SBtnEdit>
-                  <SBtnEdit
-                    className="btn-delete"
-                    onClick={handleDelete}
-                    disabled={isSubmitting}
-                    style={{ opacity: isSubmitting ? 0.7 : 1 }}
-                  >
-                    Удалить задачу
-                  </SBtnEdit>
-                </SBtnGroup>
+                {!saveSuccess ? (
+                  <>
+                    <SBtnGroup
+                      style={{
+                        display: "flex",
+                        flexDirection: isMobile ? "column" : "row",
+                        gap: "8px",
+                        order: 1,
+                      }}
+                    >
+                      <SBtnEdit
+                        className="btn-bg"
+                        onClick={handleSave}
+                        disabled={isSubmitting}
+                        style={{ opacity: isSubmitting ? 0.7 : 1 }}
+                      >
+                        {isSubmitting ? (
+                          <>
+                            <span
+                              className="spinner"
+                              style={{
+                                display: "inline-block",
+                                width: "12px",
+                                height: "12px",
+                                border: "2px solid rgba(255, 255, 255, 0.3)",
+                                borderTopColor: "#fff",
+                                borderRadius: "50%",
+                                animation: "spin 0.8s linear infinite",
+                                marginRight: "8px",
+                              }}
+                            />
+                            Сохранение...
+                          </>
+                        ) : (
+                          "Сохранить"
+                        )}
+                      </SBtnEdit>
+                      <SBtnEdit
+                        className="btn-bor"
+                        onClick={handleCancelEdit}
+                        disabled={isSubmitting}
+                        style={{ opacity: isSubmitting ? 0.7 : 1 }}
+                      >
+                        Отменить
+                      </SBtnEdit>
+                      <SBtnEdit
+                        className="btn-delete"
+                        onClick={handleDelete}
+                        disabled={isSubmitting}
+                        style={{ opacity: isSubmitting ? 0.7 : 1 }}
+                      >
+                        Удалить задачу
+                      </SBtnEdit>
+                    </SBtnGroup>
 
-                {!isMobile && (
-                  <SBtnClose
-                    onClick={handleClose}
-                    disabled={isSubmitting}
-                    style={{
-                      opacity: isSubmitting ? 0.7 : 1,
-                      order: 2,
-                    }}
-                  >
-                    Закрыть
-                  </SBtnClose>
-                )}
+                    {!isMobile && (
+                      <SBtnClose
+                        onClick={handleClose}
+                        disabled={isSubmitting}
+                        style={{
+                          opacity: isSubmitting ? 0.7 : 1,
+                          order: 2,
+                        }}
+                      >
+                        Закрыть
+                      </SBtnClose>
+                    )}
 
-                {isMobile && (
-                  <SBtnClose
-                    onClick={handleClose}
-                    disabled={isSubmitting}
-                    style={{
-                      opacity: isSubmitting ? 0.7 : 1,
-                      width: "100%",
-                      marginTop: "10px",
-                      order: 2,
-                    }}
-                  >
-                    Закрыть
-                  </SBtnClose>
+                    {isMobile && (
+                      <SBtnClose
+                        onClick={handleClose}
+                        disabled={isSubmitting}
+                        style={{
+                          opacity: isSubmitting ? 0.7 : 1,
+                          width: "100%",
+                          marginTop: "10px",
+                          order: 2,
+                        }}
+                      >
+                        Закрыть
+                      </SBtnClose>
+                    )}
+                  </>
+                ) : (
+                  <div style={{ width: "100%", textAlign: "center" }}>
+                    <p style={{ color: "#565EEF", marginBottom: "15px" }}>
+                      Задача успешно сохранена!
+                    </p>
+                    <SBtnClose
+                      onClick={handleClose}
+                      style={{
+                        backgroundColor: "#565EEF",
+                        borderColor: "#565EEF",
+                      }}
+                    >
+                      Перейти к списку задач
+                    </SBtnClose>
+                  </div>
                 )}
               </SPopBrowseBtnEdit>
             ) : (

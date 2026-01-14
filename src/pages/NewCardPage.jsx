@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PopNewCard from "../components/PopNewCard/PopNewCard";
 import Header from "../components/Header/Header";
@@ -8,21 +8,27 @@ import { TasksContext } from "../context/TaskContext";
 const NewCardPage = () => {
   const navigate = useNavigate();
   const { addNewTask } = useContext(TasksContext);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const handleClose = () => {
-    navigate("/");
+    if (!isProcessing) {
+      navigate("/", { replace: true });
+    }
   };
 
   const handleCreate = async (newCardData) => {
     try {
+      setIsProcessing(true);
       const success = await addNewTask(newCardData);
 
       if (success) {
         return true;
       } else {
+        setIsProcessing(false);
         return false;
       }
     } catch (error) {
+      setIsProcessing(false);
       return false;
     }
   };
