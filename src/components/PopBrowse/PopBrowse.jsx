@@ -57,6 +57,7 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
   const [isDeleted, setIsDeleted] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [redirectTimer, setRedirectTimer] = useState(null);
 
   useEffect(() => {
     if (initialCard?._id && tasks?.length > 0) {
@@ -93,19 +94,37 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
   // Эффект для редиректа после успешного сохранения
   useEffect(() => {
     if (saveSuccess) {
-      // Задержка для отображения сообщения об успехе
+      // Запускаем таймер для редиректа
       const timer = setTimeout(() => {
-        // Закрываем модальное окно и делаем редирект
+        // Выходим из режима редактирования
+        setIsEditing(false);
+        // Редирект на главную страницу
+        navigate("/", { replace: true });
+        // Закрываем модальное окно
         if (onClose) {
           onClose();
         }
-        // Редирект на главную страницу
-        navigate("/", { replace: true });
-      }, 1000);
+      }, 1500);
 
-      return () => clearTimeout(timer);
+      setRedirectTimer(timer);
+
+      // Очистка таймера при размонтировании
+      return () => {
+        if (timer) {
+          clearTimeout(timer);
+        }
+      };
     }
   }, [saveSuccess, onClose, navigate]);
+
+  // Очистка таймера при размонтировании компонента
+  useEffect(() => {
+    return () => {
+      if (redirectTimer) {
+        clearTimeout(redirectTimer);
+      }
+    };
+  }, [redirectTimer]);
 
   const getTopicClass = (topic) => {
     switch (topic) {
@@ -196,6 +215,9 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
 
         if (success) {
           setSaveSuccess(true);
+          setIsSubmitting(false);
+          // Сбрасываем состояние редактирования
+          setIsEditing(false);
         } else {
           setError("Не удалось сохранить");
           setIsSubmitting(false);
@@ -221,14 +243,18 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
 
   const handleClose = useCallback(
     (e) => {
-      e.preventDefault();
+      e?.preventDefault();
+      // Выходим из режима редактирования если он активен
+      if (isEditing) {
+        setIsEditing(false);
+      }
       // Закрываем модальное окно и делаем редирект на главную
       if (onClose) {
         onClose();
       }
       navigate("/", { replace: true });
     },
-    [onClose, navigate]
+    [onClose, navigate, isEditing]
   );
 
   const handleOverlayClick = useCallback(
@@ -257,6 +283,13 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
       setError("");
       setSaveSuccess(false);
 
+      // Отменяем редирект если таймер был установлен
+      if (redirectTimer) {
+        clearTimeout(redirectTimer);
+        setRedirectTimer(null);
+      }
+
+      // Восстанавливаем исходные значения
       if (currentCard) {
         setTitle(currentCard.title || "");
         setDescription(currentCard.description || "");
@@ -269,7 +302,7 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
         }
       }
     },
-    [currentCard]
+    [currentCard, redirectTimer]
   );
 
   const handleDelete = useCallback(
@@ -304,15 +337,15 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
         } else {
           setError("Не удалось удалить задачу");
           setIsDeleted(false);
+          setIsSubmitting(false);
         }
       } catch (err) {
         setError(err.message || "Произошла ошибка при удалении");
         setIsDeleted(false);
-      } finally {
         setIsSubmitting(false);
       }
     },
-    [currentCard, isSubmitting, removeTask, onClose]
+    [currentCard, isSubmitting, removeTask, onClose, navigate]
   );
 
   const handleDateSelect = useCallback(
@@ -546,7 +579,7 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
               <div
                 style={{
                   background: "#E8F5E9",
-                  color: "#565EEF",
+                  color: "#2E7D32",
                   padding: "10px",
                   borderRadius: "4px",
                   marginBottom: "20px",
@@ -557,7 +590,8 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
                 }}
               >
                 <span style={{ fontSize: "18px" }}>✓</span>
-                Задача успешно сохранена! Перенаправление...
+                Задача успешно сохранена! Перенаправление на главную через 1
+                секунду...
               </div>
             )}
 
@@ -585,7 +619,7 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
                   <TitleField
                     title={title}
                     onChange={setTitle}
-                    isEditing={isEditing}
+                    isEditing={isEditing && !saveSuccess} // Отключаем редактирование при успешном сохранении
                     isSubmitting={isSubmitting}
                     saveSuccess={saveSuccess}
                   />
@@ -594,8 +628,10 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
                 {/* 2. Статус */}
                 <StatusSection
                   status={selectedStatus}
-                  onStatusChange={isEditing ? setSelectedStatus : undefined}
-                  isEditing={isEditing}
+                  onStatusChange={
+                    isEditing && !saveSuccess ? setSelectedStatus : undefined
+                  }
+                  isEditing={isEditing && !saveSuccess}
                 />
 
                 {/* 3. Описание задачи */}
@@ -613,7 +649,7 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
                     Описание задачи
                   </label>
 
-                  {isEditing ? (
+                  {isEditing && !saveSuccess ? (
                     <SFormBrowseArea
                       name="text"
                       id="textArea01"
@@ -679,7 +715,7 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
                   <TitleField
                     title={title}
                     onChange={setTitle}
-                    isEditing={isEditing}
+                    isEditing={isEditing && !saveSuccess}
                     isSubmitting={isSubmitting}
                     saveSuccess={saveSuccess}
                   />
@@ -696,7 +732,7 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
                   onStatusChange={
                     isEditing && !saveSuccess ? setSelectedStatus : undefined
                   }
-                  isEditing={isEditing}
+                  isEditing={isEditing && !saveSuccess}
                 />
 
                 <SPopBrowseWrap>
@@ -715,7 +751,7 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
                         Описание задачи
                       </label>
 
-                      {isEditing ? (
+                      {isEditing && !saveSuccess ? (
                         <SFormBrowseArea
                           name="text"
                           id="textArea01"
@@ -758,8 +794,102 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
               </>
             )}
 
-            {isEditing ? (
+            {isEditing && !saveSuccess ? (
+              // Режим редактирования (до сохранения)
               <SPopBrowseBtnEdit
+                style={{
+                  display: "flex",
+                  flexDirection: isMobile ? "column" : "row",
+                  justifyContent: isMobile ? "center" : "space-between",
+                  alignItems: isMobile ? "center" : "flex-end",
+                  marginTop: "30px",
+                  gap: "10px",
+                }}
+              >
+                <SBtnGroup
+                  style={{
+                    display: "flex",
+                    flexDirection: isMobile ? "column" : "row",
+                    gap: "8px",
+                    order: 1,
+                  }}
+                >
+                  <SBtnEdit
+                    className="btn-bg"
+                    onClick={handleSave}
+                    disabled={isSubmitting}
+                    style={{ opacity: isSubmitting ? 0.7 : 1 }}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <span
+                          className="spinner"
+                          style={{
+                            display: "inline-block",
+                            width: "12px",
+                            height: "12px",
+                            border: "2px solid rgba(255, 255, 255, 0.3)",
+                            borderTopColor: "#fff",
+                            borderRadius: "50%",
+                            animation: "spin 0.8s linear infinite",
+                            marginRight: "8px",
+                          }}
+                        />
+                        Сохранение...
+                      </>
+                    ) : (
+                      "Сохранить"
+                    )}
+                  </SBtnEdit>
+                  <SBtnEdit
+                    className="btn-bor"
+                    onClick={handleCancelEdit}
+                    disabled={isSubmitting}
+                    style={{ opacity: isSubmitting ? 0.7 : 1 }}
+                  >
+                    Отменить
+                  </SBtnEdit>
+                  <SBtnEdit
+                    className="btn-delete"
+                    onClick={handleDelete}
+                    disabled={isSubmitting}
+                    style={{ opacity: isSubmitting ? 0.7 : 1 }}
+                  >
+                    Удалить задачу
+                  </SBtnEdit>
+                </SBtnGroup>
+
+                {!isMobile && (
+                  <SBtnClose
+                    onClick={handleClose}
+                    disabled={isSubmitting}
+                    style={{
+                      opacity: isSubmitting ? 0.7 : 1,
+                      order: 2,
+                    }}
+                  >
+                    Закрыть
+                  </SBtnClose>
+                )}
+
+                {isMobile && (
+                  <SBtnClose
+                    onClick={handleClose}
+                    disabled={isSubmitting}
+                    style={{
+                      opacity: isSubmitting ? 0.7 : 1,
+                      width: "100%",
+                      marginTop: "10px",
+                      order: 2,
+                    }}
+                  >
+                    Закрыть
+                  </SBtnClose>
+                )}
+              </SPopBrowseBtnEdit>
+            ) : (
+              // Режим просмотра (или после успешного сохранения)
+              <SPopBrowseBtnBrowse
                 style={{
                   display: "flex",
                   flexDirection: isMobile ? "column" : "row",
@@ -780,39 +910,12 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
                       }}
                     >
                       <SBtnEdit
-                        className="btn-bg"
-                        onClick={handleSave}
-                        disabled={isSubmitting}
-                        style={{ opacity: isSubmitting ? 0.7 : 1 }}
-                      >
-                        {isSubmitting ? (
-                          <>
-                            <span
-                              className="spinner"
-                              style={{
-                                display: "inline-block",
-                                width: "12px",
-                                height: "12px",
-                                border: "2px solid rgba(255, 255, 255, 0.3)",
-                                borderTopColor: "#fff",
-                                borderRadius: "50%",
-                                animation: "spin 0.8s linear infinite",
-                                marginRight: "8px",
-                              }}
-                            />
-                            Сохранение...
-                          </>
-                        ) : (
-                          "Сохранить"
-                        )}
-                      </SBtnEdit>
-                      <SBtnEdit
                         className="btn-bor"
-                        onClick={handleCancelEdit}
+                        onClick={handleEditClick}
                         disabled={isSubmitting}
                         style={{ opacity: isSubmitting ? 0.7 : 1 }}
                       >
-                        Отменить
+                        Редактировать задачу
                       </SBtnEdit>
                       <SBtnEdit
                         className="btn-delete"
@@ -853,85 +956,20 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
                     )}
                   </>
                 ) : (
+                  // После успешного сохранения показываем только кнопку закрыть
                   <div style={{ width: "100%", textAlign: "center" }}>
-                    <p style={{ color: "#565EEF", marginBottom: "15px" }}>
-                      Задача успешно сохранена!
-                    </p>
                     <SBtnClose
                       onClick={handleClose}
                       style={{
                         backgroundColor: "#565EEF",
                         borderColor: "#565EEF",
+                        width: isMobile ? "100%" : "auto",
+                        margin: "0 auto",
                       }}
                     >
                       Перейти к списку задач
                     </SBtnClose>
                   </div>
-                )}
-              </SPopBrowseBtnEdit>
-            ) : (
-              <SPopBrowseBtnBrowse
-                style={{
-                  display: "flex",
-                  flexDirection: isMobile ? "column" : "row",
-                  justifyContent: isMobile ? "center" : "space-between",
-                  alignItems: isMobile ? "center" : "flex-end",
-                  marginTop: "30px",
-                  gap: "10px",
-                }}
-              >
-                <SBtnGroup
-                  style={{
-                    display: "flex",
-                    flexDirection: isMobile ? "column" : "row",
-                    gap: "8px",
-                    order: 1,
-                  }}
-                >
-                  <SBtnEdit
-                    className="btn-bor"
-                    onClick={handleEditClick}
-                    disabled={isSubmitting}
-                    style={{ opacity: isSubmitting ? 0.7 : 1 }}
-                  >
-                    Редактировать задачу
-                  </SBtnEdit>
-                  <SBtnEdit
-                    className="btn-delete"
-                    onClick={handleDelete}
-                    disabled={isSubmitting}
-                    style={{ opacity: isSubmitting ? 0.7 : 1 }}
-                  >
-                    Удалить задачу
-                  </SBtnEdit>
-                </SBtnGroup>
-
-                {!isMobile && (
-                  <SBtnClose
-                    onClick={handleClose}
-                    disabled={isSubmitting}
-                    style={{
-                      opacity: isSubmitting ? 0.7 : 1,
-                      order: 2,
-                    }}
-                  >
-                    Закрыть
-                  </SBtnClose>
-                )}
-
-                {isMobile && (
-                  <SBtnClose
-                    onClick={handleClose}
-                    disabled={isSubmitting}
-                    style={{
-                      opacity: isSubmitting ? 0.7 : 1,
-                      width: "100%",
-                      marginTop: "10px",
-                      order: 2,
-                    }}
-                  >
-                    Закрыть
-                  </SBtnClose>
                 )}
               </SPopBrowseBtnBrowse>
             )}
