@@ -5,7 +5,6 @@ import { AuthContext } from "../context/AuthContext";
 const PrivateRoute = () => {
   const { user, isCheckingAuth } = useContext(AuthContext);
 
-  // Пока проверяем авторизацию, показываем заглушку
   if (isCheckingAuth) {
     return (
       <div

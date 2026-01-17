@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 export const SPopExit = styled.div`
   // стили для .pop-exit
-  //display: none;
+  display: none;
   width: 100%;
   height: 100%;
   min-width: 320px;
@@ -13,6 +13,7 @@ export const SPopExit = styled.div`
   z-index: 5;
   background: rgba(0, 0, 0, 0.4);
 `;
+
 export const SPopExitContainer = styled.div`
   // стили для .pop-exit__container
   width: 100%;
@@ -29,13 +30,13 @@ export const SPopExitBlock = styled.div`
   // стили для .pop-exit__block
   display: block;
   margin: 0 auto;
-  background-color: #ffffff;
+  background-color: ${(props) => props.theme.colors.surface};
   max-width: 370px;
   width: 100%;
   padding: 50px 60px;
   border-radius: 10px;
-  border: 0.7px solid #d4dbe5;
-  box-shadow: 0px 4px 67px -12px rgba(0, 0, 0, 0.13);
+  border: 0.7px solid ${(props) => props.theme.colors.border};
+  box-shadow: ${(props) => props.theme.shadows.medium};
 `;
 
 export const SPopExitFormGroup = styled.div`
@@ -45,10 +46,16 @@ export const SPopExitFormGroup = styled.div`
   align-items: center;
   justify-content: space-between;
 
+  @media screen and (max-width: 495px) {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
   .pop-exit__exit-yes {
     width: 153px;
     height: 30px;
-    background-color: #565eef;
+    background-color: ${(props) => props.theme.colors.primary};
     border-radius: 4px;
     border: none;
     outline: none;
@@ -65,7 +72,7 @@ export const SPopExitFormGroup = styled.div`
     transition: background-color 0.3s ease;
 
     &:hover {
-      background-color: #33399b;
+      background-color: ${(props) => props.theme.colors.primaryHover};
     }
 
     span {
@@ -81,7 +88,7 @@ export const SPopExitFormGroup = styled.div`
     height: 30px;
     background-color: transparent;
     border-radius: 4px;
-    border: 0.7px solid #565eef;
+    border: 0.7px solid ${(props) => props.theme.colors.primary};
     outline: none;
     display: flex;
     align-items: center;
@@ -90,12 +97,12 @@ export const SPopExitFormGroup = styled.div`
     line-height: 21px;
     font-weight: 500;
     letter-spacing: -0.14px;
-    color: #565eef;
+    color: ${(props) => props.theme.colors.primary};
     cursor: pointer;
     transition: all 0.3s ease;
 
     &:hover {
-      background-color: #565eef;
+      background-color: ${(props) => props.theme.colors.primary};
       color: #ffffff;
     }
 

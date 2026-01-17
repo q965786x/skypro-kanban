@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   SCardsItem,
@@ -13,8 +13,8 @@ import {
 
 const Card = ({ id, topic, title, date, status }) => {
   const cardId = id;
+  const [isDragging, setIsDragging] = useState(false);
 
-  // Функция для определения класса темы на основе названия
   const getTopicClass = (topicName) => {
     switch (topicName) {
       case "Web Design":
@@ -30,30 +30,42 @@ const Card = ({ id, topic, title, date, status }) => {
 
   const topicClass = getTopicClass(topic);
 
-  console.log("Card данные:", { title, status, topic, date, id });
+  const handleDragStart = (e) => {
+    setIsDragging(true);
+    e.dataTransfer.setData("text/plain", cardId);
+    e.dataTransfer.setData("text/status", status);
+    e.dataTransfer.effectAllowed = "move";
+    e.currentTarget.classList.add("dragging");
+  };
+
+  const handleDragEnd = (e) => {
+    setIsDragging(false);
+    e.currentTarget.classList.remove("dragging");
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+  };
 
   return (
-    <SCardsItem>
+    <SCardsItem
+      draggable="true"
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+      onDragOver={handleDragOver}
+      style={{
+        opacity: isDragging ? 0.5 : 1,
+        cursor: "grab",
+        transition: "opacity 0.2s ease",
+      }}
+      className="draggable-card"
+    >
       <SCardsCard>
         <SCardGroup>
           <SCardTheme className={`${topicClass}`}>
             <p className={topicClass}>{topic}</p>
           </SCardTheme>
-
-          {/* Показываем статус маленьким текстом */}
-          {/* <div
-            style={{
-              fontSize: "10px",
-              color: "#94a6be",
-              background: "#f0f0f0",
-              padding: "2px 6px",
-              borderRadius: "10px",
-              marginLeft: "5px",
-            }}
-          >
-            {status || "Без статуса"}
-          </div> */}
-
           <Link to={`/card/${cardId}`}>
             <SCardButton>
               <div></div>

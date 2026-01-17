@@ -12,6 +12,7 @@ import {
   SInputWrapper,
   BaseButton,
   SFormLink,
+  SErrorText,
 } from "./AuthForm.styled";
 
 const AuthForm = ({ isSignUp }) => {
@@ -30,34 +31,79 @@ const AuthForm = ({ isSignUp }) => {
     password: false,
   });
 
-  const [error, setError] = useState("");
+  const [serverError, setServerError] = useState("");
+  const [validationError, setValidationError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hasEmptyFields, setHasEmptyFields] = useState(false);
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+
+  const hasError = !!serverError || !!validationError;
+
+  const getFormHeight = () => {
+    if (isSignUp) {
+      return hasError ? "406px" : "345px";
+    } else {
+      return hasError ? "390px" : "329px";
+    }
+  };
 
   const validateForm = () => {
     const newErrors = { name: false, login: false, password: false };
     let isValid = true;
+    let hasEmpty = false;
 
     if (isSignUp && !formData.name.trim()) {
       newErrors.name = true;
       isValid = false;
+      hasEmpty = true;
     }
 
     if (!formData.login.trim()) {
       newErrors.login = true;
       isValid = false;
-    } else if (!formData.login.includes("@")) {
-      setError("Введите корректный email");
-      return false;
+      hasEmpty = true;
     }
 
     if (!formData.password.trim()) {
       newErrors.password = true;
       isValid = false;
-    } else if (formData.password.length < 3) {
-      setError("Пароль должен содержать не менее 6 символов");
+      hasEmpty = true;
+    }
+
+    setHasEmptyFields(hasEmpty);
+    setErrors(newErrors);
+
+    if (hasEmpty) {
+      setValidationError(
+        "Введенные вами данные не корректны. Чтобы " +
+          (isSignUp ? "завершить регистрацию" : "войти") +
+          ", заполните все поля в форме."
+      );
       return false;
     }
 
+    if (isSignUp && !formData.login.includes("@")) {
+      newErrors.login = true;
+      isValid = false;
+      setValidationError(
+        "Введенные вами данные не корректны. Чтобы завершить регистрацию, введите данные корректно и повторите попытку."
+      );
+    }
+
+    if (isSignUp && formData.password.length < 3) {
+      newErrors.password = true;
+      isValid = false;
+      setValidationError(
+        "Введенные вами данные не корректны. Чтобы завершить регистрацию, введите данные корректно и повторите попытку."
+      );
+    }
+
     setErrors(newErrors);
+
+    if (isValid) {
+      setValidationError("");
+    }
+
     return isValid;
   };
 
@@ -67,16 +113,32 @@ const AuthForm = ({ isSignUp }) => {
       ...formData,
       [name]: value,
     });
-    setErrors({ ...errors, [name]: false });
-    setError("");
+
+    if (errors[name]) {
+      setErrors({ ...errors, [name]: false });
+    }
+
+    if (serverError) setServerError("");
+    if (validationError) setValidationError("");
+    setHasEmptyFields(false);
+
+    if (isButtonDisabled && value.trim() !== "") {
+      setIsButtonDisabled(false);
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!validateForm()) {
+      setIsButtonDisabled(true);
       return;
     }
+
+    setIsSubmitting(true);
+    setIsButtonDisabled(true);
+    setServerError("");
+    setValidationError("");
 
     try {
       const data = isSignUp
@@ -84,13 +146,29 @@ const AuthForm = ({ isSignUp }) => {
         : await signIn({ login: formData.login, password: formData.password });
 
       if (data) {
-        console.log("AuthForm: успешная авторизация, данные:", data);
         login(data);
-        console.log("AuthForm: переход на главную страницу");
         navigate("/");
       }
     } catch (err) {
-      setError(err.message);
+      if (!isSignUp) {
+        setServerError(
+          "Введенные вами данные не распознаны. Проверьте свой логин и пароль и повторите попытку входа."
+        );
+      } else {
+        setServerError(
+          "Введенные вами данные не корректны. Чтобы завершить регистрацию, введите данные корректно и повторите попытку."
+        );
+      }
+
+      setErrors({
+        name: true,
+        login: true,
+        password: true,
+      });
+
+      setIsButtonDisabled(true);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -98,7 +176,12 @@ const AuthForm = ({ isSignUp }) => {
     <SSignInWrapper>
       <SContainerSignIn>
         <SModal>
-          <SModalBlock>
+          <SModalBlock
+            style={{
+              height: getFormHeight(),
+              transition: "height 0.3s ease",
+            }}
+          >
             <SModalTtl>{isSignUp ? "Регистрация" : "Вход"}</SModalTtl>
             <form onSubmit={handleSubmit}>
               <SInputWrapper>
@@ -111,6 +194,7 @@ const AuthForm = ({ isSignUp }) => {
                     placeholder="Имя"
                     value={formData.name}
                     onChange={handleChange}
+                    disabled={isSubmitting}
                   />
                 )}
                 <BaseInput
@@ -121,6 +205,7 @@ const AuthForm = ({ isSignUp }) => {
                   placeholder="Эл. почта"
                   value={formData.login}
                   onChange={handleChange}
+                  disabled={isSubmitting}
                 />
                 <BaseInput
                   error={errors.password}
@@ -130,38 +215,40 @@ const AuthForm = ({ isSignUp }) => {
                   placeholder="Пароль"
                   value={formData.password}
                   onChange={handleChange}
+                  disabled={isSubmitting}
                 />
               </SInputWrapper>
-              {error && (
-                <p
-                  style={{
-                    color: "red",
-                    textAlign: "center",
-                    fontSize: "14px",
-                    marginTop: "10px",
-                    marginBottom: "10px",
-                  }}
-                >
-                  {error}
-                </p>
+
+              {(serverError || validationError) && (
+                <SErrorText>{serverError || validationError}</SErrorText>
               )}
 
-              <BaseButton type="submit" $fullWidth={true}>
-                {isSignUp ? "Зарегистрироваться" : "Войти"}
+              <BaseButton
+                type="submit"
+                $fullWidth={true}
+                disabled={isButtonDisabled || isSubmitting}
+                $isDisabled={isButtonDisabled}
+              >
+                {isSubmitting
+                  ? "Загрузка..."
+                  : isSignUp
+                  ? "Зарегистрироваться"
+                  : "Войти"}
               </BaseButton>
 
               <SFormLink>
                 {!isSignUp ? (
                   <>
                     <p style={{ marginBottom: "5px" }}>
-                      Нужно зарегистрироваться? <Link to="/sign-up">Регистрируйтесь здесь</Link>
-                    </p>                    
+                      Нужно зарегистрироваться?{" "}
+                      <Link to="/sign-up">Регистрируйтесь здесь</Link>
+                    </p>
                   </>
                 ) : (
                   <>
                     <p style={{ marginBottom: "5px" }}>
-                      Уже есть аккаунт? <Link to="/sign-in">Войдите здесь</Link> 
-                    </p>                    
+                      Уже есть аккаунт? <Link to="/sign-in">Войдите здесь</Link>
+                    </p>
                   </>
                 )}
               </SFormLink>

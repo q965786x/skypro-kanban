@@ -6,25 +6,23 @@ import Main from "../components/Main/Main";
 import { AuthContext } from "../context/AuthContext";
 
 const ExitPage = () => {
-  const { logout } = useContext(AuthContext); // Используем logout из контекста
+  const { logout } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleClose = () => {
-    navigate("/"); // Возврат на главную
+    navigate("/");
   };
 
   const handleLogout = () => {
-    logout(); // Используем функцию из контекста вместо пропса
-    navigate("/sign-in"); // Перенаправление на страницу входа
+    logout();
+    navigate("/sign-in");
   };
 
   return (
     <div className="wrapper">
-      {/* Показываем основной интерфейс */}
       <Header />
       <Main />
 
-      {/* Поверх всего показываем модальное окно */}
       <PopExit onConfirm={handleLogout} onCancel={handleClose} isOpen={true} />
     </div>
   );

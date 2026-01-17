@@ -1,18 +1,27 @@
-import React, { useContext, useState, useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import React, { useContext, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
+import { useTheme } from "../../context/Theme";
+import { useModal } from "../../context/Modal";
+import {
+  SPopupContainer,
+  SUserName,
+  SUserEmail,
+  SThemeRow,
+  SThemeLabel,
+  SSwitchContainer,
+  SSwitchBackground,
+  SSwitchThumb,
+  SExitButtonContainer,
+  SExitButton,
+} from "./PopUser.styled";
 
 const PopUser = ({ isOpen, onClose }) => {
   const popupRef = useRef(null);
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
-  const [isDarkTheme, setIsDarkTheme] = useState(false);
-
-  const handleThemeToggle = () => {
-    setIsDarkTheme(!isDarkTheme);
-    console.log("Тема изменена на:", !isDarkTheme ? "темная" : "светлая");
-  };
+  const { isDarkTheme, toggleTheme } = useTheme();
+  const { openModal, closeModal } = useModal();
 
   useEffect(() => {
     const popupClickOutside = (event) => {
@@ -28,15 +37,18 @@ const PopUser = ({ isOpen, onClose }) => {
     };
 
     if (isOpen) {
+      openModal("popuser");
       document.addEventListener("mousedown", popupClickOutside);
       document.addEventListener("keydown", handleEscape);
+    } else {
+      closeModal();
     }
 
     return () => {
       document.removeEventListener("mousedown", popupClickOutside);
       document.removeEventListener("keydown", handleEscape);
     };
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, openModal, closeModal]); // Убрали лишнюю запятую
 
   const handleExitClick = () => {
     navigate("/exit");
@@ -48,66 +60,29 @@ const PopUser = ({ isOpen, onClose }) => {
   }
 
   return (
-    <div
-      ref={popupRef}
-      className="header__pop-user pop-user"
-      style={{
-        display: isOpen ? "block" : "none",
-        position: "absolute",
-        top: "61px",
-        right: "0",
-        width: "213px",
-        height: "205px",
-        borderRadius: "10px",
-        border: "0.7px solid rgba(148, 166, 190, 0.4)",
-        background: "#FFF",
-        boxShadow: "0px 10px 39px 0px rgba(26, 56, 101, 0.21)",
-        padding: "34px",
-        textAlign: "center",
-        zIndex: "1000",
-      }}
-    >
-      <div className="pop-user__set">
-        {/* Информация о пользователе */}
-        <div className="pop-user-set__name">
+    <SPopupContainer ref={popupRef} $isDarkTheme={isDarkTheme}>
+      <div>
+        <SUserName $isDarkTheme={isDarkTheme}>
           {user?.name || user?.login || "Пользователь"}
-        </div>
-        <div className="pop-user-set__mail">
+        </SUserName>
+        <SUserEmail $isDarkTheme={isDarkTheme}>
           {user?.login || "email@example.com"}
-        </div>
+        </SUserEmail>
 
-        {/* Переключатель темы */}
-        <div className="pop-user-set__theme">
-          <p>Темная тема</p>
-          <input
-            type="checkbox"
-            checked={isDarkTheme}
-            onChange={handleThemeToggle}
-          />
-        </div>
+        <SThemeRow $isDarkTheme={isDarkTheme} onClick={toggleTheme}>
+          <SThemeLabel $isDarkTheme={isDarkTheme}>Темная тема</SThemeLabel>
 
-        {/* Используем handleExitClick вместо onLogout */}
-        <button
-          className="pop-user__exit _btn-bor _hover03"
-          style={{
-            width: "72px",
-            height: "30px",
-            background: "transparent",
-            borderRadius: "4px",
-            border: "1px solid #565EEF",
-            fontFamily: "inherit",
-            fontSize: "14px",
-            fontWeight: "500",
-            lineHeight: "10px",
-            textAlign: "center",
-            color: "#565EEF",
-          }}
-          onClick={handleExitClick}
-        >
-          Выйти
-        </button>
+          <SSwitchContainer>
+            <SSwitchBackground $isDarkTheme={isDarkTheme} />
+            <SSwitchThumb $isDarkTheme={isDarkTheme} />
+          </SSwitchContainer>
+        </SThemeRow>
+
+        <SExitButtonContainer>
+          <SExitButton onClick={handleExitClick}>Выйти</SExitButton>
+        </SExitButtonContainer>
       </div>
-    </div>
+    </SPopupContainer>
   );
 };
 

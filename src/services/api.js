@@ -2,45 +2,50 @@ import axios from "axios";
 
 const API_URL = "https://wedev-api.sky.pro/api/kanban";
 
+const handleApiError = (error) => {
+  if (!error.response) {
+    throw new Error(
+      "Нет соединения с сервером. Проверьте интернет-соединение."
+    );
+  }
+
+  const { status, data } = error.response;
+
+  if (status === 401) {
+    throw new Error("Сессия истекла. Пожалуйста, войдите снова.");
+  }
+
+  if (status === 400) {
+    throw new Error(data?.error || "Некорректные данные");
+  }
+
+  if (status === 404) {
+    throw new Error("Ресурс не найден");
+  }
+
+  if (status === 500) {
+    throw new Error("Ошибка сервера. Попробуйте позже.");
+  }
+
+  throw new Error(data?.error || error.message || "Произошла ошибка");
+};
+
 export async function fetchTasks({ token }) {
   try {
-    console.log("Загрузка задач...");
-
     const response = await axios.get(API_URL, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
 
-    console.log("Задачи успешно загружены:", response.data);
-
     return response.data;
   } catch (error) {
-    console.error(
-      "Ошибка загрузки задач:",
-      error.response?.status,
-      error.response?.data
-    );
-
-    if (error.response?.status === 401) {
-      throw new Error("Неверный токен авторизации. Пожалуйста, войдите снова.");
-    }
-
-    throw new Error(
-      error.response?.data?.error || error.message || "Ошибка загрузки задач"
-    );
+    handleApiError(error);
   }
 }
 
 export async function postTask({ token, task }) {
   try {
-    console.log("Создание задачи:", {
-      title: task.title,
-      topic: task.topic,
-      status: task.status, // Проверьте что статус есть
-      token: token ? "есть" : "нет"
-    });
-    
     const response = await axios.post(API_URL, task, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -48,29 +53,9 @@ export async function postTask({ token, task }) {
       },
     });
 
-    console.log("Сервер ответил:", response.data);
-
-    // ВАЖНО: API возвращает {tasks: [...]}
     return response.data;
-    
   } catch (error) {
-    console.error("Ошибка создания задачи:", {
-      status: error.response?.status,
-      data: error.response?.data,
-      message: error.message,
-    });
-
-    let errorMessage = "Ошибка создания задачи";
-
-    if (error.response?.status === 400) {
-      errorMessage = "Некорректные данные задачи";
-    } else if (error.response?.status === 401) {
-      errorMessage = "Требуется авторизация";
-    } else if (error.response?.data?.error) {
-      errorMessage = error.response.data.error;
-    }
-
-    throw new Error(errorMessage);
+    throw handleApiError(error);
   }
 }
 
@@ -83,10 +68,7 @@ export async function getTask({ token, id }) {
     });
     return response.data;
   } catch (error) {
-    console.error("Ошибка получения задачи:", error.response?.data);
-    throw new Error(
-      error.response?.data?.error || error.message || "Ошибка получения задачи"
-    );
+    handleApiError(error);
   }
 }
 
@@ -98,14 +80,9 @@ export async function editTask({ token, id, task }) {
         "Content-Type": "",
       },
     });
-    return response.data.tasks;
+    return response.data;
   } catch (error) {
-    console.error("Ошибка редактирования задачи:", error.response?.data);
-    throw new Error(
-      error.response?.data?.error ||
-        error.message ||
-        "Ошибка редактирования задачи"
-    );
+    handleApiError(error);
   }
 }
 
@@ -116,11 +93,8 @@ export async function deleteTask({ token, id }) {
         Authorization: `Bearer ${token}`,
       },
     });
-    return response.data.tasks;
+    return response.data;
   } catch (error) {
-    console.error("Ошибка удаления задачи:", error.response?.data);
-    throw new Error(
-      error.response?.data?.error || error.message || "Ошибка удаления задачи"
-    );
+    handleApiError(error);
   }
 }
