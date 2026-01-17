@@ -91,16 +91,13 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  // Эффект для редиректа после успешного сохранения
   useEffect(() => {
     if (saveSuccess) {
-      // Запускаем таймер для редиректа
       const timer = setTimeout(() => {
-        // Выходим из режима редактирования
         setIsEditing(false);
-        // Редирект на главную страницу
+
         navigate("/", { replace: true });
-        // Закрываем модальное окно
+
         if (onClose) {
           onClose();
         }
@@ -108,7 +105,6 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
 
       setRedirectTimer(timer);
 
-      // Очистка таймера при размонтировании
       return () => {
         if (timer) {
           clearTimeout(timer);
@@ -117,7 +113,6 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
     }
   }, [saveSuccess, onClose, navigate]);
 
-  // Очистка таймера при размонтировании компонента
   useEffect(() => {
     return () => {
       if (redirectTimer) {
@@ -216,7 +211,7 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
         if (success) {
           setSaveSuccess(true);
           setIsSubmitting(false);
-          // Сбрасываем состояние редактирования
+
           setIsEditing(false);
         } else {
           setError("Не удалось сохранить");
@@ -244,11 +239,11 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
   const handleClose = useCallback(
     (e) => {
       e?.preventDefault();
-      // Выходим из режима редактирования если он активен
+
       if (isEditing) {
         setIsEditing(false);
       }
-      // Закрываем модальное окно и делаем редирект на главную
+
       if (onClose) {
         onClose();
       }
@@ -283,13 +278,11 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
       setError("");
       setSaveSuccess(false);
 
-      // Отменяем редирект если таймер был установлен
       if (redirectTimer) {
         clearTimeout(redirectTimer);
         setRedirectTimer(null);
       }
 
-      // Восстанавливаем исходные значения
       if (currentCard) {
         setTitle(currentCard.title || "");
         setDescription(currentCard.description || "");
@@ -351,7 +344,6 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
   const handleDateSelect = useCallback(
     (date) => {
       if (!isSubmitting && isEditing && !saveSuccess) {
-        // date приходит в формате DD.MM.YYYY из Calendar
         setSelectedDate(date);
         setFormattedDate(date);
       }
@@ -377,7 +369,6 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
     };
   }, [isEditing, saveSuccess, handleCancelEdit, handleClose]);
 
-  // Получаем актуальную дату для отображения
   const displayDate = useMemo(() => {
     return formatDisplayDate(selectedDate || currentCard?.date);
   }, [selectedDate, currentCard]);
@@ -409,7 +400,6 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
 
         <div style={{ flex: 1 }}>
           {editMode && !saveSuccess ? (
-            // В режиме редактирования показываем ВСЕ статусы
             <SStatusThemes>
               {statuses.map((statusItem) => (
                 <SStatusTheme
@@ -432,7 +422,6 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
               ))}
             </SStatusThemes>
           ) : (
-            // В режиме просмотра показываем ТОЛЬКО текущий статус
             <SStatusTheme $active={true} style={{ display: "inline-block" }}>
               <SStatusThemeText>{status}</SStatusThemeText>
             </SStatusTheme>
@@ -574,7 +563,6 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
       <SPopBrowseContainer>
         <SPopBrowseBlock>
           <SPopBrowseContent>
-            {/* Отображение сообщения об успехе */}
             {saveSuccess && (
               <div
                 style={{
@@ -595,7 +583,6 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
               </div>
             )}
 
-            {/* Отображение ошибок */}
             {error && (
               <div
                 style={{
@@ -611,21 +598,18 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
               </div>
             )}
 
-            {/* Для мобильной версии: название задачи сразу под Header */}
             {isMobile ? (
               <>
-                {/* 1. Название задачи под Header */}
                 <div style={{ marginBottom: "20px" }}>
                   <TitleField
                     title={title}
                     onChange={setTitle}
-                    isEditing={isEditing && !saveSuccess} // Отключаем редактирование при успешном сохранении
+                    isEditing={isEditing && !saveSuccess}
                     isSubmitting={isSubmitting}
                     saveSuccess={saveSuccess}
                   />
                 </div>
 
-                {/* 2. Статус */}
                 <StatusSection
                   status={selectedStatus}
                   onStatusChange={
@@ -634,7 +618,6 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
                   isEditing={isEditing && !saveSuccess}
                 />
 
-                {/* 3. Описание задачи */}
                 <div style={{ marginBottom: "20px" }}>
                   <label
                     htmlFor="textArea01"
@@ -676,7 +659,6 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
                   )}
                 </div>
 
-                {/* 4. Календарь */}
                 <div style={{ marginBottom: "20px" }}>
                   <Calendar
                     mode={isEditing && !saveSuccess ? "new" : "browse"}
@@ -691,7 +673,6 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
                   />
                 </div>
 
-                {/* 5. Категория (для мобильной версии - после календаря) */}
                 {selectedTopic && (
                   <div style={{ marginBottom: "20px" }}>
                     <div
@@ -709,7 +690,6 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
                 )}
               </>
             ) : (
-              // Десктопная версия
               <>
                 <SPopBrowseTopBlock>
                   <TitleField
@@ -795,7 +775,6 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
             )}
 
             {isEditing && !saveSuccess ? (
-              // Режим редактирования (до сохранения)
               <SPopBrowseBtnEdit
                 style={{
                   display: "flex",
@@ -888,7 +867,6 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
                 )}
               </SPopBrowseBtnEdit>
             ) : (
-              // Режим просмотра (или после успешного сохранения)
               <SPopBrowseBtnBrowse
                 style={{
                   display: "flex",
@@ -956,7 +934,6 @@ const PopBrowse = ({ card: initialCard, onClose }) => {
                     )}
                   </>
                 ) : (
-                  // После успешного сохранения показываем только кнопку закрыть
                   <div style={{ width: "100%", textAlign: "center" }}>
                     <SBtnClose
                       onClick={handleClose}
