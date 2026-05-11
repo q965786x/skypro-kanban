@@ -1,16 +1,193 @@
-# React + Vite
+# skypro-kanban
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Доска задач (Kanban) для управления проектами. Приложение позволяет создавать, редактировать, удалять и перемещать задачи между статусами.
 
-Currently, two official plugins are available:
+## Технологии
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **React 18** — библиотека для построения пользовательских интерфейсов
+- **React Router DOM v6** — маршрутизация
+- **Styled Components** — стилизация компонентов
+- **Axios** — HTTP-запросы к API
+- **Vite** — сборка проекта
 
-## React Compiler
+## Установка и запуск
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Требования
 
-## Expanding the ESLint configuration
+- Node.js (версия 16 или выше)
+- npm или yarn
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Установка зависимостей
+
+```bash
+npm install
+```
+
+### Запуск в режиме разработки
+
+```bash
+npm run dev
+```
+
+### Сборка для production
+
+```bash
+npm run build
+```
+
+### Предпросмотр production сборки
+
+```bash
+npm run preview
+```
+
+## API
+
+Приложение использует API:
+
+Базовый URL: https://wedev-api.sky.pro/api/kanban
+
+Авторизация: Bearer token
+
+### Эндпоинты
+
+Метод URL Описание
+GET /api/kanban Получить все задачи
+POST /api/kanban Создать новую задачу
+GET /api/kanban/:id Получить задачу по ID
+PUT /api/kanban/:id Обновить задачу
+DELETE /api/kanban/:id Удалить задачу
+Аутентификация
+Регистрация: POST https://wedev-api.sky.pro/api/user
+
+Вход: POST https://wedev-api.sky.pro/api/user/login
+
+## Структура проекта
+
+src/
+├── components/ # React компоненты
+│ ├── Calendar/ # Календарь выбора даты
+│ ├── Card/ # Карточка задачи
+│ ├── Column/ # Колонка со статусом
+│ ├── Header/ # Шапка приложения
+│ ├── Main/ # Основной контент
+│ ├── PopBrowse/ # Модальное окно просмотра задачи
+│ ├── PopExit/ # Модальное окно выхода
+│ ├── PopNewCard/ # Модальное окно создания задачи
+│ └── PopUser/ # Попап пользователя
+├── context/ # React Context (Auth, Tasks, Modal, Theme)
+├── pages/ # Страницы приложения
+├── services/ # API сервисы
+├── styles/ # Глобальные стили и темы
+├── App.jsx # Главный компонент
+├── App.css # Глобальные стили
+├── data.js # Статусы задач
+└── main.jsx # Точка входа
+
+## Функциональность
+
+### Статусы задач
+
+Без статуса
+
+Нужно сделать
+
+В работе
+
+Тестирование
+
+Готово
+
+### Категории задач
+
+Web Design — оранжевая тема
+
+Research — зеленая тема
+
+Copywriting — фиолетовая тема
+
+## Основные возможности
+
+✅ Создание задач с заголовком, описанием, категорией и датой
+
+✅ Drag & Drop — перемещение карточек между колонками
+
+✅ Просмотр и редактирование задачи в модальном окне
+
+✅ Удаление задач
+
+✅ Фильтрация по категориям
+
+✅ Выбор даты выполнения через календарь
+
+✅ Темная/светлая тема
+
+✅ Адаптивный дизайн (мобильные устройства)
+
+✅ Авторизация и регистрация пользователей
+
+## Маршруты
+
+Путь Описание Доступ
+/ Главная страница с доской задач Приватный
+/sign-in Вход в аккаунт Публичный
+/sign-up Регистрация Публичный
+/card/new Создание новой задачи Приватный
+/card/:id Просмотр задачи Приватный
+/exit Выход из аккаунта Приватный
+
+## Особенности реализации
+
+### Drag & Drop
+
+Перетаскивание карточек между колонками
+
+Визуальная обратная связь при перетаскивании
+
+Автоматическое обновление статуса задачи
+
+### Офлайн-режим
+
+При отсутствии соединения с сервером отображаются локальные данные
+
+Индикатор офлайн-режима в интерфейсе
+
+### Темная тема
+
+Переключение темы сохраняется в localStorage
+
+Автоматическое определение системной темы
+
+### Адаптивность
+
+Десктопная версия: полноценная доска с колонками
+
+Мобильная версия: вертикальное отображение с горизонтальным скроллом
+
+Плавающая кнопка создания задачи на мобильных устройствах
+
+## Переменные окружения
+
+Создайте файл .env в корне проекта:
+
+env
+VITE_API_URL=https://wedev-api.sky.pro/api/kanban
+VITE_AUTH_URL=https://wedev-api.sky.pro/api/user
+📝 Скрипты
+json
+{
+"dev": "запуск dev-сервера",
+"build": "сборка проекта",
+"preview": "предпросмотр сборки",
+"lint": "проверка кода ESLint"
+}
+
+## Автор
+
+Хабибова Ляля
+Разработчик: q965786x
+Проект: skypro-kanban
+
+## Лицензия
+
+Этот проект создан в рамках учебного курса Skypro.
